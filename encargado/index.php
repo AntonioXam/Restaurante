@@ -1,3 +1,4 @@
+
 <?php
 include '../sesion.php';
 include '../conexion.php';
@@ -12,7 +13,7 @@ include '../conexion.php';
 </head>
 <body>
     <header>
-        <h1>Bienvenido, Encargado</h1>
+        <h1>Bienvenido, Encargado </h1>
     </header>
     <nav>
         <ul>

@@ -13,8 +13,8 @@
     <nav>
         <ul>
             <li><a href="#login">Login</a></li>
-            <li><a href="#about">Quiénes Somos</a></li>
-            <li><a href="#contact">Dónde Encontrarnos</a></li>
+            <li><a href="#sobre">Quiénes Somos</a></li>
+            <li><a href="#contacto">Dónde Encontrarnos</a></li>
         </ul>
     </nav>
     <section id="login">
@@ -27,13 +27,13 @@
             <button type="submit">Ingresar</button>
         </form>
     </section>
-    <section id="about">
+    <section id="sobre">
         <h2>Quiénes Somos</h2>
-        <p>Somos un restaurante dedicado a ofrecer la mejor experiencia culinaria...</p>
+        <p>Somos un restaurante.....</p>
     </section>
-    <section id="contact">
+    <section id="contacto">
         <h2>Dónde Encontrarnos</h2>
-        <p>Nos encontramos en la calle Principal, número 123...</p>
+        <p>Nos encontramos en la calle....</p>
     </section>
 </body>
 </html>

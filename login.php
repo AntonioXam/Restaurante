@@ -12,13 +12,17 @@ if (mysqli_num_rows($result) == 1) {
     session_start();
     $_SESSION['usuario'] = $usuario;
     $_SESSION['rol'] = $row['rol'];
+    $_SESSION['id'] = $row['id'];
+
 
     if ($row['rol'] == 'camarero') {
-        header("Location: /camarero/index.php");
+        header("Location: camarero/index.php");
     } elseif ($row['rol'] == 'encargado') {
-        header("Location: /encargado/index.php");
+        header("Location: encargado/index.php");
     }
 } else {
     echo "Usuario o contraseña incorrectos.";
+    echo "<br>";
+    echo "<a href='index.php'>Volver</a>";
 }
 
