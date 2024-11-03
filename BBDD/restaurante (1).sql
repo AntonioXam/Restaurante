@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 31-10-2024 a las 13:56:53
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Tiempo de generación: 03-11-2024 a las 19:48:44
+-- Versión del servidor: 10.4.24-MariaDB
+-- Versión de PHP: 8.1.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -19,8 +19,8 @@ SET time_zone = "+00:00";
 
 --
 -- Base de datos: `restaurante`
-
-
+CREATE DATABASE IF NOT EXISTS `restaurante` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `restaurante`;
 
 -- --------------------------------------------------------
 
@@ -28,13 +28,23 @@ SET time_zone = "+00:00";
 -- Estructura de tabla para la tabla `detalle_pedidos`
 --
 
+DROP TABLE IF EXISTS `detalle_pedidos`;
 CREATE TABLE `detalle_pedidos` (
   `id` bigint(20) NOT NULL,
   `pedido_id` bigint(20) DEFAULT NULL,
   `producto_id` bigint(20) DEFAULT NULL,
   `cantidad` int(11) DEFAULT NULL,
   `notas` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `detalle_pedidos`
+--
+
+INSERT INTO `detalle_pedidos` (`id`, `pedido_id`, `producto_id`, `cantidad`, `notas`) VALUES
+(1, 1, 1, 2, 'Sin queso'),
+(2, 1, 3, 1, 'Con hielo'),
+(3, 2, 2, 1, 'Sin crutones');
 
 -- --------------------------------------------------------
 
@@ -42,13 +52,23 @@ CREATE TABLE `detalle_pedidos` (
 -- Estructura de tabla para la tabla `mesas`
 --
 
+DROP TABLE IF EXISTS `mesas`;
 CREATE TABLE `mesas` (
   `id` bigint(20) NOT NULL,
   `numero_mesa` int(11) DEFAULT NULL,
   `estado` text DEFAULT NULL,
   `comensales` int(11) DEFAULT NULL,
   `camarero_id` bigint(20) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `mesas`
+--
+
+INSERT INTO `mesas` (`id`, `numero_mesa`, `estado`, `comensales`, `camarero_id`) VALUES
+(1, 1, 'activa', 4, 3),
+(2, 2, 'activa', 2, 3),
+(3, 3, 'inactiva', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -56,13 +76,22 @@ CREATE TABLE `mesas` (
 -- Estructura de tabla para la tabla `pedidos`
 --
 
+DROP TABLE IF EXISTS `pedidos`;
 CREATE TABLE `pedidos` (
   `id` bigint(20) NOT NULL,
   `mesa_id` bigint(20) DEFAULT NULL,
   `camarero_id` bigint(20) DEFAULT NULL,
   `estado` text DEFAULT NULL,
   `total` decimal(10,2) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `pedidos`
+--
+
+INSERT INTO `pedidos` (`id`, `mesa_id`, `camarero_id`, `estado`, `total`) VALUES
+(1, 1, 3, 'pendiente', '0.00'),
+(2, 2, 3, 'pendiente', '0.00');
 
 -- --------------------------------------------------------
 
@@ -70,13 +99,23 @@ CREATE TABLE `pedidos` (
 -- Estructura de tabla para la tabla `productos`
 --
 
+DROP TABLE IF EXISTS `productos`;
 CREATE TABLE `productos` (
   `id` bigint(20) NOT NULL,
   `nombre` text DEFAULT NULL,
   `categoria` text DEFAULT NULL,
   `precio` decimal(10,2) DEFAULT NULL,
   `stock` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `productos`
+--
+
+INSERT INTO `productos` (`id`, `nombre`, `categoria`, `precio`, `stock`) VALUES
+(1, 'Pizza Margarita', 'Comida', '8.50', 10),
+(2, 'Ensalada César', 'Comida', '6.00', 15),
+(3, 'Coca Cola', 'Bebida', '2.50', 20);
 
 -- --------------------------------------------------------
 
@@ -84,6 +123,7 @@ CREATE TABLE `productos` (
 -- Estructura de tabla para la tabla `usuarios`
 --
 
+DROP TABLE IF EXISTS `usuarios`;
 CREATE TABLE `usuarios` (
   `id` bigint(20) NOT NULL,
   `nombre` text DEFAULT NULL,
@@ -91,7 +131,7 @@ CREATE TABLE `usuarios` (
   `rol` text DEFAULT NULL,
   `usuario` text DEFAULT NULL,
   `contrasena` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Volcado de datos para la tabla `usuarios`
@@ -101,29 +141,6 @@ INSERT INTO `usuarios` (`id`, `nombre`, `apellidos`, `rol`, `usuario`, `contrase
 (1, 'Antonio', 'Ibáñez', 'encargado', 'master', 'pizza'),
 (2, 'Perico', 'Salvador', 'encargado', 'periko_elmaki', '1234'),
 (3, 'Fernando', 'Ureña', 'camarero', 'litolunar', 'bambu');
-
--- Inserciones para la tabla `mesas`
-INSERT INTO `mesas` (`id`, `numero_mesa`, `estado`, `comensales`, `camarero_id`) VALUES
-(1, 1, 'activa', 4, 3),
-(2, 2, 'activa', 2, 3),
-(3, 3, 'inactiva', 0, NULL);
-
--- Inserciones para la tabla `productos`
-INSERT INTO `productos` (`id`, `nombre`, `categoria`, `precio`, `stock`) VALUES
-(1, 'Pizza Margarita', 'Comida', 8.50, 10),
-(2, 'Ensalada César', 'Comida', 6.00, 15),
-(3, 'Coca Cola', 'Bebida', 2.50, 20);
-
--- Inserciones para la tabla `pedidos`
-INSERT INTO `pedidos` (`id`, `mesa_id`, `camarero_id`, `estado`, `total`) VALUES
-(1, 1, 3, 'pendiente', 0.00),
-(2, 2, 3, 'pendiente', 0.00);
-
--- Inserciones para la tabla `detalle_pedidos`
-INSERT INTO `detalle_pedidos` (`id`, `pedido_id`, `producto_id`, `cantidad`, `notas`) VALUES
-(1, 1, 1, 2, 'Sin queso'),
-(2, 1, 3, 1, 'Con hielo'),
-(3, 2, 2, 1, 'Sin crutones');
 
 --
 -- Índices para tablas volcadas
@@ -174,25 +191,25 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `detalle_pedidos`
 --
 ALTER TABLE `detalle_pedidos`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `mesas`
 --
 ALTER TABLE `mesas`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `pedidos`
 --
 ALTER TABLE `pedidos`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
