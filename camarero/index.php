@@ -1,6 +1,10 @@
 <?php
 include '../sesion.php';
 include '../conexion.php';
+
+// Obtener mesas activas
+$query = "SELECT * FROM mesas WHERE estado = 'activa'";
+$result = mysqli_query($conexion, $query);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -20,8 +24,23 @@ include '../conexion.php';
         </ul>
     </nav>
     <section>
-        <h2>Panel de Camarero</h2>
-        <p>Contenido exclusivo para camareros...</p>
+        <h2>Gestión de Mesas</h2>
+        <table>
+            <tr>
+                <th>Número de Mesa</th>
+                <th>Estado</th>
+                <th>Comensales</th>
+                <th>Acciones</th>
+            </tr>
+            <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+            <tr>
+                <td><?php echo $row['numero_mesa']; ?></td>
+                <td><?php echo $row['estado']; ?></td>
+                <td><?php echo $row['comensales']; ?></td>
+                <td><a href="pedidos.php?mesa_id=<?php echo $row['id']; ?>">Gestionar Pedido</a></td>
+            </tr>
+            <?php } ?>
+        </table>
     </section>
 </body>
 </html>

@@ -1,0 +1,71 @@
+<?php
+include '../sesion.php';
+include '../conexion.php';
+
+$mesa_id = $_GET['mesa_id'];
+
+// Obtener productos
+$query_productos = "SELECT * FROM productos";
+$result_productos = mysqli_query($conexion, $query_productos);
+
+// Obtener detalles de la mesa
+$query_mesa = "SELECT * FROM mesas WHERE id = $mesa_id";
+$result_mesa = mysqli_query($conexion, $query_mesa);
+$mesa = mysqli_fetch_assoc($result_mesa);
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $producto_id = $_POST['producto_id'];
+    $cantidad = $_POST['cantidad'];
+    $notas = $_POST['notas'];
+
+    // Insertar pedido
+    $query_pedido = "INSERT INTO pedidos (mesa_id, camarero_id, estado, total) VALUES ($mesa_id, {$_SESSION['usuario_id']}, 'pendiente', 0)";
+    mysqli_query($conexion, $query_pedido);
+    $pedido_id = mysqli_insert_id($conexion);
+
+    // Insertar detalle del pedido
+    $query_detalle = "INSERT INTO detalle_pedidos (pedido_id, producto_id, cantidad, notas) VALUES ($pedido_id, $producto_id, $cantidad, '$notas')";
+    mysqli_query($conexion, $query_detalle);
+
+    // Actualizar total del pedido
+    $query_total = "UPDATE pedidos SET total = (SELECT SUM(p.cantidad * pr.precio) FROM detalle_pedidos p JOIN productos pr ON p.producto_id = pr.id WHERE p.pedido_id = $pedido_id) WHERE id = $pedido_id";
+    mysqli_query($conexion, $query_total);
+
+    header("Location: pedidos.php?mesa_id=$mesa_id");
+}
+?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Pedido</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header>
+        <h1>Gestión de Pedido para Mesa <?php echo $mesa['numero_mesa']; ?></h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="../logout.php">Cerrar Sesión</a></li>
+        </ul>
+    </nav>
+    <section>
+        <h2>Agregar Producto</h2>
+        <form method="POST">
+            <label for="producto_id">Producto:</label>
+            <select name="producto_id" id="producto_id">
+                <?php while ($producto = mysqli_fetch_assoc($result_productos)) { ?>
+                <option value="<?php echo $producto['id']; ?>"><?php echo $producto['nombre']; ?></option>
+                <?php } ?>
+            </select>
+            <label for="cantidad">Cantidad:</label>
+            <input type="number" name="cantidad" id="cantidad" required>
+            <label for="notas">Notas:</label>
+            <input type="text" name="notas" id="notas">
+            <button type="submit">Agregar</button>
+        </form>
+    </section>
+</body>
+</html>

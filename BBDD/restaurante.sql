@@ -101,6 +101,29 @@ INSERT INTO `usuarios` (`id`, `nombre`, `apellidos`, `rol`, `usuario`, `contrase
 (2, 'Perico', 'Salvador', 'encargado', 'periko_elmaki', '1234'),
 (3, 'Fernando', 'Ureña', 'camarero', 'litolunar', 'bambu');
 
+-- Inserciones para la tabla `mesas`
+INSERT INTO `mesas` (`id`, `numero_mesa`, `estado`, `comensales`, `camarero_id`) VALUES
+(1, 1, 'activa', 4, 3),
+(2, 2, 'activa', 2, 3),
+(3, 3, 'inactiva', 0, NULL);
+
+-- Inserciones para la tabla `productos`
+INSERT INTO `productos` (`id`, `nombre`, `categoria`, `precio`, `stock`) VALUES
+(1, 'Pizza Margarita', 'Comida', 8.50, 10),
+(2, 'Ensalada César', 'Comida', 6.00, 15),
+(3, 'Coca Cola', 'Bebida', 2.50, 20);
+
+-- Inserciones para la tabla `pedidos`
+INSERT INTO `pedidos` (`id`, `mesa_id`, `camarero_id`, `estado`, `total`) VALUES
+(1, 1, 3, 'pendiente', 0.00),
+(2, 2, 3, 'pendiente', 0.00);
+
+-- Inserciones para la tabla `detalle_pedidos`
+INSERT INTO `detalle_pedidos` (`id`, `pedido_id`, `producto_id`, `cantidad`, `notas`) VALUES
+(1, 1, 1, 2, 'Sin queso'),
+(2, 1, 3, 1, 'Con hielo'),
+(3, 2, 2, 1, 'Sin crutones');
+
 --
 -- Índices para tablas volcadas
 --
