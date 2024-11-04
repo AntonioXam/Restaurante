@@ -17,8 +17,7 @@ include '../conexion.php';
     </header>
     <nav>
         <ul>
-            <li><a href="registrar_camarero.php">Registrar Camarero</a></li>
-            <li><a href="../logout.php">Cerrar Sesión</a></li>
+            <li><a href="index.php">volver</a></li>
         </ul>
     </nav>
     <section>
@@ -27,32 +26,17 @@ include '../conexion.php';
     </section>
     <section>
         <h2>Registrar Camarero</h2>
-        <form action="registrar_camarero.php" method="post">
+        <form action="registro.php" method="post">
             <label for="nombre">Nombre:</label>
             <input type="text" name="nombre" id="nombre" required>
             <label for="apellido">Apellido:</label>
             <input type="text" name="apellido" id="apellido" required>
-            <label for="email">Email:</label>
-            <input type="email" name="email" id="email" required>
+            <label for="usuario">Usuario:</label>
+            <input type="text" name="usuario" id="usuario" required>
             <label for="password">Contraseña:</label>
             <input type="password" name="password" id="password" required>
             <input type="submit" value="Registrar">
         </form>
     </section>
-    <?php
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $nombre = $_POST['nombre'];
-        $apellido = $_POST['apellido'];
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $password_hash = password_hash($password, PASSWORD_DEFAULT);
-        $sql = "INSERT INTO camarero (nombre, apellido, email, password) VALUES ('$nombre', '$apellido', '$email', '$password_hash')";
-        if ($conexion->query($sql) === TRUE) {
-            echo '<p>Camarero registrado correctamente.</p>';
-        } else {
-            echo '<p>Error al registrar el camarero.</p>';
-        }
-    }
-    ?>
 </body>
 </html>

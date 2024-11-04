@@ -1,5 +1,4 @@
 <?php
-session_start();
 include '../sesion.php';
 include '../conexion.php';
 
@@ -35,7 +34,7 @@ $mesas_result = mysqli_query($conexion, $mesas_query);
     </header>
     <nav>
         <ul>
-            <li><a href="gestionar_mesas.php">Volver</a></li>
+            <li><a href="index.php">Volver</a></li>
         </ul>
     </nav>
     <section>
