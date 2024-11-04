@@ -4,9 +4,34 @@ include '../conexion.php';
 
 $camarero_id = $_SESSION['usuario_id'];
 
-// Obtener mesas del camarero actual
-$query = "SELECT * FROM mesas WHERE camarero_id = $camarero_id";
+// Obtener el ID de la mesa
+$id = $_GET['id'];
+
+// Verificar que la mesa pertenece al camarero actual
+$query_verificar = "SELECT * FROM mesas WHERE id = $id AND camarero_id = $camarero_id";
+$result_verificar = mysqli_query($conexion, $query_verificar);
+if (mysqli_num_rows($result_verificar) == 0) {
+    die("No tienes permiso para editar esta mesa.");
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Obtener datos del formulario
+    $numero_mesa = $_POST['numero_mesa'];
+    $comensales = $_POST['comensales'];
+    $estado = $_POST['estado'];
+
+    // Actualizar mesa
+    $query = "UPDATE mesas SET numero_mesa = '$numero_mesa', comensales = '$comensales', estado = '$estado' WHERE id = $id AND camarero_id = $camarero_id";
+    mysqli_query($conexion, $query);
+
+    // Redirigir a la página de mesas
+    header("Location: index.php");
+}
+
+// Obtener detalles de la mesa
+$query = "SELECT * FROM mesas WHERE id = $id";
 $result = mysqli_query($conexion, $query);
+$mesa = mysqli_fetch_assoc($result);
 
 ?>
 <!DOCTYPE html>
@@ -14,45 +39,26 @@ $result = mysqli_query($conexion, $query);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Camarero</title>
+    <title>Editar Mesa</title>
     <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
     <header>
-        <h1>Bienvenido, Camarero</h1>
+        <h1>Editar Mesa</h1>
     </header>
     <section>
-        <h2>Gestión de Mesas</h2>
-        <h3>Mesas Actuales</h3>
-        <table>
-            <tr>
-                <th>Número de Mesa</th>
-                <th>Estado</th>
-                <th>Comensales</th>
-                <th>Acciones</th>
-            </tr>
-            <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-            <tr>
-                <td><?php echo $row['numero_mesa']; ?></td>
-                <td><?php echo $row['estado']; ?></td>
-                <td><?php echo $row['comensales']; ?></td>
-                <td>
-                    <?php if ($row['estado'] == 'activa') { ?>
-                        <a href="pedidos.php?mesa_id=<?php echo $row['id']; ?>">Gestionar Pedido</a>
-                    <?php } ?>
-                    <a href="editar_mesa.php?id=<?php echo $row['id']; ?>">Editar</a>
-                    <a href="eliminar_mesa.php?id=<?php echo $row['id']; ?>">Eliminar</a>
-                </td>
-            </tr>
-            <?php } ?>
-        </table>
-        <h3>Agregar Mesa</h3>
-        <form method="POST" action="mesas.php">
+        <form method="POST">
             <label for="numero_mesa">Número de Mesa:</label>
-            <input type="text" name="numero_mesa" id="numero_mesa" required>
+            <input type="text" name="numero_mesa" id="numero_mesa" value="<?php echo $mesa['numero_mesa']; ?>" required>
             <label for="comensales">Comensales:</label>
-            <input type="number" name="comensales" id="comensales" required>
-            <button type="submit">Agregar</button>
+            <input type="number" name="comensales" id="comensales" value="<?php echo $mesa['comensales']; ?>" required>
+            <label for="estado">Estado:</label>
+            <select name="estado" id="estado">
+                <option value="activa" <?php if ($mesa['estado'] == 'activa') echo 'selected'; ?>>Activa</option>
+                <option value="inactiva" <?php if ($mesa['estado'] == 'inactiva') echo 'selected'; ?>>Inactiva</option>
+                <option value="ocupada" <?php if ($mesa['estado'] == 'ocupada') echo 'selected'; ?>>Ocupada</option>
+            </select>
+            <button type="submit">Actualizar</button>
         </form>
     </section>
     <footer>
