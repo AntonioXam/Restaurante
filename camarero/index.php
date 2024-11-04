@@ -2,8 +2,10 @@
 include '../sesion.php';
 include '../conexion.php';
 
-// Obtener mesas
-$query = "SELECT * FROM mesas";
+$camarero_id = $_SESSION['usuario_id'];
+
+// Obtener mesas del camarero actual
+$query = "SELECT * FROM mesas WHERE camarero_id = $camarero_id";
 $result = mysqli_query($conexion, $query);
 
 ?>

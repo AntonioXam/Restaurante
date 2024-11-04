@@ -2,9 +2,11 @@
 include '../sesion.php';
 include '../conexion.php';
 
+$camarero_id = $_SESSION['usuario_id'];
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Verificar el número actual de mesas
-    $query_count = "SELECT COUNT(*) as total FROM mesas";
+    $query_count = "SELECT COUNT(*) as total FROM mesas WHERE camarero_id = $camarero_id";
     $result_count = mysqli_query($conexion, $query_count);
     $count = mysqli_fetch_assoc($result_count)['total'];
 
@@ -15,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $estado = 'activa'; // Estado por defecto al crear una mesa
 
         // Insertar nueva mesa
-        $query = "INSERT INTO mesas (numero_mesa, comensales, estado) VALUES ('$numero_mesa', '$comensales', '$estado')";
+        $query = "INSERT INTO mesas (numero_mesa, comensales, estado, camarero_id) VALUES ('$numero_mesa', '$comensales', '$estado', $camarero_id)";
         mysqli_query($conexion, $query);
 
         // Redirigir a la página de mesas
@@ -25,8 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Obtener mesas
-$query = "SELECT * FROM mesas";
+// Obtener mesas del camarero actual
+$query = "SELECT * FROM mesas WHERE camarero_id = $camarero_id";
 $result = mysqli_query($conexion, $query);
 ?>
 <!DOCTYPE html>
