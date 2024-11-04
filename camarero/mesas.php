@@ -44,6 +44,7 @@ $result = mysqli_query($conexion, $query);
     <nav>
         <ul>
             <li><a href="../logout.php">Cerrar Sesión</a></li>
+            <li><button onclick="history.back()">Volver</button></li>
         </ul>
     </nav>
     <section>
