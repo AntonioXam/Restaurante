@@ -17,6 +17,7 @@ include '../conexion.php';
     </header>
     <nav>
         <ul>
+            <li><a href="registrar_camarero.php">Registrar Camarero</a></li>
             <li><a href="../logout.php">Cerrar Sesión</a></li>
         </ul>
     </nav>
