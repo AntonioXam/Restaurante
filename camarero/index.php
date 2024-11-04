@@ -1,37 +1,29 @@
 <?php
-session_start();
-if (!isset($_SESSION['camarero_id'])) {
-    header("Location: login.php");
-    exit();
-}
-
-$camarero_id = $_SESSION['camarero_id'];
-
-// Mostrar mesas
-$sql = "SELECT * FROM mesas WHERE camarero_id='$camarero_id'";
-$result = $conn->query($sql);
-
-echo "<h1>Mesas</h1>";
-while ($row = $result->fetch_assoc()) {
-    echo "Mesa " . $row['numero_mesa'] . " - Estado: " . $row['estado'] . "<br>";
-}
-
-// Crear mesa
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['crear_mesa'])) {
-    $numero_mesa = $_POST['numero_mesa'];
-    $estado = $_POST['estado'];
-    $comensales = $_POST['comensales'];
-
-    $sql = "INSERT INTO mesas (numero_mesa, estado, comensales, camarero_id) VALUES ('$numero_mesa', '$estado', '$comensales', '$camarero_id')";
-    $conn->query($sql);
-    header("Location: mesas.php");
-}
-
-// Formulario para crear mesa
+include '../sesion.php';
+include '../conexion.php';
 ?>
-<form method="post" action="">
-    Número de mesa: <input type="text" name="numero_mesa"><br>
-    Estado: <input type="text" name="estado"><br>
-    Comensales: <input type="text" name="comensales"><br>
-    <input type="submit" name="crear_mesa" value="Crear Mesa">
-</form>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Camarero</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <header>
+        <h1>Bienvenido, Camarero</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="gestionar_mesas.php">Gestionar Mesas</a></li>
+            <li><a href="gestionar_pedido.php">Gestionar Pedidos</a></li>
+            <li><a href="../logout.php">Cerrar Sesión</a></li>
+        </ul>
+    </nav>
+    <section>
+        <h2>Panel de Camarero</h2>
+        <p>Seleccione una opción del menú para comenzar.</p>
+    </section>
+</body>
+</html>
