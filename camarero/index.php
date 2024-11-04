@@ -2,9 +2,10 @@
 include '../sesion.php';
 include '../conexion.php';
 
-// Obtener mesas activas
-$query = "SELECT * FROM mesas WHERE estado = 'activa'";
+// Obtener mesas
+$query = "SELECT * FROM mesas";
 $result = mysqli_query($conexion, $query);
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -25,6 +26,7 @@ $result = mysqli_query($conexion, $query);
     </nav>
     <section>
         <h2>Gestión de Mesas</h2>
+        <h3>Mesas Actuales</h3>
         <table>
             <tr>
                 <th>Número de Mesa</th>
@@ -37,10 +39,24 @@ $result = mysqli_query($conexion, $query);
                 <td><?php echo $row['numero_mesa']; ?></td>
                 <td><?php echo $row['estado']; ?></td>
                 <td><?php echo $row['comensales']; ?></td>
-                <td><a href="pedidos.php?mesa_id=<?php echo $row['id']; ?>">Gestionar Pedido</a></td>
+                <td>
+                    <?php if ($row['estado'] == 'activa') { ?>
+                        <a href="pedidos.php?mesa_id=<?php echo $row['id']; ?>">Gestionar Pedido</a>
+                    <?php } ?>
+                    <a href="editar_mesa.php?id=<?php echo $row['id']; ?>">Editar</a>
+                    <a href="eliminar_mesa.php?id=<?php echo $row['id']; ?>">Eliminar</a>
+                </td>
             </tr>
             <?php } ?>
         </table>
+        <h3>Agregar Mesa</h3>
+        <form method="POST" action="mesas.php">
+            <label for="numero_mesa">Número de Mesa:</label>
+            <input type="text" name="numero_mesa" id="numero_mesa" required>
+            <label for="comensales">Comensales:</label>
+            <input type="number" name="comensales" id="comensales" required>
+            <button type="submit">Agregar</button>
+        </form>
     </section>
 </body>
 </html>

@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     mysqli_query($conexion, $query);
 
     // Redirigir a la página de mesas
-    header("Location: mesas.php");
+    header("Location: index.php");
 }
 
 // Obtener mesas
