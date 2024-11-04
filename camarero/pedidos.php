@@ -28,10 +28,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $cantidad = $_POST['cantidad'];
     $notas = $_POST['notas'];
 
-    // Insertar pedido
-    $query_pedido = "INSERT INTO pedidos (mesa_id, camarero_id, estado, total) VALUES ($mesa_id, {$_SESSION['usuario_id']}, 'pendiente', 0)";
-    mysqli_query($conexion, $query_pedido);
-    $pedido_id = mysqli_insert_id($conexion);
+    // Verificar si ya existe un pedido pendiente para la mesa
+    $query_pedido_existente = "SELECT id FROM pedidos WHERE mesa_id = $mesa_id AND estado = 'pendiente'";
+    $result_pedido_existente = mysqli_query($conexion, $query_pedido_existente);
+    if (mysqli_num_rows($result_pedido_existente) > 0) {
+        $pedido = mysqli_fetch_assoc($result_pedido_existente);
+        $pedido_id = $pedido['id'];
+    } else {
+        // Insertar nuevo pedido
+        $query_pedido = "INSERT INTO pedidos (mesa_id, camarero_id, estado, total) VALUES ($mesa_id, {$_SESSION['usuario_id']}, 'pendiente', 0)";
+        mysqli_query($conexion, $query_pedido);
+        $pedido_id = mysqli_insert_id($conexion);
+    }
 
     // Insertar detalle del pedido
     $query_detalle = "INSERT INTO detalle_pedidos (pedido_id, producto_id, cantidad, notas) VALUES ($pedido_id, $producto_id, $cantidad, '$notas')";
@@ -93,8 +101,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <td><?php echo $pedido['notas']; ?></td>
                 <td><?php echo $pedido['total']; ?></td>
                 <td>
-                    <a href="editar_pedido.php?id=<?php echo $pedido['id']; ?>">Editar</a>
-                    <a href="eliminar_pedido.php?id=<?php echo $pedido['id']; ?>">Eliminar</a>
+                    <a href="editar_pedido.php?id=<?php echo $pedido['id']; ?>&mesa_id=<?php echo $mesa_id; ?>">Editar</a>
+                    <a href="eliminar_pedido.php?id=<?php echo $pedido['id']; ?>&mesa_id=<?php echo $mesa_id; ?>">Eliminar</a>
                 </td>
             </tr>
             <?php } ?>

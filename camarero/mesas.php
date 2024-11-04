@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Obtener datos del formulario
     $numero_mesa = $_POST['numero_mesa'];
     $comensales = $_POST['comensales'];
-    $estado = $_POST['estado'];
+    $estado = 'activa'; // Estado por defecto al crear una mesa
 
     // Insertar nueva mesa
     $query = "INSERT INTO mesas (numero_mesa, comensales, estado) VALUES ('$numero_mesa', '$comensales', '$estado')";
@@ -44,12 +44,6 @@ $result = mysqli_query($conexion, $query);
             <input type="text" name="numero_mesa" id="numero_mesa" required>
             <label for="comensales">Comensales:</label>
             <input type="number" name="comensales" id="comensales" required>
-            <label for="estado">Estado:</label>
-            <select name="estado" id="estado">
-                <option value="activa">Activa</option>
-                <option value="inactiva">Inactiva</option>
-                <option value="ocupada">Ocupada</option>
-            </select>
             <button type="submit">Agregar</button>
         </form>
         <h2>Mesas Actuales</h2>
