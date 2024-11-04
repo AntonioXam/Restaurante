@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 04-11-2024 a las 01:34:49
+-- Tiempo de generación: 04-11-2024 a las 23:54:40
 -- Versión del servidor: 10.4.24-MariaDB
 -- Versión de PHP: 8.1.6
 
@@ -38,18 +38,6 @@ CREATE TABLE `detalle_pedidos` (
   `notas` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Volcado de datos para la tabla `detalle_pedidos`
---
-
-INSERT INTO `detalle_pedidos` (`id`, `pedido_id`, `producto_id`, `cantidad`, `notas`) VALUES
-(1, 1, 1, 2, 'Sin queso'),
-(2, 1, 3, 1, 'Con hielo'),
-(3, 2, 2, 1, 'Sin crutones'),
-(4, 1, 2, 1, 'Sin aderezo'),
-(5, 2, 1, 3, 'Extra queso'),
-(6, 2, 3, 2, 'Sin hielo');
-
 -- --------------------------------------------------------
 
 --
@@ -61,21 +49,24 @@ CREATE TABLE `mesas` (
   `id` bigint(20) NOT NULL,
   `numero_mesa` int(11) DEFAULT NULL,
   `estado` text DEFAULT NULL,
-  `comensales` int(11) DEFAULT NULL,
-  `camarero_id` bigint(20) DEFAULT NULL
+  `comensales` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Volcado de datos para la tabla `mesas`
 --
 
-INSERT INTO `mesas` (`id`, `numero_mesa`, `estado`, `comensales`, `camarero_id`) VALUES
-(1, 1, 'activa', 4, 3),
-(2, 2, 'activa', 2, 3),
-(3, 3, 'inactiva', 0, NULL),
-(4, 4, 'activa', 3, 3),
-(5, 5, 'inactiva', 0, NULL),
-(6, 6, 'ocupada', 4, 3);
+INSERT INTO `mesas` (`id`, `numero_mesa`, `estado`, `comensales`) VALUES
+(1, 1, 'inactiva', 0),
+(2, 2, 'inactiva', 0),
+(3, 3, 'inactiva', 0),
+(4, 4, 'inactiva', 0),
+(5, 5, 'inactiva', 0),
+(6, 6, 'inactiva', 0),
+(7, 7, 'inactiva', 0),
+(8, 8, 'inactiva', 0),
+(9, 9, 'inactiva', 0),
+(10, 10, 'inactiva', 0);
 
 -- --------------------------------------------------------
 
@@ -91,16 +82,6 @@ CREATE TABLE `pedidos` (
   `estado` text DEFAULT NULL,
   `total` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Volcado de datos para la tabla `pedidos`
---
-
-INSERT INTO `pedidos` (`id`, `mesa_id`, `camarero_id`, `estado`, `total`) VALUES
-(1, 1, 3, 'pendiente', '0.00'),
-(2, 2, 3, 'pendiente', '0.00'),
-(3, 4, 3, 'pendiente', '0.00'),
-(4, 6, 3, 'pendiente', '0.00');
 
 -- --------------------------------------------------------
 
@@ -124,10 +105,7 @@ CREATE TABLE `productos` (
 INSERT INTO `productos` (`id`, `nombre`, `categoria`, `precio`, `stock`) VALUES
 (1, 'Pizza Margarita', 'Comida', '8.50', 10),
 (2, 'Ensalada César', 'Comida', '6.00', 15),
-(3, 'Coca Cola', 'Bebida', '2.50', 20),
-(4, 'Hamburguesa', 'Comida', '7.00', 12),
-(5, 'Agua Mineral', 'Bebida', '1.50', 30),
-(6, 'Pasta Alfredo', 'Comida', '9.00', 8);
+(3, 'Coca Cola', 'Bebida', '2.50', 20);
 
 -- --------------------------------------------------------
 
@@ -140,6 +118,7 @@ CREATE TABLE `usuarios` (
   `id` bigint(20) NOT NULL,
   `nombre` text DEFAULT NULL,
   `apellidos` text DEFAULT NULL,
+  `dni` text NOT NULL,
   `rol` text DEFAULT NULL,
   `usuario` text DEFAULT NULL,
   `contrasena` text DEFAULT NULL
@@ -149,12 +128,9 @@ CREATE TABLE `usuarios` (
 -- Volcado de datos para la tabla `usuarios`
 --
 
-INSERT INTO `usuarios` (`id`, `nombre`, `apellidos`, `rol`, `usuario`, `contrasena`) VALUES
-(1, 'Antonio', 'Ibáñez', 'encargado', 'master', 'pizza'),
-(2, 'Perico', 'Salvador', 'encargado', 'periko_elmaki', '1234'),
-(3, 'Fernando', 'Ureña', 'camarero', 'litolunar', 'bambu'),
-(4, 'Laura', 'García', 'camarero', 'laurita', 'password123'),
-(5, 'Carlos', 'Martínez', 'encargado', 'carlosm', 'securepass');
+INSERT INTO `usuarios` (`id`, `nombre`, `apellidos`, `dni`, `rol`, `usuario`, `contrasena`) VALUES
+(1, 'Antonio', 'Ibáñez', '48576585L', 'encargado', 'master', 'pizza'),
+(3, 'Fernando', 'Ureña', '23445667F', 'camarero', 'litolunar', 'bambu');
 
 --
 -- Índices para tablas volcadas
@@ -173,8 +149,7 @@ ALTER TABLE `detalle_pedidos`
 --
 ALTER TABLE `mesas`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `numero_mesa` (`numero_mesa`),
-  ADD KEY `camarero_id` (`camarero_id`);
+  ADD UNIQUE KEY `numero_mesa` (`numero_mesa`);
 
 --
 -- Indices de la tabla `pedidos`
@@ -205,31 +180,31 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `detalle_pedidos`
 --
 ALTER TABLE `detalle_pedidos`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `mesas`
 --
 ALTER TABLE `mesas`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `pedidos`
 --
 ALTER TABLE `pedidos`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Restricciones para tablas volcadas
@@ -241,12 +216,6 @@ ALTER TABLE `usuarios`
 ALTER TABLE `detalle_pedidos`
   ADD CONSTRAINT `detalle_pedidos_ibfk_1` FOREIGN KEY (`pedido_id`) REFERENCES `pedidos` (`id`),
   ADD CONSTRAINT `detalle_pedidos_ibfk_2` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`);
-
---
--- Filtros para la tabla `mesas`
---
-ALTER TABLE `mesas`
-  ADD CONSTRAINT `mesas_ibfk_1` FOREIGN KEY (`camarero_id`) REFERENCES `usuarios` (`id`);
 
 --
 -- Filtros para la tabla `pedidos`

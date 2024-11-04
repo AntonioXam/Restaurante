@@ -14,11 +14,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     mysqli_query($conexion, $query);
 }
 
-$query = "SELECT * FROM productos";
-$result = mysqli_query($conexion, $query);
+$pizzas_query = "SELECT * FROM productos WHERE categoria = 'Comida' AND nombre LIKE '%Pizza%'";
+$pizzas_result = mysqli_query($conexion, $pizzas_query);
 
-$mesas_query = "SELECT * FROM mesas WHERE estado = 'activa'";
-$mesas_result = mysqli_query($conexion, $mesas_query);
+$ensaladas_query = "SELECT * FROM productos WHERE categoria = 'Comida' AND nombre LIKE '%Ensalada%'";
+$ensaladas_result = mysqli_query($conexion, $ensaladas_query);
+
+$bebidas_query = "SELECT * FROM productos WHERE categoria = 'Bebida'";
+$bebidas_result = mysqli_query($conexion, $bebidas_query);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -26,49 +29,114 @@ $mesas_result = mysqli_query($conexion, $mesas_query);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestionar Pedido</title>
-    <link rel="stylesheet" href="../styles.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <header>
+    <header class="bg-primary text-white text-center py-3">
         <h1>Gestionar Pedido</h1>
     </header>
-    <nav>
-        <ul>
-            <li><a href="index.php">Volver</a></li>
-        </ul>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">Restaurante</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php">Volver</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </nav>
-    <section>
-        <h2>Seleccionar Mesa</h2>
-        <form action="" method="get">
-            <label for="mesa_id">Mesa:</label>
-            <select id="mesa_id" name="mesa_id" onchange="this.form.submit()">
-                <option value="">Seleccione una mesa</option>
-                <?php while ($mesa = mysqli_fetch_assoc($mesas_result)) { ?>
-                <option value="<?php echo $mesa['id']; ?>" <?php if ($mesa['id'] == $mesa_id) echo 'selected'; ?>>
-                    Mesa <?php echo $mesa['numero_mesa']; ?>
-                </option>
-                <?php } ?>
-            </select>
-        </form>
-    </section>
-    <?php if ($mesa_id) { ?>
-    <section>
-        <h2>Añadir Producto</h2>
-        <form action="" method="post">
-            <input type="hidden" name="mesa_id" value="<?php echo $mesa_id; ?>">
-            <label for="producto_id">Producto:</label>
-            <select id="producto_id" name="producto_id">
-                <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-                <option value="<?php echo $row['id']; ?>"><?php echo $row['nombre']; ?></option>
-                <?php } ?>
-            </select>
-            <label for="cantidad">Cantidad:</label>
-            <input type="number" id="cantidad" name="cantidad" required>
-            <label for="notas">Notas:</label>
-            <input type="text" id="notas" name="notas">
-            <button type="submit">Añadir</button>
-        </form>
-    </section>
-    <?php } ?>
+    <div class="container mt-5">
+        <section class="p-4 bg-light border rounded shadow-sm">
+            <h2>Seleccionar Producto</h2>
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="pizzas-tab" data-toggle="tab" href="#pizzas" role="tab" aria-controls="pizzas" aria-selected="true">Pizzas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="ensaladas-tab" data-toggle="tab" href="#ensaladas" role="tab" aria-controls="ensaladas" aria-selected="false">Ensaladas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="bebidas-tab" data-toggle="tab" href="#bebidas" role="tab" aria-controls="bebidas" aria-selected="false">Bebidas</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="pizzas" role="tabpanel" aria-labelledby="pizzas-tab">
+                    <form action="" method="post" class="form mt-3">
+                        <input type="hidden" name="mesa_id" value="<?php echo $mesa_id; ?>">
+                        <div class="form-group">
+                            <label for="producto_id">Producto:</label>
+                            <select id="producto_id" name="producto_id" class="form-control">
+                                <?php while ($row = mysqli_fetch_assoc($pizzas_result)) { ?>
+                                <option value="<?php echo $row['id']; ?>"><?php echo $row['nombre']; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cantidad">Cantidad:</label>
+                            <input type="number" class="form-control" id="cantidad" name="cantidad" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="notas">Notas:</label>
+                            <textarea class="form-control" id="notas" name="notas"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Añadir</button>
+                    </form>
+                </div>
+                <div class="tab-pane fade" id="ensaladas" role="tabpanel" aria-labelledby="ensaladas-tab">
+                    <form action="" method="post" class="form mt-3">
+                        <input type="hidden" name="mesa_id" value="<?php echo $mesa_id; ?>">
+                        <div class="form-group">
+                            <label for="producto_id">Producto:</label>
+                            <select id="producto_id" name="producto_id" class="form-control">
+                                <?php while ($row = mysqli_fetch_assoc($ensaladas_result)) { ?>
+                                <option value="<?php echo $row['id']; ?>"><?php echo $row['nombre']; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cantidad">Cantidad:</label>
+                            <input type="number" class="form-control" id="cantidad" name="cantidad" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="notas">Notas:</label>
+                            <textarea class="form-control" id="notas" name="notas"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Añadir</button>
+                    </form>
+                </div>
+                <div class="tab-pane fade" id="bebidas" role="tabpanel" aria-labelledby="bebidas-tab">
+                    <form action="" method="post" class="form mt-3">
+                        <input type="hidden" name="mesa_id" value="<?php echo $mesa_id; ?>">
+                        <div class="form-group">
+                            <label for="producto_id">Producto:</label>
+                            <select id="producto_id" name="producto_id" class="form-control">
+                                <?php while ($row = mysqli_fetch_assoc($bebidas_result)) { ?>
+                                <option value="<?php echo $row['id']; ?>"><?php echo $row['nombre']; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cantidad">Cantidad:</label>
+                            <input type="number" class="form-control" id="cantidad" name="cantidad" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="notas">Notas:</label>
+                            <textarea class="form-control" id="notas" name="notas"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Añadir</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- bootstrap scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

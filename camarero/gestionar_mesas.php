@@ -4,20 +4,21 @@ include '../conexion.php';
 
 $mesa_id = isset($_GET['mesa_id']) ? $_GET['mesa_id'] : null;
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activar_mesa'])) {
     $mesa_id = $_POST['mesa_id'];
-    $producto_id = $_POST['producto_id'];
-    $cantidad = $_POST['cantidad'];
-    $notas = $_POST['notas'];
+    $camarero_id = $_SESSION['id'];
 
-    $query = "INSERT INTO detalle_pedidos (pedido_id, producto_id, cantidad, notas) VALUES ((SELECT id FROM pedidos WHERE mesa_id = $mesa_id AND estado = 'pendiente'), $producto_id, $cantidad, '$notas')";
+    $query = "UPDATE mesas SET estado = 'activa', camarero_id = $camarero_id WHERE id = $mesa_id";
     mysqli_query($conexion, $query);
+
+    $query = "INSERT INTO pedidos (mesa_id, camarero_id, estado, total) VALUES ($mesa_id, $camarero_id, 'pendiente', 0.00)";
+    mysqli_query($conexion, $query);
+
+    header("Location: gestionar_pedidos.php?mesa_id=$mesa_id");
+    exit();
 }
 
-$query = "SELECT * FROM productos";
-$result = mysqli_query($conexion, $query);
-
-$mesas_query = "SELECT * FROM mesas WHERE estado = 'activa'";
+$mesas_query = "SELECT * FROM mesas WHERE estado = 'inactiva'";
 $mesas_result = mysqli_query($conexion, $mesas_query);
 ?>
 <!DOCTYPE html>
@@ -25,50 +26,56 @@ $mesas_result = mysqli_query($conexion, $mesas_query);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestionar Pedido</title>
-    <link rel="stylesheet" href="../styles.css">
+    <title>Gestionar Mesas</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <h1>Gestionar Pedido</h1>
+    <header class="bg-primary text-white text-center py-3">
+        <h1>Gestionar Mesas</h1>
     </header>
-    <nav>
-        <ul>
-            <li><a href="index.php">Volver</a></li>
-        </ul>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">Restaurante</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php">Volver</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </nav>
-    <section>
-        <h2>Seleccionar Mesa</h2>
-        <form action="" method="get">
-            <label for="mesa_id">Mesa:</label>
-            <select id="mesa_id" name="mesa_id" onchange="this.form.submit()">
-                <option value="">Seleccione una mesa</option>
-                <?php while ($mesa = mysqli_fetch_assoc($mesas_result)) { ?>
-                <option value="<?php echo $mesa['id']; ?>" <?php if ($mesa['id'] == $mesa_id) echo 'selected'; ?>>
-                    Mesa <?php echo $mesa['numero_mesa']; ?>
-                </option>
-                <?php } ?>
-            </select>
-        </form>
-    </section>
-    <?php if ($mesa_id) { ?>
-    <section>
-        <h2>Añadir Producto</h2>
-        <form action="" method="post">
-            <input type="hidden" name="mesa_id" value="<?php echo $mesa_id; ?>">
-            <label for="producto_id">Producto:</label>
-            <select id="producto_id" name="producto_id">
-                <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-                <option value="<?php echo $row['id']; ?>"><?php echo $row['nombre']; ?></option>
-                <?php } ?>
-            </select>
-            <label for="cantidad">Cantidad:</label>
-            <input type="number" id="cantidad" name="cantidad" required>
-            <label for="notas">Notas:</label>
-            <input type="text" id="notas" name="notas">
-            <button type="submit">Añadir</button>
-        </form>
-    </section>
-    <?php } ?>
+    <div class="container mt-5">
+        <section class="p-4 bg-light border rounded shadow-sm">
+            <h2>Seleccionar Mesa</h2>
+            <form action="" method="get" class="form-inline">
+                <label for="mesa_id" class="mr-2">Mesa:</label>
+                <select id="mesa_id" name="mesa_id" class="form-control mr-2" onchange="this.form.submit()">
+                    <option value="">Seleccione una mesa</option>
+                    <?php while ($mesa = mysqli_fetch_assoc($mesas_result)) { ?>
+                    <option value="<?php echo $mesa['id']; ?>" <?php if ($mesa['id'] == $mesa_id) echo 'selected'; ?>>
+                        Mesa <?php echo $mesa['numero_mesa']; ?>
+                    </option>
+                    <?php } ?>
+                </select>
+            </form>
+        </section>
+        <?php if ($mesa_id) { ?>
+        <section class="mt-4 p-4 bg-light border rounded shadow-sm">
+            <h2>Activar Mesa</h2>
+            <form action="" method="post" class="form">
+                <input type="hidden" name="mesa_id" value="<?php echo $mesa_id; ?>">
+                <button type="submit" name="activar_mesa" class="btn btn-primary">Activar Mesa</button>
+            </form>
+        </section>
+        <?php } ?>
+    </div>
+    <!-- bootstrap scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
