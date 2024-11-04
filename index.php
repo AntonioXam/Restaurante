@@ -4,36 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurante</title>
-    <link rel="stylesheet" href="styles.css">
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <header>
-        <h1>Bienvenidos a Nuestro Restaurante</h1>
+    <header class="bg-primary text-white text-center py-3">
+        <h1>Bienvenidos a Nuestro Restaurante </h1>
     </header>
-    <nav>
-        <ul>
-            <li><a href="#login">Login</a></li>
-            <li><a href="#sobre">Quiénes Somos</a></li>
-            <li><a href="#contacto">Dónde Encontrarnos</a></li>
-        </ul>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">Restaurante</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#login">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="quienes_somos.html">Quiénes Somos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="donde_encontrarnos.html">Dónde Encontrarnos</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </nav>
-    <section id="login">
-        <h2>Login</h2>
-        <form action="login.php" method="post">
-            <label for="usuario">Usuario:</label>
-            <input type="text" id="usuario" name="usuario" required>
-            <label for="contrasena">Contraseña:</label>
-            <input type="password" id="contrasena" name="contrasena" required>
-            <button type="submit">Ingresar</button>
-        </form>
-    </section>
-    <section id="sobre">
-        <h2>Quiénes Somos</h2>
-        <p>Somos un restaurante.....</p>
-    </section>
-    <section id="contacto">
-        <h2>Dónde Encontrarnos</h2>
-        <p>Nos encontramos en la calle....</p>
-    </section>
+    <div class="container mt-5">
+        <section id="login" class="my-5">
+            <h2>Login</h2>
+            <form action="login.php" method="post" class="needs-validation" novalidate>
+                <div class="form-group">
+                    <label for="usuario">Usuario:</label>
+                    <input type="text" class="form-control" id="usuario" name="usuario" required>
+                    <div class="invalid-feedback">Por favor, ingrese su usuario.</div>
+                </div>
+                <div class="form-group">
+                    <label for="contrasena">Contraseña:</label>
+                    <input type="password" class="form-control" id="contrasena" name="contrasena" required>
+                    <div class="invalid-feedback">Por favor, ingrese su contraseña.</div>
+                </div>
+                <button type="submit" class="btn btn-primary">Ingresar</button>
+            </form>
+        </section>
+    </div>
+    <!-- bootstrap scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
 </body>
 </html>

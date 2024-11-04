@@ -15,6 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['usuario'] = $usuario;
         $_SESSION['usuario_id'] = $row['id'];
         $_SESSION['rol'] = $row['rol'];
+        $_SESSION['dni'] = $row['dni'];
+        $_SESSION['nombre'] = $row['nombre'];
+        $_SESSION['apellidos'] = $row['apellidos'];
 
         if ($row['rol'] == 'camarero') {
             header("Location: camarero/index.php");
