@@ -1,10 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['usuario']) || $_SESSION['rol'] != 'camarero') {
-    header("Location: ../index.php");
-    exit();
-}
-
+include '../sesion.php';
 include '../conexion.php';
 
 $mesa_id = isset($_GET['mesa_id']) ? $_GET['mesa_id'] : null;
