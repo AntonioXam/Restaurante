@@ -36,12 +36,6 @@ $mesa = mysqli_fetch_assoc($result);
     <header>
         <h1>Editar Mesa</h1>
     </header>
-    <nav>
-        <ul>
-            <li><a href="../logout.php">Cerrar Sesión</a></li>
-            <li><button onclick="history.back()">Volver</button></li>
-        </ul>
-    </nav>
     <section>
         <form method="POST">
             <label for="numero_mesa">Número de Mesa:</label>
@@ -57,5 +51,9 @@ $mesa = mysqli_fetch_assoc($result);
             <button type="submit">Actualizar</button>
         </form>
     </section>
+    <footer>
+        <button onclick="location.href='../logout.php'">Cerrar Sesión</button>
+        <button onclick="history.back()">Volver</button>
+    </footer>
 </body>
 </html>

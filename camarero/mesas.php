@@ -41,12 +41,6 @@ $result = mysqli_query($conexion, $query);
     <header>
         <h1>Gestión de Mesas</h1>
     </header>
-    <nav>
-        <ul>
-            <li><a href="../logout.php">Cerrar Sesión</a></li>
-            <li><button onclick="history.back()">Volver</button></li>
-        </ul>
-    </nav>
     <section>
         <h2>Agregar Mesa</h2>
         <form method="POST">
@@ -77,5 +71,9 @@ $result = mysqli_query($conexion, $query);
             <?php } ?>
         </table>
     </section>
+    <footer>
+        <button onclick="location.href='../logout.php'">Cerrar Sesión</button>
+        <button onclick="history.back()">Volver</button>
+    </footer>
 </body>
 </html>

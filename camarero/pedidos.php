@@ -65,12 +65,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <header>
         <h1>Gestión de Pedido para Mesa <?php echo $mesa['numero_mesa']; ?></h1>
     </header>
-    <nav>
-        <ul>
-            <li><a href="../logout.php">Cerrar Sesión</a></li>
-            <li><button onclick="history.back()">Volver</button></li>
-        </ul>
-    </nav>
     <section>
         <h2>Agregar Producto</h2>
         <form method="POST">
@@ -109,5 +103,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <?php } ?>
         </table>
     </section>
+    <footer>
+        <button onclick="location.href='../logout.php'">Cerrar Sesión</button>
+        <button onclick="history.back()">Volver</button>
+    </footer>
 </body>
 </html>

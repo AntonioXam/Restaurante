@@ -19,12 +19,6 @@ $result = mysqli_query($conexion, $query);
     <header>
         <h1>Bienvenido, Camarero</h1>
     </header>
-    <nav>
-        <ul>
-            <li><a href="../logout.php">Cerrar Sesión</a></li>
-            <li><button onclick="history.back()">Volver</button></li>
-        </ul>
-    </nav>
     <section>
         <h2>Gestión de Mesas</h2>
         <h3>Mesas Actuales</h3>
@@ -59,5 +53,9 @@ $result = mysqli_query($conexion, $query);
             <button type="submit">Agregar</button>
         </form>
     </section>
+    <footer>
+        <button onclick="location.href='../logout.php'">Cerrar Sesión</button>
+        <button onclick="history.back()">Volver</button>
+    </footer>
 </body>
 </html>

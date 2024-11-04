@@ -44,12 +44,6 @@ $result_productos = mysqli_query($conexion, $query_productos);
     <header>
         <h1>Editar Pedido</h1>
     </header>
-    <nav>
-        <ul>
-            <li><a href="../logout.php">Cerrar Sesión</a></li>
-            <li><button onclick="history.back()">Volver</button></li>
-        </ul>
-    </nav>
     <section>
         <form method="POST">
             <label for="producto_id">Producto:</label>
@@ -65,5 +59,9 @@ $result_productos = mysqli_query($conexion, $query_productos);
             <button type="submit">Actualizar</button>
         </form>
     </section>
+    <footer>
+        <button onclick="location.href='../logout.php'">Cerrar Sesión</button>
+        <button onclick="history.back()">Volver</button>
+    </footer>
 </body>
 </html>
