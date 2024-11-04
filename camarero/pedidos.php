@@ -106,6 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <td>
                     <a href="editar_pedido.php?id=<?php echo $pedido['id']; ?>&mesa_id=<?php echo $mesa_id; ?>">Editar</a>
                     <a href="eliminar_pedido.php?id=<?php echo $pedido['id']; ?>&mesa_id=<?php echo $mesa_id; ?>">Eliminar</a>
+                    <a href="pagar_pedido.php?pedido_id=<?php echo $pedido['id']; ?>&mesa_id=<?php echo $mesa_id; ?>">Pagar</a>
                 </td>
             </tr>
             <?php } ?>
