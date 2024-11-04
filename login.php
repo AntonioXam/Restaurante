@@ -1,6 +1,8 @@
 <?php
 include 'conexion.php';
 
+if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+
 $usuario = $_POST['usuario'];
 $contrasena = $_POST['contrasena'];
 
@@ -22,6 +24,13 @@ if (mysqli_num_rows($result) == 1) {
     }
 } else {
     echo "Usuario o contraseña incorrectos.";
+    echo "<br>";
+    echo "<a href='index.php'>Volver</a>";
+}
+
+
+} else {
+    echo "Error al procesar la solicitud.";
     echo "<br>";
     echo "<a href='index.php'>Volver</a>";
 }

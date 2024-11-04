@@ -1,21 +1,20 @@
 <?php
 // conexion.php
-$servidor = "localhost";
-$usuario = "root";
-$clave = "";
-$basededatos = "restaurante";
+$host = 'localhost';
+$usuario = 'root';
+$contrasena = '';
+$base_datos = 'restaurante';
 
-$conexion = mysqli_connect($servidor ,$usuario,$clave,$basededatos);
-//comprobar la errror de conexion
+$conexion = mysqli_connect($host, $usuario, $contrasena, $base_datos);
 
-mysqli_error($conexion);
+if (!$conexion) {
+    die("Error de conexión: " . mysqli_connect_error());
+}
 
-// caracteres especiales
+//caracteres especiales
+mysqli_set_charset($conexion, 'utf8');
 
-mysqli_set_charset($conexion, "utf8");
-
-
-//compobar error de conexion
+//comprobar errores en la conexion
 
 mysqli_error($conexion);
 
