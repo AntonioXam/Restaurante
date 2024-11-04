@@ -27,6 +27,9 @@ include '../conexion.php';
                         <a class="nav-link" href="gestionar_mesas.php">Gestionar Mesas</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="gestionar_pedido.php">Gestionar Pedidos</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="../logout.php">Cerrar Sesión</a>
                     </li>
                 </ul>

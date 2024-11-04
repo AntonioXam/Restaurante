@@ -6,20 +6,23 @@ $mesa_id = isset($_GET['mesa_id']) ? $_GET['mesa_id'] : null;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activar_mesa'])) {
     $mesa_id = $_POST['mesa_id'];
-    $camarero_id = $_SESSION['id'];
+    $comensales = $_POST['comensales'];
 
-    $query = "UPDATE mesas SET estado = 'activa', camarero_id = $camarero_id WHERE id = $mesa_id";
+    $query = "UPDATE mesas SET estado = 'activa', comensales = $comensales WHERE id = $mesa_id";
     mysqli_query($conexion, $query);
 
-    $query = "INSERT INTO pedidos (mesa_id, camarero_id, estado, total) VALUES ($mesa_id, $camarero_id, 'pendiente', 0.00)";
+    $query = "INSERT INTO pedidos (mesa_id, estado, total) VALUES ($mesa_id, 'pendiente', 0.00)";
     mysqli_query($conexion, $query);
 
-    header("Location: gestionar_pedidos.php?mesa_id=$mesa_id");
+    header("Location: gestionar_pedido.php?mesa_id=$mesa_id");
     exit();
 }
 
-$mesas_query = "SELECT * FROM mesas WHERE estado = 'inactiva'";
-$mesas_result = mysqli_query($conexion, $mesas_query);
+$mesas_inactivas_query = "SELECT * FROM mesas WHERE estado = 'inactiva'";
+$mesas_inactivas_result = mysqli_query($conexion, $mesas_inactivas_query);
+
+$mesas_activas_query = "SELECT * FROM mesas WHERE estado = 'activa'";
+$mesas_activas_result = mysqli_query($conexion, $mesas_activas_query);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -55,7 +58,7 @@ $mesas_result = mysqli_query($conexion, $mesas_query);
                 <label for="mesa_id" class="mr-2">Mesa:</label>
                 <select id="mesa_id" name="mesa_id" class="form-control mr-2" onchange="this.form.submit()">
                     <option value="">Seleccione una mesa</option>
-                    <?php while ($mesa = mysqli_fetch_assoc($mesas_result)) { ?>
+                    <?php while ($mesa = mysqli_fetch_assoc($mesas_inactivas_result)) { ?>
                     <option value="<?php echo $mesa['id']; ?>" <?php if ($mesa['id'] == $mesa_id) echo 'selected'; ?>>
                         Mesa <?php echo $mesa['numero_mesa']; ?>
                     </option>
@@ -68,10 +71,25 @@ $mesas_result = mysqli_query($conexion, $mesas_query);
             <h2>Activar Mesa</h2>
             <form action="" method="post" class="form">
                 <input type="hidden" name="mesa_id" value="<?php echo $mesa_id; ?>">
+                <div class="form-group">
+                    <label for="comensales">Número de Comensales:</label>
+                    <input type="number" class="form-control" id="comensales" name="comensales" required>
+                </div>
                 <button type="submit" name="activar_mesa" class="btn btn-primary">Activar Mesa</button>
             </form>
         </section>
         <?php } ?>
+        <section class="mt-4 p-4 bg-light border rounded shadow-sm">
+            <h2>Mesas Activas</h2>
+            <ul class="list-group">
+                <?php while ($mesa = mysqli_fetch_assoc($mesas_activas_result)) { ?>
+                <li class="list-group-item">
+                    Mesa <?php echo $mesa['numero_mesa']; ?> - Comensales: <?php echo $mesa['comensales']; ?>
+                    <a href="gestionar_pedido.php?mesa_id=<?php echo $mesa['id']; ?>" class="btn btn-primary btn-sm float-right">Gestionar</a>
+                </li>
+                <?php } ?>
+            </ul>
+        </section>
     </div>
     <!-- bootstrap scripts -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
