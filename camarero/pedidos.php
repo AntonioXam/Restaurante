@@ -2,6 +2,7 @@
 include '../sesion.php';
 include '../conexion.php';
 
+// Obtener el ID de la mesa
 $mesa_id = $_GET['mesa_id'];
 
 // Obtener productos
@@ -13,7 +14,16 @@ $query_mesa = "SELECT * FROM mesas WHERE id = $mesa_id";
 $result_mesa = mysqli_query($conexion, $query_mesa);
 $mesa = mysqli_fetch_assoc($result_mesa);
 
+// Obtener pedidos actuales
+$query_pedidos = "SELECT p.id, p.estado, p.total, dp.producto_id, dp.cantidad, dp.notas, pr.nombre AS producto_nombre
+                  FROM pedidos p
+                  JOIN detalle_pedidos dp ON p.id = dp.pedido_id
+                  JOIN productos pr ON dp.producto_id = pr.id
+                  WHERE p.mesa_id = $mesa_id AND p.estado = 'pendiente'";
+$result_pedidos = mysqli_query($conexion, $query_pedidos);
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Obtener datos del formulario
     $producto_id = $_POST['producto_id'];
     $cantidad = $_POST['cantidad'];
     $notas = $_POST['notas'];
@@ -31,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $query_total = "UPDATE pedidos SET total = (SELECT SUM(p.cantidad * pr.precio) FROM detalle_pedidos p JOIN productos pr ON p.producto_id = pr.id WHERE p.pedido_id = $pedido_id) WHERE id = $pedido_id";
     mysqli_query($conexion, $query_total);
 
+    // Redirigir a la página de pedidos
     header("Location: pedidos.php?mesa_id=$mesa_id");
 }
 ?>
@@ -66,6 +77,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <input type="text" name="notas" id="notas">
             <button type="submit">Agregar</button>
         </form>
+        <h2>Pedidos Actuales</h2>
+        <table>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Notas</th>
+                <th>Total</th>
+                <th>Acciones</th>
+            </tr>
+            <?php while ($pedido = mysqli_fetch_assoc($result_pedidos)) { ?>
+            <tr>
+                <td><?php echo $pedido['producto_nombre']; ?></td>
+                <td><?php echo $pedido['cantidad']; ?></td>
+                <td><?php echo $pedido['notas']; ?></td>
+                <td><?php echo $pedido['total']; ?></td>
+                <td>
+                    <a href="editar_pedido.php?id=<?php echo $pedido['id']; ?>">Editar</a>
+                    <a href="eliminar_pedido.php?id=<?php echo $pedido['id']; ?>">Eliminar</a>
+                </td>
+            </tr>
+            <?php } ?>
+        </table>
     </section>
 </body>
 </html>
