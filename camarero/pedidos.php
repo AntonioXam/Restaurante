@@ -1,10 +1,17 @@
 <?php
-session_start();
+
 include '../sesion.php';
 include '../conexion.php';
 
 // Obtener el ID de la mesa
 $mesa_id = $_GET['mesa_id'];
+
+// Verificar que la mesa pertenece al camarero actual
+$query_verificar = "SELECT * FROM mesas WHERE id = $mesa_id AND camarero_id = {$_SESSION['usuario_id']}";
+$result_verificar = mysqli_query($conexion, $query_verificar);
+if (mysqli_num_rows($result_verificar) == 0) {
+    die("No tienes permiso para gestionar esta mesa.");
+}
 
 // Obtener productos
 $query_productos = "SELECT * FROM productos";

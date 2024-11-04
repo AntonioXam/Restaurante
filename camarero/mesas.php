@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 include '../sesion.php';
 include '../conexion.php';
 
@@ -11,7 +11,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $result_count = mysqli_query($conexion, $query_count);
     $count = mysqli_fetch_assoc($result_count)['total'];
 
-    if ($count < 6) {
+    // Verificar si hay mesas activas
+    $query_active = "SELECT COUNT(*) as active_total FROM mesas WHERE camarero_id = $camarero_id AND estado = 'activa'";
+    $result_active = mysqli_query($conexion, $query_active);
+    $active_count = mysqli_fetch_assoc($result_active)['active_total'];
+
+    if ($count < 6 || $active_count == 0) {
         // Obtener datos del formulario
         $numero_mesa = $_POST['numero_mesa'];
         $comensales = $_POST['comensales'];
@@ -24,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Redirigir a la página de mesas
         header("Location: index.php");
     } else {
-        echo "El número máximo de mesas (6) ha sido alcanzado.";
+        echo "El número máximo de mesas (6) ha sido alcanzado o ya hay una mesa activa.";
     }
 }
 

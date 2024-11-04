@@ -1,7 +1,15 @@
 <?php
-session_start();
+
 include '../sesion.php';
 include '../conexion.php';
+
+// Verificar que la mesa pertenece al camarero actual
+$mesa_id = $_GET['mesa_id'];
+$query_verificar = "SELECT * FROM mesas WHERE id = $mesa_id AND camarero_id = {$_SESSION['usuario_id']}";
+$result_verificar = mysqli_query($conexion, $query_verificar);
+if (mysqli_num_rows($result_verificar) == 0) {
+    die("No tienes permiso para eliminar pedidos de esta mesa.");
+}
 
 // Obtener el ID del detalle del pedido
 $id = $_GET['id'];

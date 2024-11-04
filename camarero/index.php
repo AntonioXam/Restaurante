@@ -1,9 +1,14 @@
 <?php
-session_start();
+
 include '../sesion.php';
 include '../conexion.php';
 
 $camarero_id = $_SESSION['usuario_id'];
+
+// Verificar si el ID de la mesa está definido
+if (!isset($_GET['id'])) {
+    die("ID de mesa no especificado.");
+}
 
 // Obtener el ID de la mesa
 $id = $_GET['id'];
@@ -20,6 +25,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $numero_mesa = $_POST['numero_mesa'];
     $comensales = $_POST['comensales'];
     $estado = $_POST['estado'];
+
+    // Verificar si hay mesas activas
+    $query_verificar_activas = "SELECT * FROM mesas WHERE estado = 'activa' AND camarero_id = $camarero_id";
+    $result_verificar_activas = mysqli_query($conexion, $query_verificar_activas);
+    if (mysqli_num_rows($result_verificar_activas) > 0) {
+        die("No puedes crear una nueva mesa mientras haya mesas activas.");
+    }
 
     // Actualizar mesa
     $query = "UPDATE mesas SET numero_mesa = '$numero_mesa', comensales = '$comensales', estado = '$estado' WHERE id = $id AND camarero_id = $camarero_id";
