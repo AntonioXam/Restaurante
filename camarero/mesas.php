@@ -3,17 +3,26 @@ include '../sesion.php';
 include '../conexion.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Obtener datos del formulario
-    $numero_mesa = $_POST['numero_mesa'];
-    $comensales = $_POST['comensales'];
-    $estado = 'activa'; // Estado por defecto al crear una mesa
+    // Verificar el número actual de mesas
+    $query_count = "SELECT COUNT(*) as total FROM mesas";
+    $result_count = mysqli_query($conexion, $query_count);
+    $count = mysqli_fetch_assoc($result_count)['total'];
 
-    // Insertar nueva mesa
-    $query = "INSERT INTO mesas (numero_mesa, comensales, estado) VALUES ('$numero_mesa', '$comensales', '$estado')";
-    mysqli_query($conexion, $query);
+    if ($count < 6) {
+        // Obtener datos del formulario
+        $numero_mesa = $_POST['numero_mesa'];
+        $comensales = $_POST['comensales'];
+        $estado = 'activa'; // Estado por defecto al crear una mesa
 
-    // Redirigir a la página de mesas
-    header("Location: index.php");
+        // Insertar nueva mesa
+        $query = "INSERT INTO mesas (numero_mesa, comensales, estado) VALUES ('$numero_mesa', '$comensales', '$estado')";
+        mysqli_query($conexion, $query);
+
+        // Redirigir a la página de mesas
+        header("Location: index.php");
+    } else {
+        echo "El número máximo de mesas (6) ha sido alcanzado.";
+    }
 }
 
 // Obtener mesas
