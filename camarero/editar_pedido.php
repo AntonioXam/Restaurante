@@ -61,7 +61,6 @@ $result_productos = mysqli_query($conexion, $query_productos);
     </section>
     <footer>
         <button onclick="location.href='../logout.php'">Cerrar Sesión</button>
-        <button onclick="history.back()">Volver</button>
     </footer>
 </body>
 </html>

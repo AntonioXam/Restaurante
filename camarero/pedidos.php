@@ -105,7 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </section>
     <footer>
         <button onclick="location.href='../logout.php'">Cerrar Sesión</button>
-        <button onclick="history.back()">Volver</button>
     </footer>
 </body>
 </html>

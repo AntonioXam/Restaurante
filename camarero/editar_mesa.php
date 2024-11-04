@@ -53,7 +53,6 @@ $mesa = mysqli_fetch_assoc($result);
     </section>
     <footer>
         <button onclick="location.href='../logout.php'">Cerrar Sesión</button>
-        <button onclick="history.back()">Volver</button>
     </footer>
 </body>
 </html>
