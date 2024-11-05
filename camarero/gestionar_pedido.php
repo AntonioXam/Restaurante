@@ -8,14 +8,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     include 'procesar_pedido.php';
 }
 
-$pizzas_query = "SELECT * FROM productos WHERE categoria = 'Comida' AND nombre LIKE '%Pizza%'";
+$pizzas_query = "SELECT * FROM productos WHERE categoria = 'pizzas'";
 $pizzas_result = mysqli_query($conexion, $pizzas_query);
 
-$ensaladas_query = "SELECT * FROM productos WHERE categoria = 'Comida' AND nombre LIKE '%Ensalada%'";
+$ensaladas_query = "SELECT * FROM productos WHERE categoria = 'ensalada'";
 $ensaladas_result = mysqli_query($conexion, $ensaladas_query);
 
-$bebidas_query = "SELECT * FROM productos WHERE categoria = 'Bebida'";
+$bebidas_query = "SELECT * FROM productos WHERE categoria = 'bebida'";
 $bebidas_result = mysqli_query($conexion, $bebidas_query);
+
+$carnes_query = "SELECT * FROM productos WHERE categoria = 'carne'";
+$carnes_result = mysqli_query($conexion, $carnes_query);
+
+$pasta_query = "SELECT * FROM productos WHERE categoria = 'pasta'";
+$pasta_result = mysqli_query($conexion, $pasta_query);
+
+$pescado_query = "SELECT * FROM productos WHERE categoria = 'pescado'";
+$pescado_result = mysqli_query($conexion, $pescado_query);
+
+$vinos_query = "SELECT * FROM productos WHERE categoria = 'vino'";
+$vinos_result = mysqli_query($conexion, $vinos_query);
 
 $mesas_activas_query = "SELECT * FROM mesas WHERE estado = 'activa'";
 $mesas_activas_result = mysqli_query($conexion, $mesas_activas_query);
