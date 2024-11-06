@@ -7,50 +7,78 @@ include '../conexion.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Camarero</title>
-    <!-- bootstrap -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Sistema Restaurante - Camarero</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <header class="bg-primary text-white text-center py-3">
-    <h1>Bienvenido, <?php echo $_SESSION['nombre']; ?></h1>
+        <h1 class="h4 mb-0">Bienvenido, <?php echo $_SESSION['nombre']; ?></h1>
     </header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-            <a class="navbar-brand" href="#">Restaurante</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="gestionar_mesas.php">Gestionar Mesas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="gestionar_pedido.php">Gestionar Pedidos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../logout.php">Cerrar Sesión</a>
-                    </li>
-                </ul>
+
+    <div class="container py-4">
+        <div class="row g-3">
+            <div class="col-12 col-md-6">
+                <a href="gestionar_mesas.php" class="text-decoration-none">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chair fs-1 mb-2 text-primary"></i>
+                            <h3 class="card-title">Gestionar Mesas</h3>
+                            <p class="card-text">Asignar y gestionar mesas de clientes</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-12 col-md-6">
+                <a href="gestionar_pedido.php" class="text-decoration-none">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-utensils fs-1 mb-2 text-primary"></i>
+                            <h3 class="card-title">Gestionar Pedidos</h3>
+                            <p class="card-text">Tomar y gestionar pedidos de clientes</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-12">
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h3 class="card-title">Funciones del Camarero</h3>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <div class="p-3 border rounded text-center">
+                                    <i class="fas fa-chair mb-2"></i>
+                                    <h4 class="h5">Asignar Mesas</h4>
+                                    <p class="small mb-0">Asignar mesas a los clientes</p>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="p-3 border rounded text-center">
+                                    <i class="fas fa-clipboard-list mb-2"></i>
+                                    <h4 class="h5">Asignar Productos</h4>
+                                    <p class="small mb-0">Tomar pedidos y asignar productos</p>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="p-3 border rounded text-center">
+                                    <i class="fas fa-paper-plane mb-2"></i>
+                                    <h4 class="h5">Enviar Pedido</h4>
+                                    <p class="small mb-0">Enviar pedidos a cocina</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </nav>
-    <div class="container mt-5">
-        <section class="p-4 bg-light border rounded shadow-sm">
-            <h2>Panel de Camarero</h2>
-            <p>Seleccione una opción del menú para comenzar.</p>
-        <h3>Funciones del Camarero</h3>
-        <ul>
-            <li><strong>Asignar Mesas:</strong> El camarero puede asignar mesas a los clientes que llegan al restaurante.</li>
-            <li><strong>Asignar Productos a las Mesas:</strong> El camarero puede tomar los pedidos de los clientes y asignar los productos a las mesas correspondientes.</li>
-            <li><strong>Enviar Pedido a Cocina:</strong> Una vez que el pedido está completo, el camarero puede enviarlo a la cocina para su preparación.</li>
-        </ul>
-        </section>
+
+        <div class="text-center mt-4">
+            <a href="../logout.php" class="btn btn-danger">Cerrar Sesión</a>
+        </div>
     </div>
-    <!-- bootstrap scripts -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </body>
 </html>

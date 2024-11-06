@@ -2,35 +2,34 @@
 include '../sesion.php';
 include '../conexion.php';
 
-$mesa_id = isset($_GET['mesa_id']) ? $_GET['mesa_id'] : null;
+// Funciones
+function obtener_mesas_activas($conexion) {
+    return mysqli_query($conexion, "SELECT * FROM mesas WHERE estado = 'activa'");
+}
 
+// Lógica para activar mesa
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activar_mesa'])) {
     $mesa_id = $_POST['mesa_id'];
     $comensales = $_POST['comensales'];
 
-    $query = "UPDATE mesas SET estado = 'activa', comensales = $comensales WHERE id = $mesa_id";
-    mysqli_query($conexion, $query);
-
-    $query = "INSERT INTO pedidos (mesa_id, estado, total) VALUES ($mesa_id, 'pendiente', 0.00)";
-    mysqli_query($conexion, $query);
+    mysqli_query($conexion, "UPDATE mesas SET estado = 'activa', comensales = $comensales WHERE id = $mesa_id");
+    mysqli_query($conexion, "INSERT INTO pedidos (mesa_id, estado, total) VALUES ($mesa_id, 'pendiente', 0.00)");
 
     header("Location: gestionar_pedido.php?mesa_id=$mesa_id");
     exit();
 }
 
-$mesas_inactivas_query = "SELECT * FROM mesas WHERE estado = 'inactiva'";
-$mesas_inactivas_result = mysqli_query($conexion, $mesas_inactivas_query);
-
-$mesas_activas_query = "SELECT * FROM mesas WHERE estado = 'activa'";
-$mesas_activas_result = mysqli_query($conexion, $mesas_activas_query);
+$mesa_id = isset($_GET['mesa_id']) ? $_GET['mesa_id'] : null;
+$mesas_inactivas_result = mysqli_query($conexion, "SELECT * FROM mesas WHERE estado = 'inactiva'");
+$mesas_activas_result = obtener_mesas_activas($conexion);
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestionar Mesas</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Gestionar Mesas - Restaurante</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <header class="bg-primary text-white text-center py-3">
@@ -51,9 +50,23 @@ $mesas_activas_result = mysqli_query($conexion, $mesas_activas_query);
             </div>
         </div>
     </nav>
-    <div class="container mt-5">
+    <div class="container-fluid py-3">
         <section class="p-4 bg-light border rounded shadow-sm">
-            <h2>Seleccionar Mesa</h2>
+            <h2>Seleccionar Mesa Activa</h2>
+            <form action="" method="get" class="form-inline">
+                <label for="mesa_activa_id" class="mr-2">Mesa:</label>
+                <select id="mesa_activa_id" name="mesa_id" class="form-control mr-2" onchange="this.form.submit()">
+                    <option value="">Seleccione una mesa</option>
+                    <?php 
+                    $mesas_activas = obtener_mesas_activas($conexion);
+                    while ($mesa = mysqli_fetch_assoc($mesas_activas)) { ?>
+                    <option value="<?php echo $mesa['id']; ?>">Mesa <?php echo $mesa['numero_mesa']; ?></option>
+                    <?php } ?>
+                </select>
+            </form>
+        </section>
+        <section class="mt-4 p-4 bg-light border rounded shadow-sm">
+            <h2>Activar Mesa Nueva</h2>
             <form action="" method="get" class="form-inline">
                 <label for="mesa_id" class="mr-2">Mesa:</label>
                 <select id="mesa_id" name="mesa_id" class="form-control mr-2" onchange="this.form.submit()">
@@ -82,7 +95,9 @@ $mesas_activas_result = mysqli_query($conexion, $mesas_activas_query);
         <section class="mt-4 p-4 bg-light border rounded shadow-sm">
             <h2>Mesas Activas</h2>
             <ul class="list-group">
-                <?php while ($mesa = mysqli_fetch_assoc($mesas_activas_result)) { ?>
+                <?php 
+                $mesas_activas = obtener_mesas_activas($conexion);
+                while ($mesa = mysqli_fetch_assoc($mesas_activas)) { ?>
                 <li class="list-group-item">
                     Mesa <?php echo $mesa['numero_mesa']; ?> - Comensales: <?php echo $mesa['comensales']; ?>
                     <a href="gestionar_pedido.php?mesa_id=<?php echo $mesa['id']; ?>" class="btn btn-primary btn-sm float-right">Gestionar</a>
@@ -91,9 +106,7 @@ $mesas_activas_result = mysqli_query($conexion, $mesas_activas_query);
             </ul>
         </section>
     </div>
-    <!-- bootstrap scripts -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
 </body>
 </html>

@@ -12,7 +12,7 @@ if (!$conexion) {
 }
 
 //caracteres especiales
-mysqli_set_charset($conexion, 'utf8');
+mysqli_set_charset($conexion, 'utf8mb4');
 
 //comprobar errores en la conexion
 
