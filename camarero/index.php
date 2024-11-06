@@ -1,4 +1,6 @@
 <?php
+// Página principal del camarero
+// Incluye gestión de sesión y conexión a base de datos
 include '../sesion.php';
 include '../conexion.php';
 ?>

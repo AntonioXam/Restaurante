@@ -2,43 +2,81 @@
 include '../sesion.php';
 include '../conexion.php';
 
-// Verificar mesa_id
-$mesa_id = isset($_GET['mesa_id']) ? (int)$_GET['mesa_id'] : null;
+// Verificar permisos de camarero
+if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'camarero') {
+    header('Location: ../index.php');
+    exit;
+}
+
+// Sanitizar mesa_id
+$mesa_id = filter_input(INPUT_GET, 'mesa_id', FILTER_VALIDATE_INT);
 if (!$mesa_id) {
     header('Location: gestionar_mesas.php');
     exit;
 }
 
-// Función para obtener productos por categoría
+// Gestión de productos para una mesa específica
+// Verifica que haya una mesa seleccionada
+// Permite añadir productos al pedido agrupados por categoría
+// Incluye un modal para modificar cantidades
+
+// Funciones principales:
+// - Obtener productos por categoría
+// - Procesar nuevos pedidos
+// - Mostrar productos en pestañas por categoría
+// - Gestionar cantidades y notas
+
+// Variables principales:
+// $mesa_id - ID de la mesa actual
+// $categorias - Array asociativo con las categorías de productos
+// $result - Resultado de la consulta de productos por categoría
+
+/**
+ * Obtiene los productos filtrados por categoría
+ * @param mysqli $conexion - Conexión a la base de datos
+ * @param string $categoria - Nombre de la categoría a filtrar
+ * @return mysqli_result - Resultado de la consulta
+ */
 function obtener_productos_por_categoria($conexion, $categoria) {
-    $query = "SELECT * FROM productos WHERE categoria = '$categoria'";
-    return mysqli_query($conexion, $query);
+    $categoria = mysqli_real_escape_string($conexion, $categoria);
+    $query = "SELECT id, nombre, precio, descripcion 
+              FROM productos 
+              WHERE categoria = ? AND activo = 1 
+              ORDER BY nombre";
+    
+    $stmt = mysqli_prepare($conexion, $query);
+    mysqli_stmt_bind_param($stmt, "s", $categoria);
+    mysqli_stmt_execute($stmt);
+    return mysqli_stmt_get_result($stmt);
 }
 
-// Procesar nuevo pedido
+// Procesar nuevo pedido con prepared statements
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['producto_id'])) {
-        $producto_id = $_POST['producto_id'];
-        $cantidad = $_POST['cantidad'];
-        $notas = isset($_POST['notas']) ? $_POST['notas'] : '';
+        $producto_id = filter_input(INPUT_POST, 'producto_id', FILTER_VALIDATE_INT);
+        $cantidad = filter_input(INPUT_POST, 'cantidad', FILTER_VALIDATE_INT);
+        $notas = filter_input(INPUT_POST, 'notas', FILTER_SANITIZE_STRING);
 
-        // Obtener pedido pendiente
-        $pedido_query = "SELECT id FROM pedidos WHERE mesa_id = $mesa_id AND estado = 'pendiente'";
-        $pedido_result = mysqli_query($conexion, $pedido_query);
-        $pedido = mysqli_fetch_assoc($pedido_result);
-        $pedido_id = $pedido['id'];
-
-        // Insertar detalle del pedido
-        $query = "INSERT INTO detalle_pedidos (pedido_id, producto_id, cantidad, notas) 
-                 VALUES ($pedido_id, $producto_id, $cantidad, '$notas')";
-        mysqli_query($conexion, $query);
-        
-        header("Location: gestionar_pedido.php?mesa_id=$mesa_id");
-        exit;
+        if ($producto_id && $cantidad > 0) {
+            $stmt = mysqli_prepare($conexion, 
+                "INSERT INTO detalle_pedidos (pedido_id, producto_id, cantidad, notas) 
+                 SELECT p.id, ?, ?, ? 
+                 FROM pedidos p 
+                 WHERE p.mesa_id = ? AND p.estado = 'pendiente'");
+            
+            mysqli_stmt_bind_param($stmt, "iisi", $producto_id, $cantidad, $notas, $mesa_id);
+            
+            if (mysqli_stmt_execute($stmt)) {
+                header("Location: gestionar_pedido.php?mesa_id=$mesa_id&status=success");
+            } else {
+                header("Location: gestionar_pedido.php?mesa_id=$mesa_id&status=error");
+            }
+            exit;
+        }
     }
 }
 
-// Categorías de productos
+// Categorías de productos  y consulta de productos por categoría 
 $categorias = [
     'pizzas' => 'Pizzas',
     'ensalada' => 'Ensaladas',
@@ -120,7 +158,6 @@ $categorias = [
         </div>
     </div>
 
-    <!-- Modal para modificar cantidad -->
     <div class="modal fade" id="modificarModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -190,7 +227,6 @@ $categorias = [
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    // Validación de formularios
     (function () {
         'use strict'
         var forms = document.querySelectorAll('.needs-validation')
@@ -205,7 +241,6 @@ $categorias = [
         })
     })()
 
-    // Función para abrir modal de modificación
     function modificarCantidad(detalle_id, cantidad_actual) {
         document.getElementById('mod_detalle_id').value = detalle_id;
         document.querySelector('#modificarModal input[name="cantidad"]').value = cantidad_actual;

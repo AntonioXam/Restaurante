@@ -2,7 +2,32 @@
 include '../sesion.php';
 include '../conexion.php';
 
-// Funciones
+// Gestión de mesas del restaurante
+// Muestra:
+// - Mesas activas (ocupadas)
+// - Mesas inactivas (disponibles)
+// Permite:
+// - Activar mesas nuevas
+// - Asignar número de comensales
+// - Acceder a la gestión de pedidos de cada mesa
+
+// Funciones principales:
+// - Obtener mesas activas
+// - Activar mesas nuevas
+// - Gestionar interfaz visual de mesas
+// - Modal para configurar nuevas mesas
+
+// Variables principales:
+// $mesa_id - ID de la mesa seleccionada
+// $mesas_inactivas_result - Resultado de mesas disponibles
+// $mesas_activas_result - Resultado de mesas ocupadas
+// $comensales - Número de comensales para una mesa
+
+/**
+ * Obtiene todas las mesas que están actualmente ocupadas
+ * @param mysqli $conexion - Conexión a la base de datos
+ * @return mysqli_result - Resultado de la consulta
+ */
 function obtener_mesas_activas($conexion) {
     return mysqli_query($conexion, "SELECT * FROM mesas WHERE estado = 'activa'");
 }
@@ -172,6 +197,11 @@ $mesas_activas_result = obtener_mesas_activas($conexion);
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+    /**
+     * Función JavaScript para seleccionar una mesa para activar
+     * @param int mesaId - ID de la mesa
+     * @param int numeroMesa - Número identificador de la mesa
+     */
     function seleccionarMesa(mesaId, numeroMesa) {
         document.getElementById('mesaId').value = mesaId;
         document.getElementById('numeroMesa').textContent = numeroMesa;
@@ -179,6 +209,10 @@ $mesas_activas_result = obtener_mesas_activas($conexion);
         new bootstrap.Modal(document.getElementById('activarMesaModal')).show();
     }
 
+    /**
+     * Función JavaScript para ajustar el número de comensales
+     * @param int cambio - Valor de incremento/decremento (+1 o -1)
+     */
     function ajustarComensales(cambio) {
         const input = document.getElementById('comensales');
         const nuevoValor = parseInt(input.value) + cambio;

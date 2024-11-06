@@ -4,12 +4,29 @@ include '../conexion.php';
 
 $mesa_id = isset($_GET['mesa_id']) ? (int)$_GET['mesa_id'] : null;
 
-// Funciones
+// Variables principales:
+// $mesa_id - ID de la mesa seleccionada
+// $mesa - Datos de la mesa actual
+// $detalle_pedidos_result - Resultado de productos en el pedido
+// $total - Total acumulado del pedido
+
+/**
+ * Obtiene los datos de una mesa específica
+ * @param mysqli $conexion - Conexión a la base de datos
+ * @param int $mesa_id - ID de la mesa a consultar
+ * @return array - Datos de la mesa
+ */
 function obtener_mesa($conexion, $mesa_id) {
     $query = "SELECT * FROM mesas WHERE id = $mesa_id";
     return mysqli_fetch_assoc(mysqli_query($conexion, $query));
 }
 
+/**
+ * Obtiene los detalles de los pedidos pendientes de una mesa
+ * @param mysqli $conexion - Conexión a la base de datos
+ * @param int $mesa_id - ID de la mesa a consultar
+ * @return mysqli_result - Resultado de la consulta
+ */
 function obtener_detalle_pedidos($conexion, $mesa_id) {
     $query = "SELECT dp.*, p.nombre as nombre_producto, p.precio 
               FROM detalle_pedidos dp 
