@@ -30,83 +30,162 @@ $mesas_activas_result = obtener_mesas_activas($conexion);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestionar Mesas - Restaurante</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <header class="bg-primary text-white text-center py-3">
-        <h1>Gestionar Mesas</h1>
-    </header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <!-- Navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="#">Restaurante</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php">Volver</a>
-                    </li>
-                </ul>
+            <div class="d-flex align-items-center">
+                <a href="index.php" class="btn btn-outline-light">
+                    <i class="fas fa-arrow-left me-2"></i>Volver
+                </a>
             </div>
         </div>
     </nav>
-    <div class="container-fluid py-3">
-        <section class="p-4 bg-light border rounded shadow-sm">
-            <h2>Seleccionar Mesa Activa</h2>
-            <form action="" method="get" class="form-inline">
-                <label for="mesa_activa_id" class="mr-2">Mesa:</label>
-                <select id="mesa_activa_id" name="mesa_id" class="form-control mr-2" onchange="this.form.submit()">
-                    <option value="">Seleccione una mesa</option>
-                    <?php 
-                    $mesas_activas = obtener_mesas_activas($conexion);
-                    while ($mesa = mysqli_fetch_assoc($mesas_activas)) { ?>
-                    <option value="<?php echo $mesa['id']; ?>">Mesa <?php echo $mesa['numero_mesa']; ?></option>
-                    <?php } ?>
-                </select>
-            </form>
-        </section>
-        <section class="mt-4 p-4 bg-light border rounded shadow-sm">
-            <h2>Activar Mesa Nueva</h2>
-            <form action="" method="get" class="form-inline">
-                <label for="mesa_id" class="mr-2">Mesa:</label>
-                <select id="mesa_id" name="mesa_id" class="form-control mr-2" onchange="this.form.submit()">
-                    <option value="">Seleccione una mesa</option>
-                    <?php while ($mesa = mysqli_fetch_assoc($mesas_inactivas_result)) { ?>
-                    <option value="<?php echo $mesa['id']; ?>" <?php if ($mesa['id'] == $mesa_id) echo 'selected'; ?>>
-                        Mesa <?php echo $mesa['numero_mesa']; ?>
-                    </option>
-                    <?php } ?>
-                </select>
-            </form>
-        </section>
-        <?php if ($mesa_id) { ?>
-        <section class="mt-4 p-4 bg-light border rounded shadow-sm">
-            <h2>Activar Mesa</h2>
-            <form action="" method="post" class="form">
-                <input type="hidden" name="mesa_id" value="<?php echo $mesa_id; ?>">
-                <div class="form-group">
-                    <label for="comensales">Número de Comensales:</label>
-                    <input type="number" class="form-control" id="comensales" name="comensales" required>
+
+    <div class="container-fluid py-4">
+        <!-- Mesas Activas -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Mesas Activas</h5>
+                        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+                            <?php 
+                            $mesas_activas = obtener_mesas_activas($conexion);
+                            while ($mesa = mysqli_fetch_assoc($mesas_activas)):
+                            ?>
+                            <div class="col">
+                                <div class="card h-100 mesa-card active">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-chair fa-2x mb-2 text-primary"></i>
+                                        <h5 class="card-title">Mesa <?php echo $mesa['numero_mesa']; ?></h5>
+                                        <p class="card-text"><small class="text-muted"><?php echo $mesa['comensales']; ?> comensales</small></p>
+                                        <a href="gestionar_pedido.php?mesa_id=<?php echo $mesa['id']; ?>" 
+                                           class="btn btn-primary btn-sm w-100">Gestionar</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endwhile; ?>
+                        </div>
+                    </div>
                 </div>
-                <button type="submit" name="activar_mesa" class="btn btn-primary">Activar Mesa</button>
-            </form>
-        </section>
-        <?php } ?>
-        <section class="mt-4 p-4 bg-light border rounded shadow-sm">
-            <h2>Mesas Activas</h2>
-            <ul class="list-group">
-                <?php 
-                $mesas_activas = obtener_mesas_activas($conexion);
-                while ($mesa = mysqli_fetch_assoc($mesas_activas)) { ?>
-                <li class="list-group-item">
-                    Mesa <?php echo $mesa['numero_mesa']; ?> - Comensales: <?php echo $mesa['comensales']; ?>
-                    <a href="gestionar_pedido.php?mesa_id=<?php echo $mesa['id']; ?>" class="btn btn-primary btn-sm float-right">Gestionar</a>
-                </li>
-                <?php } ?>
-            </ul>
-        </section>
+            </div>
+        </div>
+
+        <!-- Mesas Inactivas -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Mesas Disponibles</h5>
+                        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+                            <?php while ($mesa = mysqli_fetch_assoc($mesas_inactivas_result)): ?>
+                            <div class="col">
+                                <div class="card h-100 mesa-card inactive" 
+                                     onclick="seleccionarMesa(<?php echo $mesa['id']; ?>, <?php echo $mesa['numero_mesa']; ?>)">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-chair fa-2x mb-2 text-secondary"></i>
+                                        <h5 class="card-title">Mesa <?php echo $mesa['numero_mesa']; ?></h5>
+                                        <p class="card-text"><small class="text-muted">Disponible</small></p>
+                                        <button class="btn btn-outline-primary btn-sm w-100">Activar Mesa</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endwhile; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+
+    <!-- Modal Activar Mesa -->
+    <div class="modal fade" id="activarMesaModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Activar Mesa <span id="numeroMesa"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="mesa_id" id="mesaId">
+                        <div class="form-group">
+                            <label for="comensales" class="form-label">Número de Comensales:</label>
+                            <div class="d-flex justify-content-center align-items-center gap-2">
+                                <button type="button" class="btn btn-outline-secondary" onclick="ajustarComensales(-1)">-</button>
+                                <input type="number" class="form-control text-center" id="comensales" name="comensales" 
+                                       value="1" min="1" max="12" style="max-width: 80px;" required>
+                                <button type="button" class="btn btn-outline-secondary" onclick="ajustarComensales(1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" name="activar_mesa" class="btn btn-primary">Activar Mesa</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    .mesa-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+    }
+    
+    .mesa-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .mesa-card.active .fa-chair {
+        color: #0d6efd;
+    }
+    
+    .mesa-card.inactive .fa-chair {
+        color: #6c757d;
+    }
+    
+    @media (max-width: 576px) {
+        .mesa-card .card-body {
+            padding: 1rem;
+        }
+        
+        .mesa-card .fa-2x {
+            font-size: 1.5em;
+        }
+        
+        .mesa-card .card-title {
+            font-size: 1rem;
+        }
+        
+        .mesa-card .card-text {
+            font-size: 0.8rem;
+        }
+    }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    function seleccionarMesa(mesaId, numeroMesa) {
+        document.getElementById('mesaId').value = mesaId;
+        document.getElementById('numeroMesa').textContent = numeroMesa;
+        document.getElementById('comensales').value = 1;
+        new bootstrap.Modal(document.getElementById('activarMesaModal')).show();
+    }
+
+    function ajustarComensales(cambio) {
+        const input = document.getElementById('comensales');
+        const nuevoValor = parseInt(input.value) + cambio;
+        if (nuevoValor >= 1 && nuevoValor <= 12) {
+            input.value = nuevoValor;
+        }
+    }
+    </script>
 </body>
 </html>
