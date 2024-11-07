@@ -15,49 +15,54 @@ $resultado = $conexion->query($sql);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Listado de Camareros</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media (max-width: 768px) {
+            .table-responsive { font-size: 0.9rem; }
+        }
+        .back-button {
+            margin: 10px 0;
+        }
+        @media (max-width: 768px) {
+            .btn-back {
+                width: 100%;
+                padding: 12px;
+            }
+        }
+    </style>
 </head>
 <body>
     <header class="bg-primary text-white text-center py-3">
-    <h1>Bienvenido, <?php echo $_SESSION['nombre']; ?></h1>
+        <h1 class="h3">Bienvenido, <?php echo $_SESSION['nombre']; ?></h1>
     </header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-            <a class="navbar-brand" href="#">Restaurante</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php">Volver</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <div class="container mt-5">
-        <h2 class="my-4">Listado de Camareros</h2>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>DNI</th>
-                    <th>Usuario</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while ($camarero = $resultado->fetch_assoc()) { ?>
+
+    <div class="container mt-3 mt-lg-5">
+        <a href="index.php" class="btn btn-secondary btn-lg back-button mb-4 btn-back">
+            <i class="fas fa-arrow-left"></i> Volver al Panel
+        </a>
+
+        <h2 class="h4 mb-4">Listado de Camareros</h2>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
                     <tr>
-                        <td><?php echo $camarero['nombre']; ?></td>
-                        <td><?php echo $camarero['apellidos']; ?></td>
-                        <td><?php echo $camarero['dni']; ?></td>
-                        <td><?php echo $camarero['usuario']; ?></td>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>DNI</th>
+                        <th>Usuario</th>
                     </tr>
-                <?php } ?>
-            </tbody>
-        </table>
-        <a href="index.php" class="btn btn-primary mt-4">Volver</a>
+                </thead>
+                <tbody>
+                    <?php while ($camarero = $resultado->fetch_assoc()) { ?>
+                        <tr>
+                            <td><?php echo $camarero['nombre']; ?></td>
+                            <td><?php echo $camarero['apellidos']; ?></td>
+                            <td><?php echo $camarero['dni']; ?></td>
+                            <td><?php echo $camarero['usuario']; ?></td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

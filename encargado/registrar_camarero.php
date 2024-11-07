@@ -11,30 +11,34 @@ include '../conexion.php';
     <title>Registrar Camarero</title>
     <!-- bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .back-button {
+            margin: 10px 0;
+        }
+        @media (max-width: 768px) {
+            .btn-back {
+                width: 100%;
+                padding: 12px;
+            }
+            .container { padding: 0 15px; }
+            .form-group { margin-bottom: 1rem; }
+        }
+    </style>
+    <!-- Agregar FontAwesome para los iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <header class="bg-primary text-white text-center py-3">
-   
-    <h1>Bienvenido, <?php echo $_SESSION['nombre']; ?></h1>
+        <h1 class="h3">Bienvenido, <?php echo $_SESSION['nombre']; ?></h1>
     </header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-            <a class="navbar-brand" href="#">Restaurante</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php">Volver</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <div class="container mt-5">
+    
+    <div class="container mt-3 mt-lg-5">
+        <a href="index.php" class="btn btn-secondary btn-lg back-button mb-4 btn-back">
+            <i class="fas fa-arrow-left"></i> Volver al Panel
+        </a>
+        
         <section>
-            <h2>Registrar Camarero</h2>
+            <h2 class="h4 mb-4">Registrar Camarero</h2>
             <form action="registro.php" method="post" class="needs-validation" novalidate>
                 <div class="form-group">
                     <label for="nombre">Nombre:</label>
@@ -61,7 +65,7 @@ include '../conexion.php';
                     <input type="password" class="form-control" name="contrasena" id="contrasena" required>
                     <div class="invalid-feedback">Por favor, ingrese la contraseña.</div>
                 </div>
-                <button type="submit" class="btn btn-primary">Registrar</button>
+                <button type="submit" class="btn btn-primary btn-block btn-lg mt-4">Registrar</button>
             </form>
         </section>
     </div>

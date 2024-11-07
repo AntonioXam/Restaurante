@@ -39,11 +39,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta http-equiv="refresh" content="3;url=index.php">
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="alert alert-<?php echo $tipo_mensaje; ?>" role="alert">
+    <div class="container mt-3 mt-lg-5">
+        <div class="alert alert-<?php echo $tipo_mensaje; ?> text-center" role="alert">
             <?php echo $mensaje; ?>
         </div>
-        <p>Será redirigido al panel de encargado en unos segundos...</p>
+        <p class="text-center">Será redirigido al panel de encargado en unos segundos...</p>
     </div>
     <!-- bootstrap scripts -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

@@ -3,74 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurante</title>
-    <!-- bootstrap -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta name="description" content="Restaurante - Sistema de gestión">
+    <title>Restaurante - Login</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .navbar .nav-link {
+            margin: 0.25rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem !important;
+        }
+        .navbar .nav-link:hover {
+            background-color: rgba(255,255,255,0.1);
+            transform: translateY(-1px);
+        }
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                background: rgba(0,0,0,0.1);
+                padding: 1rem;
+                border-radius: 8px;
+                margin-top: 0.5rem;
+            }
+            .navbar .nav-link {
+                text-align: left;
+                margin: 0.25rem 0;
+                display: flex;
+                align-items: center;
+            }
+            .navbar .nav-link i {
+                width: 1.5rem;
+                text-align: center;
+                margin-right: 0.5rem;
+            }
+        }
+        
+        /* Nuevos estilos */
+        .card {
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        }
+        
+        .btn-primary {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 576px) {
+            .card {
+                margin: 0 10px;
+            }
+            
+            .card-body {
+                padding: 1.5rem;
+            }
+            
+            .btn {
+                padding: 0.6rem;
+            }
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .nav-buttons .btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 140px;
+            justify-content: center;
+        }
+        
+        @media (max-width: 576px) {
+            .navbar-brand {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 10px;
+            }
+            .nav-buttons {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
 </head>
-<body>
-    <header class="bg-primary text-white text-center py-3">
-        <h1>Bienvenidos a Nuestro Restaurante </h1>
+<body class="d-flex flex-column min-vh-100">
+    <!-- Restaurar navbar -->
+    <header>
+        <nav class="navbar navbar-dark bg-primary py-2 flex-column">
+            <div class="container flex-column">
+                <a class="navbar-brand d-flex align-items-center" href="#">
+                    <i class="fas fa-utensils me-2"></i>
+                    <span>Restaurante Champiñón</span>
+                </a>
+                <div class="nav-buttons">
+                    <a class="btn btn-outline-light" href="quienes_somos.html">
+                        <i class="fas fa-users"></i>
+                        <span>Quiénes Somos</span>
+                    </a>
+                    <a class="btn btn-outline-light" href="donde_encontrarnos.html">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Ubicación</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
     </header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-            <a class="navbar-brand" href="#">Restaurante</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#login">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="quienes_somos.html">Quiénes Somos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="donde_encontrarnos.html">Dónde Encontrarnos</a>
-                    </li>
-                </ul>
+    
+    <main class="container my-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h2 class="card-title text-center mb-4">
+                            <i class="fas fa-user-circle fs-1 text-primary mb-3 d-block"></i>
+                            Iniciar Sesión
+                        </h2>
+                        <form action="login.php" method="post" class="needs-validation" novalidate>
+                            <div class="mb-3">
+                                <label for="usuario" class="form-label">Usuario</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    <input type="text" class="form-control" id="usuario" name="usuario" required>
+                                </div>
+                                <div class="invalid-feedback">Por favor, ingrese su usuario.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="contrasena" class="form-label">Contraseña</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input type="password" class="form-control" id="contrasena" name="contrasena" required>
+                                </div>
+                                <div class="invalid-feedback">Por favor, ingrese su contraseña.</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-sign-in-alt me-2"></i>Ingresar
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-    </nav>
-    <div class="container mt-5">
-        <section id="login" class="my-5">
-            <h2>Login</h2>
-            <form action="login.php" method="post" class="needs-validation" novalidate>
-                <div class="form-group">
-                    <label for="usuario">Usuario:</label>
-                    <input type="text" class="form-control" id="usuario" name="usuario" required>
-                    <div class="invalid-feedback">Por favor, ingrese su usuario.</div>
-                </div>
-                <div class="form-group">
-                    <label for="contrasena">Contraseña:</label>
-                    <input type="password" class="form-control" id="contrasena" name="contrasena" required>
-                    <div class="invalid-feedback">Por favor, ingrese su contraseña.</div>
-                </div>
-                <button type="submit" class="btn btn-primary">Ingresar</button>
-            </form>
-        </section>
-    </div>
-    <!-- bootstrap scripts -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container text-center">
+            <span class="text-muted">© 2024 Restaurante. Todos los derechos reservados.</span>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Example starter JavaScript for disabling form submissions if there are invalid fields
-        (function() {
-            'use strict';
-            window.addEventListener('load', function() {
-                var forms = document.getElementsByClassName('needs-validation');
-                var validation = Array.prototype.filter.call(forms, function(form) {
-                    form.addEventListener('submit', function(event) {
-                        if (form.checkValidity() === false) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-                        form.classList.add('was-validated');
-                    }, false);
-                });
-            }, false);
-        })();
+        (() => {
+            'use strict'
+            const forms = document.querySelectorAll('.needs-validation')
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
     </script>
 </body>
 </html>

@@ -3,38 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiénes Somos</title>
-    <!-- bootstrap -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Quiénes Somos - Restaurante Champiñón</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .navbar .nav-link {
+            margin: 0.25rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem !important;
+        }
+        .navbar .nav-link:hover {
+            background-color: rgba(255,255,255,0.1);
+            transform: translateY(-1px);
+        }
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                background: rgba(0,0,0,0.1);
+                padding: 1rem;
+                border-radius: 8px;
+                margin-top: 0.5rem;
+            }
+            .navbar .nav-link {
+                text-align: left;
+                margin: 0.25rem 0;
+                display: flex;
+                align-items: center;
+            }
+            .navbar .nav-link i {
+                width: 1.5rem;
+                text-align: center;
+                margin-right: 0.5rem;
+            }
+        }
+        
+        /* Nuevos estilos */
+        .img-fluid {
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .img-fluid:hover {
+            transform: scale(1.02);
+        }
+        
+        .valores-lista li {
+            margin-bottom: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            background-color: rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+        }
+        
+        .valores-lista li:hover {
+            background-color: rgba(0,0,0,0.05);
+            transform: translateX(5px);
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .lead {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
 </head>
-<body>
-    <header class="bg-primary text-white text-center py-3">
-        <h1>Quiénes Somos</h1>
-    </header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+<body class="d-flex flex-column min-vh-100">
+    <!-- Restaurar navbar -->
+    <nav class="navbar navbar-dark bg-primary py-2">
         <div class="container">
-            <a class="navbar-brand" href="index.php">Restaurante</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php">Inicio</a>
-                    </li>
-                </ul>
-            </div>
+            <a class="navbar-brand d-flex align-items-center mx-auto" href="index.php">
+                <i class="fas fa-mushroom me-2"></i>
+                <span>Restaurante Champiñón</span>
+            </a>
+            <a class="btn btn-outline-light position-absolute start-0 ms-3" href="index.php">
+                <i class="fas fa-arrow-left me-2"></i>Volver
+            </a>
         </div>
     </nav>
-    <div class="container mt-5">
-        <section class="my-5">
-            <h2>Nuestra Historia</h2>
-            <p>Somos una pizzería con más de 20 años de experiencia, ofreciendo las mejores pizzas artesanales de la ciudad. Nuestro compromiso es brindar a nuestros clientes una experiencia gastronómica única, con ingredientes frescos y de la más alta calidad.</p>
-        </section>
-    </div>
-    <!-- bootstrap scripts -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <main class="container my-4 main-content">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <img src="imagenes/imagen_Restaurante.jpg" alt="Restaurante Champiñón" class="img-fluid rounded shadow">
+            </div>
+            <div class="col-md-6">
+                <h1 class="mb-4">Nuestra Historia</h1>
+                <p class="lead">Desde 1985, Restaurante Champiñón ha sido un referente en la gastronomía local de Molina de Segura.</p>
+                <p>Con más de 35 años de experiencia, nuestro acogedor establecimiento de 10 mesas ofrece una experiencia culinaria única, donde la tradición se fusiona con la innovación.</p>
+                <p>Especializados en cocina mediterránea y carnes a la brasa, nuestro chef ejecutivo y su equipo seleccionan cuidadosamente los ingredientes más frescos del mercado para crear platos excepcionales.</p>
+                <div class="mt-4 valores-lista">
+                    <h2 class="h4">Nuestros Valores</h2>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success me-2"></i>Calidad en productos frescos</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Atención personalizada</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Ambiente familiar</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Cocina tradicional renovada</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container text-center">
+            <span class="text-muted">© 2024 Restaurante Champiñón. Todos los derechos reservados.</span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
