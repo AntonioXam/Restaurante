@@ -84,8 +84,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
                 
             case 'enviar_cocina':
-                mysqli_query($conexion, "UPDATE pedidos SET estado = 'enviado' 
-                                       WHERE mesa_id = $mesa_id AND estado = 'pendiente'");
+                try {
+                    mysqli_begin_transaction($conexion);
+                    
+                    // Obtener los productos del pedido pendiente
+                    $query = "SELECT dp.*, p.nombre as nombre_producto, p.id as producto_id, p.precio 
+                             FROM detalle_pedidos dp 
+                             INNER JOIN productos p ON dp.producto_id = p.id 
+                             INNER JOIN pedidos ped ON dp.pedido_id = ped.id 
+                             WHERE ped.mesa_id = ? AND ped.estado = 'pendiente'";
+                    
+                    $stmt = mysqli_prepare($conexion, $query);
+                    mysqli_stmt_bind_param($stmt, "i", $mesa_id);
+                    mysqli_stmt_execute($stmt);
+                    $detalles = mysqli_stmt_get_result($stmt);
+
+                    // Procesar cada producto
+                    while ($detalle = mysqli_fetch_assoc($detalles)) {
+                        $subtotal = $detalle['cantidad'] * $detalle['precio'];
+                        
+                        // Verificar si ya existe en la cuenta
+                        $check_query = "SELECT id, cantidad FROM cuenta 
+                                      WHERE mesa_id = ? AND producto_id = ?";
+                        $check_stmt = mysqli_prepare($conexion, $check_query);
+                        mysqli_stmt_bind_param($check_stmt, "ii", $mesa_id, $detalle['producto_id']);
+                        mysqli_stmt_execute($check_stmt);
+                        $existing = mysqli_fetch_assoc(mysqli_stmt_get_result($check_stmt));
+
+                        if ($existing) {
+                            // Actualizar cantidad y subtotal existente
+                            $nueva_cantidad = $existing['cantidad'] + $detalle['cantidad'];
+                            $nuevo_subtotal = $nueva_cantidad * $detalle['precio'];
+                            
+                            $update = "UPDATE cuenta 
+                                      SET cantidad = ?, subtotal = ? 
+                                      WHERE id = ?";
+                            $update_stmt = mysqli_prepare($conexion, $update);
+                            mysqli_stmt_bind_param($update_stmt, "idi", 
+                                $nueva_cantidad, 
+                                $nuevo_subtotal, 
+                                $existing['id']
+                            );
+                            mysqli_stmt_execute($update_stmt);
+                        } else {
+                            // Insertar nuevo producto en cuenta
+                            $insert = "INSERT INTO cuenta 
+                                      (mesa_id, producto_id, cantidad, precio_unitario, subtotal) 
+                                      VALUES (?, ?, ?, ?, ?)";
+                            $insert_stmt = mysqli_prepare($conexion, $insert);
+                            mysqli_stmt_bind_param($insert_stmt, "iiidd",
+                                $mesa_id,
+                                $detalle['producto_id'],
+                                $detalle['cantidad'],
+                                $detalle['precio'],
+                                $subtotal
+                            );
+                            mysqli_stmt_execute($insert_stmt);
+                        }
+                    }
+
+                    // Actualizar estado del pedido y crear uno nuevo
+                    mysqli_query($conexion, "UPDATE pedidos SET estado = 'enviado' WHERE mesa_id = $mesa_id AND estado = 'pendiente'");
+                    mysqli_query($conexion, "INSERT INTO pedidos (mesa_id, estado, total) VALUES ($mesa_id, 'pendiente', 0)");
+                    
+                    mysqli_commit($conexion);
+                    header("Location: gestionar_pedido.php?mesa_id=$mesa_id&status=success");
+                    exit;
+                } catch (Exception $e) {
+                    mysqli_rollback($conexion);
+                    header("Location: gestionar_pedido.php?mesa_id=$mesa_id&status=error");
+                    exit;
+                }
                 break;
         }
         header("Location: gestionar_pedido.php?mesa_id=$mesa_id");
@@ -115,11 +184,13 @@ $mesa_numero = isset($mesa) ? $mesa['numero_mesa'] : 'No seleccionada';
             <a class="navbar-brand" href="#">Restaurante</a>
             <div class="d-flex align-items-center">
                 <?php if(isset($mesa) && $mesa): ?>
-                    <span class="navbar-text me-3">
+                    <span class="navbar-text me-3 d-none d-sm-inline">
                         Mesa: <?php echo htmlspecialchars($mesa_numero); ?>
                     </span>
-                    <a href="cuenta.php?mesa_id=<?php echo $mesa_id; ?>" class="btn btn-info btn-sm text-white me-2">
-                        <i class="fas fa-receipt"></i> Ver Cuenta
+                    <a href="cuenta.php?mesa_id=<?php echo $mesa_id; ?>" 
+                       class="btn btn-info btn-sm text-white me-2">
+                        <i class="fas fa-receipt"></i>
+                        <span class="d-none d-sm-inline ms-1">Cuenta</span>
                     </a>
                 <?php endif; ?>
                 <a href="index.php" class="btn btn-outline-light d-flex align-items-center">

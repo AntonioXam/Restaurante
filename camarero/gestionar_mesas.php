@@ -88,11 +88,17 @@ $mesas_activas_result = obtener_mesas_activas($conexion);
                                         <i class="fas fa-chair fa-2x mb-2"></i>
                                         <h5 class="card-title">Mesa <?php echo $mesa['numero_mesa']; ?></h5>
                                         <p class="card-text"><small class="text-muted"><?php echo $mesa['comensales']; ?> comensales</small></p>
-                                        <div class="btn-group w-100">
+                                        <div class="d-grid gap-2">
                                             <a href="gestionar_pedido.php?mesa_id=<?php echo $mesa['id']; ?>" 
-                                               class="btn btn-primary btn-sm">Gestionar</a>
+                                               class="btn btn-primary btn-sm">
+                                               <i class="fas fa-utensils me-1"></i>
+                                               <span>Gestionar</span>
+                                            </a>
                                             <a href="cuenta.php?mesa_id=<?php echo $mesa['id']; ?>" 
-                                               class="btn btn-info btn-sm text-white">Ver Cuenta</a>
+                                               class="btn btn-info btn-sm text-white">
+                                               <i class="fas fa-receipt me-1"></i>
+                                               <span>Cuenta</span>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -180,6 +186,39 @@ $mesas_activas_result = obtener_mesas_activas($conexion);
         color: #6c757d;
     }
     
+    @media (max-width: 576px) {
+        .mesa-card {
+            margin-bottom: 0.5rem;
+        }
+        
+        .mesa-card .card-body {
+            padding: 0.75rem;
+        }
+        
+        .mesa-card .btn {
+            padding: 0.4rem;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .mesa-card .btn i {
+            font-size: 0.9rem;
+            margin-right: 0.3rem;
+        }
+        
+        .d-grid.gap-2 {
+            gap: 0.25rem !important;
+        }
+    }
+
+    @media (max-width: 360px) {
+        .mesa-card .btn span {
+            font-size: 0.75rem;
+        }
+    }
+
     @media (max-width: 576px) {
         .mesa-card .card-body {
             padding: 1rem;

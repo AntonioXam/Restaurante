@@ -67,23 +67,6 @@ CREATE TABLE `detalle_pedidos` (
   CONSTRAINT `detalle_pedidos_ibfk_2` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 6. Tabla historial_pedidos (depende de mesas y productos)
-CREATE TABLE `historial_pedidos` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `mesa_id` bigint(20) NOT NULL,
-  `fecha_hora` datetime DEFAULT CURRENT_TIMESTAMP,
-  `producto_id` bigint(20) NOT NULL,
-  `cantidad` int(11) NOT NULL,
-  `precio_unitario` decimal(10,2) NOT NULL,
-  `subtotal` decimal(10,2) NOT NULL,
-  `notas` text DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `mesa_id` (`mesa_id`),
-  KEY `producto_id` (`producto_id`),
-  CONSTRAINT `historial_pedidos_ibfk_1` FOREIGN KEY (`mesa_id`) REFERENCES `mesas` (`id`),
-  CONSTRAINT `historial_pedidos_ibfk_2` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 -- Tabla para la cuenta
 CREATE TABLE `cuenta` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -112,6 +95,30 @@ CREATE TABLE `temp_ticket` (
   PRIMARY KEY (`id`),
   KEY `mesa_id` (`mesa_id`),
   CONSTRAINT `temp_ticket_ibfk_1` FOREIGN KEY (`mesa_id`) REFERENCES `mesas` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Mantener solo las tablas esenciales
+DROP TABLE IF EXISTS `tickets_pagados`;
+DROP TABLE IF EXISTS `historial_pagos`;
+DROP TABLE IF EXISTS `detalle_pagos`;
+DROP TABLE IF EXISTS `cuentas_pagadas`;
+
+-- Eliminar tablas innecesarias
+DROP TABLE IF EXISTS `temp_ticket`;
+DROP TABLE IF EXISTS `historial_pedidos`;
+
+-- Crear tabla para almacenar cuentas pagadas
+CREATE TABLE `cuentas_pagadas` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `mesa_id` bigint(20) NOT NULL,
+  `fecha_hora` datetime DEFAULT CURRENT_TIMESTAMP,
+  `producto` varchar(100) NOT NULL,
+  `cantidad` int(11) NOT NULL,
+  `precio_unitario` decimal(10,2) NOT NULL,
+  `subtotal` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `mesa_id` (`mesa_id`),
+  CONSTRAINT `cuentas_pagadas_ibfk_1` FOREIGN KEY (`mesa_id`) REFERENCES `mesas` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Insertar datos iniciales
