@@ -119,8 +119,9 @@ $mesa_numero = isset($mesa) ? $mesa['numero_mesa'] : 'No seleccionada';
                         Mesa: <?php echo htmlspecialchars($mesa_numero); ?>
                     </span>
                 <?php endif; ?>
-                <a href="index.php" class="btn btn-outline-light">
-                    <i class="fas fa-arrow-left me-2"></i>Volver
+                <a href="index.php" class="btn btn-outline-light d-flex align-items-center">
+                    <i class="fas fa-arrow-left"></i>
+                    <span class="ms-2">Volver</span>
                 </a>
             </div>
         </div>
@@ -170,71 +171,73 @@ $mesa_numero = isset($mesa) ? $mesa['numero_mesa'] : 'No seleccionada';
             <!-- Sección de Productos por Categorías -->
             <div class="row mb-4">
                 <div class="col-12">
-                    <div class="card">
+                    <div class="card shadow">
+                        <div class="card-header bg-light py-3">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div class="d-flex align-items-center">
+                                    <h5 class="card-title mb-0 me-3">Añadir Productos</h5>
+                                    <span class="text-muted small">
+                                        <i class="fas fa-arrows-alt-h me-1"></i>
+                                        <span class="d-none d-sm-inline">Desliza para</span>
+                                        <span>más categorías</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                         <div class="card-body">
-                            <h5 class="card-title">Añadir Productos</h5>
-                            
-                            <!-- Pestañas de categorías -->
-                            <ul class="nav nav-tabs mb-3" id="productTabs" role="tablist">
-                                <?php
-                                // Obtener categorías únicas de la base de datos
-                                $query_categorias = "SELECT DISTINCT categoria FROM productos ORDER BY categoria";
-                                $result_categorias = mysqli_query($conexion, $query_categorias);
-                                $first = true;
-                                while ($cat = mysqli_fetch_assoc($result_categorias)):
-                                ?>
-                                <li class="nav-item">
-                                    <a class="nav-link <?php echo $first ? 'active' : ''; ?>" 
-                                       id="<?php echo $cat['categoria']; ?>-tab" 
-                                       data-bs-toggle="tab" 
-                                       href="#<?php echo $cat['categoria']; ?>" 
-                                       role="tab">
-                                        <?php echo ucfirst($cat['categoria']); ?>
-                                    </a>
-                                </li>
-                                <?php 
-                                $first = false;
-                                endwhile; 
-                                ?>
-                            </ul>
+                            <!-- Nav pills scrollable -->
+                            <div class="nav-container mb-3">
+                                <ul class="nav nav-pills flex-nowrap hide-scrollbar" id="productTabs" role="tablist">
+                                    <?php
+                                    $query_categorias = "SELECT DISTINCT categoria FROM productos ORDER BY categoria";
+                                    $result_categorias = mysqli_query($conexion, $query_categorias);
+                                    $first = true;
+                                    while ($cat = mysqli_fetch_assoc($result_categorias)):
+                                    ?>
+                                    <li class="nav-item">
+                                        <a class="nav-link <?php echo $first ? 'active' : ''; ?>" 
+                                           id="<?php echo $cat['categoria']; ?>-tab" 
+                                           data-bs-toggle="pill"
+                                           href="#<?php echo $cat['categoria']; ?>">
+                                            <?php echo ucfirst($cat['categoria']); ?>
+                                        </a>
+                                    </li>
+                                    <?php 
+                                    $first = false;
+                                    endwhile; 
+                                    ?>
+                                </ul>
+                            </div>
 
                             <!-- Contenido de las pestañas -->
                             <div class="tab-content" id="productTabContent">
                                 <?php 
-                                // Reiniciar el puntero de categorías
                                 mysqli_data_seek($result_categorias, 0);
                                 $first = true;
                                 while ($cat = mysqli_fetch_assoc($result_categorias)): 
                                 ?>
                                 <div class="tab-pane fade <?php echo $first ? 'show active' : ''; ?>" 
-                                     id="<?php echo $cat['categoria']; ?>" 
-                                     role="tabpanel">
-                                    
-                                    <div class="row">
+                                     id="<?php echo $cat['categoria']; ?>">
+                                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
                                         <?php
                                         $query = "SELECT * FROM productos WHERE categoria = '{$cat['categoria']}'";
                                         $productos = mysqli_query($conexion, $query);
                                         while ($producto = mysqli_fetch_assoc($productos)):
                                         ?>
-                                        <div class="col-md-4 mb-3">
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <h5 class="card-title"><?php echo htmlspecialchars($producto['nombre']); ?></h5>
-                                                    <p class="card-text"><?php echo number_format($producto['precio'], 2); ?>€</p>
-                                                    <form action="" method="POST" class="add-product-form">
-                                                        <input type="hidden" name="action" value="agregar">
-                                                        <input type="hidden" name="producto_id" value="<?php echo $producto['id']; ?>">
-                                                        <div class="form-group mb-2">
-                                                            <label>Cantidad:</label>
-                                                            <input type="number" name="cantidad" class="form-control" value="1" min="1" required>
-                                                        </div>
-                                                        <div class="form-group mb-2">
-                                                            <label>Notas:</label>
-                                                            <textarea name="notas" class="form-control" rows="2"></textarea>
-                                                        </div>
-                                                        <button type="submit" class="btn btn-primary btn-sm">Añadir</button>
-                                                    </form>
+                                        <div class="col">
+                                            <div class="list-group-item product-item d-flex justify-content-between align-items-center rounded">
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1"><?php echo htmlspecialchars($producto['nombre']); ?></h6>
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="badge bg-primary me-2"><?php echo number_format($producto['precio'], 2); ?>€</span>
+                                                    </div>
                                                 </div>
+                                                <button class="btn btn-primary btn-sm rounded-circle add-btn" 
+                                                        onclick="mostrarModalAgregar(<?php echo $producto['id']; ?>, 
+                                                                                '<?php echo htmlspecialchars($producto['nombre']); ?>', 
+                                                                                <?php echo $producto['precio']; ?>)">
+                                                    <i class="fas fa-plus fa-fw"></i>
+                                                </button>
                                             </div>
                                         </div>
                                         <?php endwhile; ?>
@@ -250,6 +253,42 @@ $mesa_numero = isset($mesa) ? $mesa['numero_mesa'] : 'No seleccionada';
                 </div>
             </div>
 
+            <!-- Modal para agregar producto -->
+            <div class="modal fade" id="agregarModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Añadir Producto</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form action="" method="POST">
+                            <div class="modal-body">
+                                <input type="hidden" name="action" value="agregar">
+                                <input type="hidden" name="producto_id" id="add_producto_id">
+                                <h6 id="producto_nombre" class="mb-2"></h6>
+                                <p class="text-muted mb-3">Precio: <span id="producto_precio"></span>€</p>
+                                <div class="form-group mb-3">
+                                    <label>Cantidad:</label>
+                                    <div class="input-group">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="ajustarCantidad(-1)">-</button>
+                                        <input type="number" name="cantidad" id="add_cantidad" class="form-control text-center" value="1" min="1" required>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="ajustarCantidad(1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Notas:</label>
+                                    <textarea name="notas" class="form-control" rows="2"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Añadir al Pedido</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <!-- Productos Añadidos -->
             <div class="row">
                 <div class="col-12">
@@ -258,15 +297,15 @@ $mesa_numero = isset($mesa) ? $mesa['numero_mesa'] : 'No seleccionada';
                             <h5 class="card-title">Productos en el Pedido</h5>
                             <?php if ($detalle_pedidos_result && mysqli_num_rows($detalle_pedidos_result) > 0): ?>
                                 <div class="table-responsive">
-                                    <table class="table table-hover">
+                                    <table class="table table-hover mobile-table">
                                         <thead>
                                             <tr>
-                                                <th>Producto</th>
-                                                <th>Cantidad</th>
-                                                <th>Precio Unitario</th>
-                                                <th>Subtotal</th>
-                                                <th>Notas</th>
-                                                <th>Acciones</th>
+                                                <th class="col-4 col-sm-3">Producto</th>
+                                                <th class="col-2 col-sm-2">Cant.</th>
+                                                <th class="col-3 col-sm-2">Precio</th>
+                                                <th class="d-none d-md-table-cell">Subtotal</th>
+                                                <th class="d-none d-md-table-cell">Notas</th>
+                                                <th class="col-3 col-sm-5">Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -276,43 +315,69 @@ $mesa_numero = isset($mesa) ? $mesa['numero_mesa'] : 'No seleccionada';
                                                 $subtotal = $detalle['cantidad'] * $detalle['precio'];
                                                 $total += $subtotal;
                                             ?>
-                                            <tr>
-                                                <td><?php echo htmlspecialchars($detalle['nombre_producto']); ?></td>
-                                                <td><?php echo $detalle['cantidad']; ?></td>
-                                                <td><?php echo number_format($detalle['precio'], 2); ?>€</td>
-                                                <td><?php echo number_format($subtotal, 2); ?>€</td>
-                                                <td><?php echo htmlspecialchars($detalle['notas']); ?></td>
-                                                <td>
-                                                    <button class="btn btn-sm btn-warning" 
-                                                            onclick="modificarCantidad(<?php echo $detalle['id']; ?>, <?php echo $detalle['cantidad']; ?>, '<?php echo htmlspecialchars($detalle['notas']); ?>')">
-                                                        <i class="fas fa-edit"></i> Modificar
-                                                    </button>
-                                                    <form action="" method="POST" class="d-inline">
-                                                        <input type="hidden" name="action" value="eliminar">
-                                                        <input type="hidden" name="detalle_id" value="<?php echo $detalle['id']; ?>">
-                                                        <button type="submit" class="btn btn-sm btn-danger" 
-                                                                onclick="return confirm('¿Está seguro de eliminar este producto?')">
-                                                            <i class="fas fa-trash"></i> Eliminar
+                                            <tr class="producto-row">
+                                                <td class="producto-cell">
+                                                    <div class="text-truncate">
+                                                        <?php echo htmlspecialchars($detalle['nombre_producto']); ?>
+                                                    </div>
+                                                </td>
+                                                <td class="cantidad-cell text-center">
+                                                    <span class="badge bg-secondary">
+                                                        <?php echo $detalle['cantidad']; ?>
+                                                    </span>
+                                                </td>
+                                                <td class="precio-cell text-end">
+                                                    <?php echo number_format($detalle['precio'], 2); ?>€
+                                                </td>
+                                                <td class="d-none d-md-table-cell">
+                                                    <?php echo number_format($subtotal, 2); ?>€
+                                                </td>
+                                                <td class="d-none d-md-table-cell notes-cell">
+                                                    <?php if ($detalle['notas']): ?>
+                                                        <small class="text-muted"><?php echo htmlspecialchars($detalle['notas']); ?></small>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td class="action-buttons text-end">
+                                                    <div class="btn-group btn-group-sm">
+                                                        <button class="btn btn-warning" 
+                                                                onclick="modificarCantidad(<?php echo $detalle['id']; ?>, 
+                                                                                         <?php echo $detalle['cantidad']; ?>, 
+                                                                                         '<?php echo addslashes($detalle['notas']); ?>')">
+                                                            <i class="fas fa-edit"></i>
+                                                            <span class="d-none d-sm-inline ms-1">Modificar</span>
                                                         </button>
-                                                    </form>
+                                                        <form action="" method="POST" class="d-inline">
+                                                            <input type="hidden" name="action" value="eliminar">
+                                                            <input type="hidden" name="detalle_id" value="<?php echo $detalle['id']; ?>">
+                                                            <button type="submit" class="btn btn-danger" 
+                                                                    onclick="return confirm('¿Está seguro de eliminar este producto?')">
+                                                                <i class="fas fa-trash"></i>
+                                                                <span class="d-none d-sm-inline ms-1">Eliminar</span>
+                                                            </button>
+                                                        </form>
+                                                    </div>
                                                 </td>
                                             </tr>
                                             <?php endwhile; ?>
                                         </tbody>
                                         <tfoot>
-                                            <tr>
-                                                <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                                                <td><strong><?php echo number_format($total, 2); ?>€</strong></td>
-                                                <td colspan="2"></td>
+                                            <tr class="total-row">
+                                                <td colspan="2" class="text-end"><strong>Total:</strong></td>
+                                                <td colspan="4" class="text-start"><strong><?php echo number_format($total, 2); ?>€</strong></td>
                                             </tr>
                                         </tfoot>
                                     </table>
-                                    <form action="" method="POST" class="mt-3">
-                                        <input type="hidden" name="action" value="enviar_cocina">
-                                        <button type="submit" class="btn btn-success">
-                                            <i class="fas fa-utensils"></i> Enviar a Cocina
-                                        </button>
-                                    </form>
+                                    
+                                    <!-- Botón Enviar a Cocina -->
+                                    <div class="text-end mt-3">
+                                        <form action="" method="POST" class="d-inline">
+                                            <input type="hidden" name="action" value="enviar_cocina">
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="fas fa-utensils me-2"></i>
+                                                Enviar a Cocina
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             <?php else: ?>
                                 <p class="text-muted">No hay productos en el pedido</p>
@@ -361,6 +426,22 @@ $mesa_numero = isset($mesa) ? $mesa['numero_mesa'] : 'No seleccionada';
         document.getElementById('mod_notas').value = notas;
         new bootstrap.Modal(document.getElementById('modificarModal')).show();
     }
+
+    function mostrarModalAgregar(producto_id, nombre, precio) {
+        document.getElementById('add_producto_id').value = producto_id;
+        document.getElementById('producto_nombre').textContent = nombre;
+        document.getElementById('producto_precio').textContent = precio.toFixed(2);
+        document.getElementById('add_cantidad').value = 1;
+        new bootstrap.Modal(document.getElementById('agregarModal')).show();
+    }
+
+    function ajustarCantidad(cambio) {
+        const input = document.getElementById('add_cantidad');
+        const nuevoValor = parseInt(input.value) + cambio;
+        if (nuevoValor >= 1) {
+            input.value = nuevoValor;
+        }
+    }
     </script>
 
     <!-- Scripts -->
@@ -400,6 +481,512 @@ $mesa_numero = isset($mesa) ? $mesa['numero_mesa'] : 'No seleccionada';
         
         .mesa-card .card-text {
             font-size: 0.8rem;
+        }
+    }
+
+    /* Estilos para la tabla en móviles */
+    @media (max-width: 768px) {
+        .mobile-table {
+            border: 0;
+        }
+
+        .mobile-table thead {
+            display: none;
+        }
+
+        .mobile-table tr {
+            display: block;
+            margin-bottom: 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            background: #fff;
+        }
+
+        .mobile-table td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: none;
+            padding: 0.5rem;
+            text-align: right;
+        }
+
+        .mobile-table td::before {
+            content: attr(data-label);
+            font-weight: bold;
+            margin-right: 1rem;
+            text-align: left;
+        }
+
+        .mobile-table td.action-buttons {
+            flex-direction: row;
+            justify-content: space-evenly;
+            gap: 0.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .btn-action {
+            width: 45%;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .notes-cell {
+            max-width: 100%;
+        }
+
+        .total-row td {
+            justify-content: flex-end;
+            font-size: 1.1rem;
+        }
+
+        .total-row td::before {
+            font-size: 1.1rem;
+        }
+    }
+
+    /* Mejoras para los botones en móvil */
+    .btn-action {
+        border-radius: 0.5rem;
+        transition: transform 0.1s;
+    }
+
+    .btn-action:active {
+        transform: scale(0.95);
+    }
+
+    .btn-action i {
+        margin-right: 0.25rem;
+    }
+
+    /* Ajustes para el modal en móvil */
+    @media (max-width: 768px) {
+        .modal-dialog {
+            margin: 0.5rem;
+        }
+
+        .modal-content {
+            border-radius: 1rem;
+        }
+
+        .modal-body {
+            padding: 1rem;
+        }
+    }
+
+    /* Estilos para los botones en móviles */
+    @media (max-width: 576px) {
+        .btn-action {
+            width: auto !important;
+            padding: 0.5rem !important;
+            min-width: 40px;
+        }
+        
+        .action-buttons {
+            gap: 0.25rem !important;
+        }
+        
+        .btn-action i {
+            margin-right: 0 !important;
+        }
+        
+        .mobile-table td.action-buttons {
+            justify-content: flex-end;
+        }
+    }
+
+    /* Estilos específicos para móviles pequeños */
+    @media (max-width: 576px) {
+        .mobile-table tr {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            align-items: center !important;
+            margin-bottom: 0.5rem !important;
+            padding: 0.5rem !important;
+            gap: 0.5rem;
+        }
+
+        .mobile-table td {
+            padding: 0 !important;
+            border: none !important;
+            font-size: 0.9rem;
+        }
+
+        .mobile-table td::before {
+            display: none !important;
+        }
+
+        .producto-cell {
+            flex: 1 1 50% !important;
+            min-width: 0;
+        }
+
+        .cantidad-cell {
+            flex: 0 0 auto !important;
+        }
+
+        .precio-cell {
+            flex: 0 0 auto !important;
+        }
+
+        .action-buttons {
+            flex: 1 1 100% !important;
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 0.5rem !important;
+            margin-top: 0.5rem;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .badge {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .btn-group {
+            gap: 0.25rem;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .text-truncate {
+            max-width: 150px;
+        }
+    }
+
+    /* Ajustes adicionales para pantallas muy pequeñas */
+    @media (max-width: 360px) {
+        .producto-cell {
+            flex: 1 1 100% !important;
+        }
+
+        .cantidad-cell,
+        .precio-cell {
+            flex: 0 0 auto !important;
+        }
+    }
+
+    /* Ajustes para pantalla SM */
+    @media (min-width: 576px) and (max-width: 767.98px) {
+        .mobile-table tr {
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            padding: 0.75rem !important;
+        }
+
+        .producto-cell {
+            flex: 0 0 30% !important;
+        }
+
+        .cantidad-cell {
+            flex: 0 0 15% !important;
+            text-align: center !important;
+        }
+
+        .precio-cell {
+            flex: 0 0 20% !important;
+            text-align: right !important;
+        }
+
+        .action-buttons {
+            flex: 0 0 35% !important;
+            border-top: none !important;
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .btn-group .btn {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+        }
+    }
+
+    /* Ajuste del botón enviar a cocina en móviles */
+    @media (max-width: 576px) {
+        .btn-success {
+            width: 100%;
+            margin-top: 1rem;
+            padding: 0.75rem;
+        }
+    }
+
+    /* Estilos para nav pills */
+    .nav-container {
+        position: relative;
+        margin: 0 -1rem;
+        padding: 0 1rem;
+    }
+
+    .nav-pills {
+        padding: 0.5rem 0;
+        margin-bottom: 0;
+    }
+
+    .nav-pills .nav-link {
+        white-space: nowrap;
+        margin-right: 0.5rem;
+        border-radius: 1rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    /* Estilos para lista de productos */
+    .list-group-item {
+        padding: 0.75rem;
+        border: none;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .list-group-item:last-child {
+        border-bottom: none;
+    }
+
+    .btn-circle {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    @media (max-width: 576px) {
+        .list-group-item {
+            padding: 0.5rem;
+        }
+        
+        .list-group-item h6 {
+            font-size: 0.9rem;
+        }
+        
+        .list-group-item small {
+            font-size: 0.8rem;
+        }
+        
+        .btn-sm {
+            width: 28px;
+            height: 28px;
+        }
+    }
+
+    /* Estilos mejorados para navegación y productos */
+    .nav-container {
+        background: #f8f9fa;
+        border-radius: 1rem;
+        padding: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .nav-pills {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .nav-pills .nav-link {
+        color: #6c757d;
+        padding: 0.5rem 1.2rem;
+        margin: 0 0.25rem;
+        border-radius: 2rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .nav-pills .nav-link:hover {
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: #0d6efd;
+        box-shadow: 0 2px 4px rgba(13, 110, 253, 0.3);
+    }
+
+    /* Estilos para items de producto */
+    .product-item {
+        background: white;
+        padding: 1rem;
+        border: 1px solid rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .product-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+
+    .add-btn {
+        width: 32px !important;
+        height: 32px !important;
+        padding: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all 0.3s ease;
+    }
+
+    .add-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .badge {
+        padding: 0.5em 0.8em;
+        font-weight: 500;
+    }
+
+    /* Mejoras responsive */
+    @media (min-width: 768px) {
+        .nav-pills {
+            justify-content: center;
+        }
+        
+        .product-item {
+            height: 100%;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .nav-container {
+            margin: 0 -1rem;
+            border-radius: 0;
+        }
+        
+        .product-item {
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    /* Estilos para el encabezado de productos */
+    .card-header {
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .card-title {
+        color: #2c3e50;
+        font-weight: 500;
+    }
+
+    .text-muted.small {
+        background-color: #e9ecef;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .text-muted.small i {
+        font-size: 0.75rem;
+    }
+
+    @media (max-width: 576px) {
+        .card-header {
+            padding: 0.75rem 1rem;
+        }
+        
+        .text-muted.small {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+    }
+
+    /* Correcciones para los iconos y botones */
+    .btn i.fas {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 1em !important;
+        height: 1em !important;
+        font-size: inherit !important;
+    }
+
+    .btn-circle,
+    .add-btn,
+    .btn-action {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        line-height: 1 !important;
+    }
+
+    .btn i {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 1em !important;
+        height: 1em !important;
+        vertical-align: middle !important;
+    }
+
+    /* Ajustes específicos para botones circulares */
+    .rounded-circle.btn-sm {
+        width: 32px !important;
+        height: 32px !important;
+        padding: 0 !important;
+    }
+
+    /* Corrección de alineación en los badge */
+    .badge {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 24px !important;
+        height: 24px !important;
+    }
+
+    /* Ajustes responsive para iconos */
+    @media (max-width: 576px) {
+        .rounded-circle.btn-sm {
+            width: 28px !important;
+            height: 28px !important;
+        }
+
+        .btn i {
+            font-size: 0.875rem !important;
+        }
+
+        .badge {
+            min-width: 20px !important;
+            height: 20px !important;
+            font-size: 0.75rem !important;
+        }
+    }
+
+    /* Ajuste de espaciado para botones con texto e icono */
+    .btn-warning i,
+    .btn-danger i {
+        margin-right: 0.25rem !important;
+    }
+
+    @media (max-width: 575.98px) {
+        .btn-warning i,
+        .btn-danger i {
+            margin-right: 0 !important;
         }
     }
     </style>

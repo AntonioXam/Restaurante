@@ -73,19 +73,42 @@
                 font-size: 1.1rem;
             }
         }
+        
+        /* Nuevos estilos para el navbar responsive */
+        .navbar-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .back-button {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 576px) {
+            .navbar-container {
+                padding: 0.5rem 0;
+            }
+            
+            .back-button {
+                width: auto;
+            }
+        }
     </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
     <!-- Restaurar navbar -->
     <nav class="navbar navbar-dark bg-primary py-2">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center mx-auto" href="index.php">
-                <i class="fas fa-mushroom me-2"></i>
-                <span>Restaurante Champiñón</span>
-            </a>
-            <a class="btn btn-outline-light position-absolute start-0 ms-3" href="index.php">
-                <i class="fas fa-arrow-left me-2"></i>Volver
-            </a>
+            <div class="navbar-container">
+                <a class="btn btn-outline-light back-button" href="index.php">
+                    <i class="fas fa-arrow-left me-2"></i>Volver
+                </a>
+            </div>
         </div>
     </nav>
     

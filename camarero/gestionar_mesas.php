@@ -85,7 +85,7 @@ $mesas_activas_result = obtener_mesas_activas($conexion);
                             <div class="col">
                                 <div class="card h-100 mesa-card active">
                                     <div class="card-body text-center">
-                                        <i class="fas fa-chair fa-2x mb-2 text-primary"></i>
+                                        <i class="fas fa-chair fa-2x mb-2"></i>
                                         <h5 class="card-title">Mesa <?php echo $mesa['numero_mesa']; ?></h5>
                                         <p class="card-text"><small class="text-muted"><?php echo $mesa['comensales']; ?> comensales</small></p>
                                         <a href="gestionar_pedido.php?mesa_id=<?php echo $mesa['id']; ?>" 
@@ -112,7 +112,7 @@ $mesas_activas_result = obtener_mesas_activas($conexion);
                                 <div class="card h-100 mesa-card inactive" 
                                      onclick="seleccionarMesa(<?php echo $mesa['id']; ?>, <?php echo $mesa['numero_mesa']; ?>)">
                                     <div class="card-body text-center">
-                                        <i class="fas fa-chair fa-2x mb-2 text-secondary"></i>
+                                        <i class="fas fa-chair fa-2x mb-2"></i>
                                         <h5 class="card-title">Mesa <?php echo $mesa['numero_mesa']; ?></h5>
                                         <p class="card-text"><small class="text-muted">Disponible</small></p>
                                         <button class="btn btn-outline-primary btn-sm w-100">Activar Mesa</button>
@@ -191,6 +191,21 @@ $mesas_activas_result = obtener_mesas_activas($conexion);
         
         .mesa-card .card-text {
             font-size: 0.8rem;
+        }
+    }
+
+    .fa-chair {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        height: 1em !important;
+        font-size: 2em !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    @media (max-width: 576px) {
+        .fa-chair {
+            font-size: 1.5em !important;
         }
     }
     </style>
