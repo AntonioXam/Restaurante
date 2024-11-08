@@ -88,8 +88,12 @@ $mesas_activas_result = obtener_mesas_activas($conexion);
                                         <i class="fas fa-chair fa-2x mb-2"></i>
                                         <h5 class="card-title">Mesa <?php echo $mesa['numero_mesa']; ?></h5>
                                         <p class="card-text"><small class="text-muted"><?php echo $mesa['comensales']; ?> comensales</small></p>
-                                        <a href="gestionar_pedido.php?mesa_id=<?php echo $mesa['id']; ?>" 
-                                           class="btn btn-primary btn-sm w-100">Gestionar</a>
+                                        <div class="btn-group w-100">
+                                            <a href="gestionar_pedido.php?mesa_id=<?php echo $mesa['id']; ?>" 
+                                               class="btn btn-primary btn-sm">Gestionar</a>
+                                            <a href="cuenta.php?mesa_id=<?php echo $mesa['id']; ?>" 
+                                               class="btn btn-info btn-sm text-white">Ver Cuenta</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

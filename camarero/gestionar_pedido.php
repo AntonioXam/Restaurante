@@ -118,6 +118,9 @@ $mesa_numero = isset($mesa) ? $mesa['numero_mesa'] : 'No seleccionada';
                     <span class="navbar-text me-3">
                         Mesa: <?php echo htmlspecialchars($mesa_numero); ?>
                     </span>
+                    <a href="cuenta.php?mesa_id=<?php echo $mesa_id; ?>" class="btn btn-info btn-sm text-white me-2">
+                        <i class="fas fa-receipt"></i> Ver Cuenta
+                    </a>
                 <?php endif; ?>
                 <a href="index.php" class="btn btn-outline-light d-flex align-items-center">
                     <i class="fas fa-arrow-left"></i>

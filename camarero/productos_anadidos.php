@@ -1,5 +1,3 @@
-
-
 <div class="row mt-4">
     <div class="col-12">
         <div class="card">
@@ -85,7 +83,98 @@
     </div>
 </div>
 
-// ======== JAVASCRIPT ========
+<?php
+// ...existing code...
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'enviar_cocina') {
+    // Iniciar transacción
+    mysqli_begin_transaction($conexion);
+    
+    try {
+        // Obtener todos los detalles del pedido actual
+        $query = "SELECT dp.*, p.nombre as nombre_producto, p.precio 
+                 FROM detalle_pedidos dp 
+                 INNER JOIN productos p ON dp.producto_id = p.id 
+                 INNER JOIN pedidos ped ON dp.pedido_id = ped.id 
+                 WHERE ped.mesa_id = ? AND ped.estado = 'pendiente'";
+        
+        $stmt = mysqli_prepare($conexion, $query);
+        mysqli_stmt_bind_param($stmt, "i", $mesa_id);
+        mysqli_stmt_execute($stmt);
+        $detalles = mysqli_stmt_get_result($stmt);
+
+        // Guardar cada producto en el historial y en la cuenta
+        while ($detalle = mysqli_fetch_assoc($detalles)) {
+            $subtotal = $detalle['cantidad'] * $detalle['precio'];
+            
+            // Insertar en historial_pedidos
+            $insert_historial = "INSERT INTO historial_pedidos 
+                               (mesa_id, producto_id, cantidad, precio_unitario, subtotal, notas) 
+                               VALUES (?, ?, ?, ?, ?, ?)";
+            
+            $stmt_historial = mysqli_prepare($conexion, $insert_historial);
+            mysqli_stmt_bind_param($stmt_historial, "iiidds", 
+                $mesa_id, 
+                $detalle['producto_id'],
+                $detalle['cantidad'],
+                $detalle['precio'],
+                $subtotal,
+                $detalle['notas']
+            );
+            mysqli_stmt_execute($stmt_historial);
+
+            // Insertar en cuenta
+            $insert_cuenta = "INSERT INTO cuenta 
+                            (mesa_id, producto_id, cantidad, precio_unitario, subtotal) 
+                            VALUES (?, ?, ?, ?, ?)";
+            
+            $stmt_cuenta = mysqli_prepare($conexion, $insert_cuenta);
+            mysqli_stmt_bind_param($stmt_cuenta, "iiidd",
+                $mesa_id,
+                $detalle['producto_id'],
+                $detalle['cantidad'],
+                $detalle['precio'],
+                $subtotal
+            );
+            mysqli_stmt_execute($stmt_cuenta);
+
+            // Insertar en temp_ticket para el PDF
+            $insert_ticket = "INSERT INTO temp_ticket 
+                            (mesa_id, producto, cantidad, precio_unitario, subtotal) 
+                            VALUES (?, ?, ?, ?, ?)";
+            
+            $stmt_ticket = mysqli_prepare($conexion, $insert_ticket);
+            mysqli_stmt_bind_param($stmt_ticket, "isidd",
+                $mesa_id,
+                $detalle['nombre_producto'],
+                $detalle['cantidad'],
+                $detalle['precio'],
+                $subtotal
+            );
+            mysqli_stmt_execute($stmt_ticket);
+        }
+
+        // Actualizar el estado del pedido a 'enviado'
+        mysqli_query($conexion, "UPDATE pedidos SET estado = 'enviado' WHERE mesa_id = $mesa_id AND estado = 'pendiente'");
+        
+        // Confirmar transacción
+        mysqli_commit($conexion);
+        
+        header("Location: gestionar_pedido.php?mesa_id=$mesa_id&status=success");
+        exit;
+        
+    } catch (Exception $e) {
+        // Revertir cambios si hay error
+        mysqli_rollback($conexion);
+        header("Location: gestionar_pedido.php?mesa_id=$mesa_id&status=error");
+        exit;
+    }
+}
+
+// ...existing code...
+?>
+
+<!-- ======== JAVASCRIPT ======== -->
 <script>
 /**
  * Función para modificar la cantidad y notas de un producto
@@ -103,7 +192,7 @@ function modificarCantidad(detalle_id, cantidad, notas) {
 }
 </script>
 
-// ======== ESTILOS CSS ========
+<!-- ======== ESTILOS CSS ======== -->
 <style>
 /* Estilos para las tarjetas de productos */
 .card {

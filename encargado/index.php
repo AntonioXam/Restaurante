@@ -1,6 +1,7 @@
 <?php
 include '../sesion.php';
 include '../conexion.php';
+// ...existing code...
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -75,7 +76,6 @@ include '../conexion.php';
                             </div>
                             <div class="col-md-4 mb-3">
                                 <div class="card h-100">
-                                    <div class="card-body">
                                         <h5 class="card-title text-info">
                                             <i class="fas fa-list mb-2"></i> Gestión
                                         </h5>
