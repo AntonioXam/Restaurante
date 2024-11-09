@@ -24,33 +24,57 @@ while ($item = mysqli_fetch_assoc($cuenta_result)) {
     $productos_cuenta[] = $item;
 }
 
-// Modificar la sección de procesar pago
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'pagar') {
+// Procesar acciones POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     try {
         mysqli_begin_transaction($conexion);
         
-        // Guardar cada producto en cuentas_pagadas para historial
-        foreach ($productos_cuenta as $item) {
-            $insert_cuenta = "INSERT INTO cuentas_pagadas 
-                            (mesa_id, producto, cantidad, precio_unitario, subtotal) 
-                            VALUES (?, ?, ?, ?, ?)";
-            $stmt = mysqli_prepare($conexion, $insert_cuenta);
-            mysqli_stmt_bind_param($stmt, "isids",
-                $mesa_id,
-                $item['nombre_producto'],
-                $item['cantidad'],
-                $item['precio_unitario'],
-                $item['subtotal']
-            );
-            mysqli_stmt_execute($stmt);
+        switch ($_POST['action']) {
+            case 'modificar_cuenta':
+                $item_id = (int)$_POST['item_id'];
+                $cantidad = (int)$_POST['cantidad'];
+                $precio_unitario = (float)$_POST['precio_unitario'];
+                $subtotal = $cantidad * $precio_unitario;
+                
+                mysqli_query($conexion, "UPDATE cuenta 
+                                       SET cantidad = $cantidad, 
+                                           subtotal = $subtotal 
+                                       WHERE id = $item_id");
+                break;
+                
+            case 'eliminar_cuenta':
+                $item_id = (int)$_POST['item_id'];
+                mysqli_query($conexion, "DELETE FROM cuenta WHERE id = $item_id");
+                break;
+                
+            case 'pagar':
+                // Guardar cada producto en cuentas_pagadas para historial
+                foreach ($productos_cuenta as $item) {
+                    $insert_cuenta = "INSERT INTO cuentas_pagadas 
+                                    (mesa_id, producto, cantidad, precio_unitario, subtotal) 
+                                    VALUES (?, ?, ?, ?, ?)";
+                    $stmt = mysqli_prepare($conexion, $insert_cuenta);
+                    mysqli_stmt_bind_param($stmt, "isids",
+                        $mesa_id,
+                        $item['nombre_producto'],
+                        $item['cantidad'],
+                        $item['precio_unitario'],
+                        $item['subtotal']
+                    );
+                    mysqli_stmt_execute($stmt);
+                }
+                
+                // Limpiar cuenta actual y liberar mesa
+                mysqli_query($conexion, "DELETE FROM cuenta WHERE mesa_id = $mesa_id");
+                mysqli_query($conexion, "UPDATE mesas SET estado = 'inactiva', comensales = NULL WHERE id = $mesa_id");
+                
+                mysqli_commit($conexion);
+                header("Location: gestionar_mesas.php?status=success");
+                exit;
         }
         
-        // Limpiar cuenta actual y liberar mesa
-        mysqli_query($conexion, "DELETE FROM cuenta WHERE mesa_id = $mesa_id");
-        mysqli_query($conexion, "UPDATE mesas SET estado = 'inactiva', comensales = NULL WHERE id = $mesa_id");
-        
         mysqli_commit($conexion);
-        header("Location: gestionar_mesas.php?status=success");
+        header("Location: cuenta.php?mesa_id=$mesa_id&status=success");
         exit;
     } catch (Exception $e) {
         mysqli_rollback($conexion);
@@ -120,15 +144,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                                     <?php echo htmlspecialchars($item['nombre_producto']); ?>
                                                 </td>
                                                 <td class="text-center cantidad-cell">
-                                                    <span class="badge bg-secondary">
-                                                        <?php echo $item['cantidad']; ?>
-                                                    </span>
+                                                    <button type="button" class="btn btn-link p-0" 
+                                                            onclick="modificarCantidad(<?php echo $item['id']; ?>, 
+                                                                                    '<?php echo htmlspecialchars($item['nombre_producto']); ?>', 
+                                                                                    <?php echo $item['cantidad']; ?>, 
+                                                                                    <?php echo $item['precio_unitario']; ?>)">
+                                                        <span class="badge bg-secondary">
+                                                            <?php echo $item['cantidad']; ?>
+                                                        </span>
+                                                    </button>
                                                 </td>
                                                 <td class="text-end precio-cell">
                                                     <?php echo number_format($item['precio_unitario'], 2); ?>€
                                                 </td>
                                                 <td class="text-end subtotal-cell">
                                                     <?php echo number_format($item['subtotal'], 2); ?>€
+                                                </td>
+                                                <td class="action-buttons text-end">
+                                                    <div class="btn-group btn-group-sm">
+                                                        <button class="btn btn-warning" 
+                                                                onclick="modificarCantidad(<?php echo $item['id']; ?>, 
+                                                                                       '<?php echo htmlspecialchars($item['nombre_producto']); ?>', 
+                                                                                       <?php echo $item['cantidad']; ?>,
+                                                                                       <?php echo $item['precio_unitario']; ?>)">
+                                                            <i class="fas fa-edit"></i>
+                                                            <span class="d-none d-sm-inline ms-1">Modificar</span>
+                                                        </button>
+                                                        <form action="" method="POST" class="d-inline">
+                                                            <input type="hidden" name="action" value="eliminar_cuenta">
+                                                            <input type="hidden" name="item_id" value="<?php echo $item['id']; ?>">
+                                                            <button type="submit" class="btn btn-danger" 
+                                                                    onclick="return confirm('¿Está seguro de eliminar este producto?')">
+                                                                <i class="fas fa-trash"></i>
+                                                                <span class="d-none d-sm-inline ms-1">Eliminar</span>
+                                                            </button>
+                                                        </form>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
@@ -243,8 +294,140 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     .btn-success {
         padding: 0.75rem;
     }
+
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+    }
+
+    .cantidad-cell .btn-link {
+        text-decoration: none;
+    }
+
+    .cantidad-cell .btn-link:hover .badge {
+        background-color: #0d6efd !important;
+    }
+
+    @media (max-width: 576px) {
+        .btn-group-sm .btn {
+            padding: 0.2rem 0.4rem;
+        }
+        
+        .btn-group-sm .btn i {
+            font-size: 0.8rem;
+        }
+    }
+
+    /* Estilos para los botones de acción */
+    .action-buttons .btn-group {
+        gap: 0.25rem;
+    }
+
+    .action-buttons .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.375rem 0.75rem;
+    }
+
+    .action-buttons .btn i {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1em;
+        height: 1em;
+    }
+
+    @media (max-width: 576px) {
+        .action-buttons .btn {
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .action-buttons .btn i {
+            font-size: 0.875rem;
+        }
+        
+        .mobile-table td.action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 0.5rem;
+            margin-top: 0.5rem;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .btn-group .btn {
+            flex: 1;
+        }
+    }
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    function modificarCantidad(itemId, nombre, cantidad, precio) {
+        document.getElementById('mod_item_id').value = itemId;
+        document.getElementById('mod_producto_nombre').textContent = nombre;
+        document.getElementById('mod_cantidad').value = cantidad;
+        document.getElementById('mod_precio_unitario').value = precio;
+        new bootstrap.Modal(document.getElementById('modificarModal')).show();
+    }
+
+    function ajustarCantidad(cambio) {
+        const input = document.getElementById('mod_cantidad');
+        const nuevoValor = parseInt(input.value) + cambio;
+        if (nuevoValor >= 1) {
+            input.value = nuevoValor;
+        }
+    }
+
+    function eliminarProducto(itemId, nombre) {
+        if (confirm(`¿Está seguro de eliminar ${nombre} de la cuenta?`)) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.innerHTML = `
+                <input type="hidden" name="action" value="eliminar_cuenta">
+                <input type="hidden" name="item_id" value="${itemId}">
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+    </script>
+
+    <!-- Añadir el modal de modificación antes del cierre del body -->
+    <div class="modal fade" id="modificarModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modificar Cantidad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="" method="POST">
+                    <div class="modal-body">
+                        <input type="hidden" name="action" value="modificar_cuenta">
+                        <input type="hidden" name="item_id" id="mod_item_id">
+                        <input type="hidden" name="precio_unitario" id="mod_precio_unitario">
+                        <h6 id="mod_producto_nombre" class="mb-3"></h6>
+                        <div class="form-group">
+                            <label class="form-label">Cantidad:</label>
+                            <div class="input-group">
+                                <button type="button" class="btn btn-outline-secondary" onclick="ajustarCantidad(-1)">-</button>
+                                <input type="number" name="cantidad" id="mod_cantidad" 
+                                       class="form-control text-center" min="1" required>
+                                <button type="button" class="btn btn-outline-secondary" onclick="ajustarCantidad(1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
