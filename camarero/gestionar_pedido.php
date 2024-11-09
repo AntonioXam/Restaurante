@@ -155,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     header("Location: gestionar_pedido.php?mesa_id=$mesa_id&status=error");
                     exit;
                 }
-                break;
+                
         }
         header("Location: gestionar_pedido.php?mesa_id=$mesa_id");
         exit;
