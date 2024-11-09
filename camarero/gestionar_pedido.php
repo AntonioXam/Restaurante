@@ -173,22 +173,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'productos' => $productos_ticket,
                         'total' => $total_ticket,
                         'fecha' => date('Y-m-d H:i:s'),
-                        'mesa_id' => $mesa_id
+                        'mesa_id' => $mesa_id,
+                        'return_url' => 'cuenta.php' // URL de retorno en caso de error
                     ];
 
-                    // Actualizar estado del pedido y crear uno nuevo
-                    mysqli_query($conexion, "UPDATE pedidos SET estado = 'enviado' WHERE mesa_id = $mesa_id AND estado = 'pendiente'");
-                    mysqli_query($conexion, "INSERT INTO pedidos (mesa_id, estado, total) VALUES ($mesa_id, 'pendiente', 0)");
-                    
                     mysqli_commit($conexion);
 
-                    // Redirigir a ethernet.php para imprimir
+                    // Intentar generar el ticket
                     header("Location: ../imprimir_tickets/example/interface/ethernet.php");
                     exit;
 
                 } catch (Exception $e) {
                     mysqli_rollback($conexion);
-                    header("Location: gestionar_pedido.php?mesa_id=$mesa_id&status=error");
+                    $_SESSION['error_ticket'] = "Error al procesar el pedido: " . $e->getMessage();
+                    header("Location: cuenta.php?mesa_id=$mesa_id&status=error");
                     exit;
                 }
                 

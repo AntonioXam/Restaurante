@@ -7,19 +7,34 @@ session_start();
 
 // Verificar si hay datos del ticket
 if (!isset($_SESSION['ticket_data'])) {
-    die("No hay datos para imprimir el ticket");
+    $_SESSION['error_ticket'] = "No hay datos para imprimir el ticket";
+    header("Location: ../../../camarero/cuenta.php");
+    exit;
 }
 
 $ticket_data = $_SESSION['ticket_data'];
-unset($_SESSION['ticket_data']); // Limpiar los datos de la sesión
+$return_url = isset($ticket_data['return_url']) ? 
+              "../../../camarero/" . $ticket_data['return_url'] : 
+              "../../../camarero/cuenta.php";
+$mesa_id = $ticket_data['mesa_id'];
+$error_mensaje = null;
 
 try {
+    // Intentar conectar con la impresora con un timeout de 5 segundos
+    $connector = @fsockopen("10.x.x.x", 9100, $errno, $errstr, 5);
+    
+    if (!$connector) {
+        throw new Exception("No se pudo conectar con la impresora: $errstr ($errno)");
+    }
+    fclose($connector);
+
+    // Si la conexión fue exitosa, proceder con la impresión
     $connector = new NetworkPrintConnector("10.x.x.x", 9100);
     $printer = new Printer($connector);
 
     // Cabecera del ticket
     $printer->setJustification(Printer::JUSTIFY_CENTER);
-    $printer->text("RESTAURANTE\n");
+    $printer->text("RESTAURANTE CHAMPIÑON\n");
     $printer->text("------------------------\n");
     $printer->text("Mesa: " . $ticket_data['mesa_numero'] . "\n");
     $printer->text("Fecha: " . $ticket_data['fecha'] . "\n");
@@ -44,12 +59,17 @@ try {
     
     $printer->cut();
     $printer->close();
-
-    // Redirigir de vuelta a la cuenta
-    header("Location: ../../../camarero/cuenta.php?mesa_id=" . $ticket_data['mesa_id']);
-    exit;
+    
+    unset($_SESSION['ticket_data']);
+    $_SESSION['success_message'] = "Ticket generado correctamente";
 
 } catch (Exception $e) {
-    echo "No se pudo imprimir el ticket: " . $e->getMessage() . "\n";
+    $error_mensaje = "Error al imprimir el ticket: " . $e->getMessage();
+    $_SESSION['error_ticket'] = $error_mensaje;
 }
+
+// Siempre redirigir, ya sea con éxito o con error
+$status = $error_mensaje ? 'error' : 'success';
+header("Location: $return_url?mesa_id=$mesa_id&status=$status");
+exit;
 ?>

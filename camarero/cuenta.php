@@ -4,6 +4,12 @@ include '../conexion.php';
 
 $mesa_id = isset($_GET['mesa_id']) ? (int)$_GET['mesa_id'] : null;
 
+// Mostrar mensaje de error si existe
+if (isset($_SESSION['error_ticket'])) {
+    $error_mensaje = $_SESSION['error_ticket'];
+    unset($_SESSION['error_ticket']);
+}
+
 // Modificar la consulta para obtener los productos correctamente
 $query = "SELECT c.*, p.nombre as nombre_producto 
          FROM cuenta c 
@@ -105,6 +111,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             </div>
         </div>
     </nav>
+
+    <?php if (isset($error_mensaje)): ?>
+        <div class="alert alert-danger alert-dismissible fade show mx-3 mt-3" role="alert">
+            <?php echo htmlspecialchars($error_mensaje); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
 
     <div class="container-fluid py-4">
         <div class="row justify-content-center">
