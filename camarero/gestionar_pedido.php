@@ -143,13 +143,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                     }
 
+                    // Después de procesar todo y antes del commit, preparar datos para el ticket
+                    $productos_ticket = [];
+                    mysqli_data_seek($detalles, 0); // Reiniciar el puntero del resultado
+                    $total_ticket = 0;
+
+                    while ($detalle = mysqli_fetch_assoc($detalles)) {
+                        $subtotal = $detalle['cantidad'] * $detalle['precio'];
+                        $productos_ticket[] = [
+                            'nombre' => $detalle['nombre_producto'],
+                            'cantidad' => $detalle['cantidad'],
+                            'precio' => $detalle['precio'],
+                            'subtotal' => $subtotal
+                        ];
+                        $total_ticket += $subtotal;
+                    }
+
+                    // Obtener número de mesa
+                    $mesa_query = "SELECT numero_mesa FROM mesas WHERE id = ?";
+                    $stmt_mesa = mysqli_prepare($conexion, $mesa_query);
+                    mysqli_stmt_bind_param($stmt_mesa, "i", $mesa_id);
+                    mysqli_stmt_execute($stmt_mesa);
+                    $mesa_result = mysqli_stmt_get_result($stmt_mesa);
+                    $mesa = mysqli_fetch_assoc($mesa_result);
+
+                    // Guardar datos del ticket en sesión
+                    $_SESSION['ticket_data'] = [
+                        'mesa_numero' => $mesa['numero_mesa'],
+                        'productos' => $productos_ticket,
+                        'total' => $total_ticket,
+                        'fecha' => date('Y-m-d H:i:s'),
+                        'mesa_id' => $mesa_id
+                    ];
+
                     // Actualizar estado del pedido y crear uno nuevo
                     mysqli_query($conexion, "UPDATE pedidos SET estado = 'enviado' WHERE mesa_id = $mesa_id AND estado = 'pendiente'");
                     mysqli_query($conexion, "INSERT INTO pedidos (mesa_id, estado, total) VALUES ($mesa_id, 'pendiente', 0)");
                     
                     mysqli_commit($conexion);
-                    header("Location: gestionar_pedido.php?mesa_id=$mesa_id&status=success");
+
+                    // Redirigir a ethernet.php para imprimir
+                    header("Location: ../imprimir_tickets/example/interface/ethernet.php");
                     exit;
+
                 } catch (Exception $e) {
                     mysqli_rollback($conexion);
                     header("Location: gestionar_pedido.php?mesa_id=$mesa_id&status=error");
