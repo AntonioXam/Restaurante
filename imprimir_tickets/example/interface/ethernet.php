@@ -21,7 +21,7 @@ $error_mensaje = null;
 
 try {
     // Intentar conectar con la impresora con un timeout de 5 segundos
-    $connector = @fsockopen("192.168.36.169", 9100, $errno, $errstr, 5);
+    $connector = @fsockopen("192.168.0.100", 9100, $errno, $errstr, 5);
     
     if (!$connector) {
         throw new Exception("No se pudo conectar con la impresora: $errstr ($errno)");
@@ -29,7 +29,7 @@ try {
     fclose($connector);
 
     // Si la conexión fue exitosa, proceder con la impresión
-    $connector = new NetworkPrintConnector("192.168.36.169", 9100);
+    $connector = new NetworkPrintConnector("192.168.0.100", 9100);
     $printer = new Printer($connector);
 
     // Cabecera del ticket
