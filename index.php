@@ -10,6 +10,71 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #1a237e;
+            --secondary-color: #3949ab;
+            --accent-color: #7986cb;
+        }
+        
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                        url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+        }
+
+        .navbar {
+            background: linear-gradient(to right, #1a237e, #3949ab) !important;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #1a237e, #3949ab);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(to right, #3949ab, #7986cb);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-light {
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .btn-outline-light:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: white;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.25rem rgba(121, 134, 203, 0.25);
+        }
+
+        .footer {
+            background: linear-gradient(to right, #1a237e, #3949ab) !important;
+            color: white !important;
+        }
+
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+
+        .input-group-text {
+            background: linear-gradient(to right, #1a237e, #3949ab);
+            color: white;
+            border: none;
+        }
+
         .navbar .nav-link {
             margin: 0.25rem;
             border-radius: 0.5rem;
@@ -114,7 +179,7 @@
             <div class="container flex-column">
                 <a class="navbar-brand d-flex align-items-center" href="#">
                     <i class="fas fa-utensils me-2"></i>
-                    <span>Restaurante Champiñón</span>
+                    <span>Restaurante Champiñon</span>
                 </a>
                 <div class="nav-buttons">
                     <a class="btn btn-outline-light" href="quienes_somos.html">
@@ -130,14 +195,14 @@
         </nav>
     </header>
     
-    <main class="container my-4">
+    <main class="container my-5">
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
+                <div class="card shadow">
+                    <div class="card-body p-4">
                         <h2 class="card-title text-center mb-4">
-                            <i class="fas fa-user-circle fs-1 text-primary mb-3 d-block"></i>
-                            Iniciar Sesión
+                            <i class="fas fa-utensils fs-1 text-primary mb-3 d-block"></i>
+                            Bienvenido al Portal
                         </h2>
                         <form action="login.php" method="post" class="needs-validation" novalidate>
                             <div class="mb-3">
