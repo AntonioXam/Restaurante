@@ -44,19 +44,50 @@ $resultado = $conexion->query($sql);
             <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th>Foto</th>
                         <th>Nombre</th>
                         <th>Apellido</th>
                         <th>DNI</th>
                         <th>Usuario</th>
+                        <th>Contraseña</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php while ($camarero = $resultado->fetch_assoc()) { ?>
                         <tr>
+                            <td>
+                                <?php if ($camarero['foto']): ?>
+                                    <img src="../uploads/<?php echo $camarero['foto']; ?>" 
+                                         alt="Foto de <?php echo $camarero['nombre']; ?>"
+                                         class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                                <?php else: ?>
+                                    <img src="../uploads/default.png" 
+                                         alt="Foto por defecto"
+                                         class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                                <?php endif; ?>
+                            </td>
                             <td><?php echo $camarero['nombre']; ?></td>
                             <td><?php echo $camarero['apellidos']; ?></td>
                             <td><?php echo $camarero['dni']; ?></td>
                             <td><?php echo $camarero['usuario']; ?></td>
+                            <td><?php echo $camarero['contrasena']; ?></td>
+                            <td><?php echo $camarero['estado'] ? 'Activo' : 'Suspendido'; ?></td>
+                            <td>
+                                <form action="gestionar_camarero.php" method="POST" class="d-inline">
+                                    <input type="hidden" name="id" value="<?php echo $camarero['id']; ?>">
+                                    <input type="hidden" name="accion" value="<?php echo $camarero['estado'] ? 'suspender' : 'activar'; ?>">
+                                    <button type="submit" class="btn btn-<?php echo $camarero['estado'] ? 'warning' : 'success'; ?> btn-sm">
+                                        <?php echo $camarero['estado'] ? 'Suspender' : 'Activar'; ?>
+                                    </button>
+                                </form>
+                                <form action="gestionar_camarero.php" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar este camarero?');">
+                                    <input type="hidden" name="id" value="<?php echo $camarero['id']; ?>">
+                                    <input type="hidden" name="accion" value="eliminar">
+                                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                                </form>
+                            </td>
                         </tr>
                     <?php } ?>
                 </tbody>

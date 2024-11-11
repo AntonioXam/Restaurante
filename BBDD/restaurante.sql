@@ -29,7 +29,7 @@ CREATE TABLE `productos` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 3. Tabla usuarios
+-- 3. Tabla usuarios (actualizada con columna estado)
 CREATE TABLE `usuarios` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `nombre` text DEFAULT NULL,
@@ -38,6 +38,8 @@ CREATE TABLE `usuarios` (
   `rol` text DEFAULT NULL,
   `usuario` text DEFAULT NULL,
   `contrasena` text DEFAULT NULL,
+  `foto` varchar(255) DEFAULT NULL,
+  `estado` tinyint(1) DEFAULT 1,
   PRIMARY KEY (`id`),
   UNIQUE KEY `usuario` (`usuario`) USING HASH
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -153,9 +155,9 @@ INSERT INTO `productos` (`id`, `nombre`, `categoria`, `precio`, `stock`) VALUES
 (29, 'Solomillo de Cerdo', 'carne', '14.00', 10),
 (30, 'Pollo Asado', 'carne', '10.00', 10);
 
--- 3. Insertar usuarios
-INSERT INTO `usuarios` (`id`, `nombre`, `apellidos`, `dni`, `rol`, `usuario`, `contrasena`) VALUES
-(1, 'Antonio', 'Ibáñez', '48576585L', 'encargado', 'master', 'pizza'),
-(3, 'Fernando', 'Ureña', '23445667F', 'camarero', 'litolunar', 'bambu');
+-- 3. Insertar usuarios (actualizado con estado y foto)
+INSERT INTO `usuarios` (`id`, `nombre`, `apellidos`, `dni`, `rol`, `usuario`, `contrasena`, `foto`, `estado`) VALUES
+(1, 'Antonio', 'Ibáñez', '48576585L', 'encargado', 'master', 'pizza', 'default_encargado.png', 1),
+(3, 'Pedro', 'Salvador', '23445667F', 'camarero', 'periko_elmaki', '1234', 'default_camarero.png', 1);
 
 COMMIT;

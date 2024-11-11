@@ -40,7 +40,7 @@ include '../conexion.php';
         
         <section>
             <h2 class="h4 mb-4">Registrar Camarero</h2>
-            <form action="registro.php" method="post" class="needs-validation" novalidate>
+            <form action="registro.php" method="post" class="needs-validation" enctype="multipart/form-data" novalidate>
                 <div class="form-group">
                     <label for="nombre">Nombre:</label>
                     <input type="text" class="form-control" name="nombre" id="nombre" required>
@@ -65,6 +65,11 @@ include '../conexion.php';
                     <label for="password">Contraseña:</label>
                     <input type="password" class="form-control" name="contrasena" id="contrasena" required>
                     <div class="invalid-feedback">Por favor, ingrese la contraseña.</div>
+                </div>
+                <div class="form-group">
+                    <label for="foto">Foto:</label>
+                    <input type="file" class="form-control-file" name="foto" id="foto" accept="image/*">
+                    <small class="form-text text-muted">Seleccione una imagen para el camarero (opcional)</small>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block btn-lg mt-4">Registrar</button>
             </form>
