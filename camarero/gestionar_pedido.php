@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     mysqli_begin_transaction($conexion);
                     
                     // Obtener los productos del pedido pendiente
-                    $query = "SELECT dp.*, p.nombre as nombre_producto, p.id as producto_id, p.precio 
+                    $query = "SELECT dp.*, p.nombre as nombre_producto, p.precio 
                              FROM detalle_pedidos dp 
                              INNER JOIN productos p ON dp.producto_id = p.id 
                              INNER JOIN pedidos ped ON dp.pedido_id = ped.id 
@@ -143,52 +143,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                     }
 
-                    // Después de procesar todo y antes del commit, preparar datos para el ticket
-                    $productos_ticket = [];
-                    mysqli_data_seek($detalles, 0); // Reiniciar el puntero del resultado
-                    $total_ticket = 0;
+                    // Limpiar los detalles del pedido y actualizar estado
+                    mysqli_query($conexion, "DELETE FROM detalle_pedidos 
+                                           WHERE pedido_id IN (
+                                               SELECT id FROM pedidos 
+                                               WHERE mesa_id = $mesa_id AND estado = 'pendiente'
+                                           )");
 
-                    while ($detalle = mysqli_fetch_assoc($detalles)) {
-                        $subtotal = $detalle['cantidad'] * $detalle['precio'];
-                        $productos_ticket[] = [
-                            'nombre' => $detalle['nombre_producto'],
-                            'cantidad' => $detalle['cantidad'],
-                            'precio' => $detalle['precio'],
-                            'subtotal' => $subtotal
-                        ];
-                        $total_ticket += $subtotal;
-                    }
-
-                    // Obtener número de mesa
-                    $mesa_query = "SELECT numero_mesa FROM mesas WHERE id = ?";
-                    $stmt_mesa = mysqli_prepare($conexion, $mesa_query);
-                    mysqli_stmt_bind_param($stmt_mesa, "i", $mesa_id);
-                    mysqli_stmt_execute($stmt_mesa);
-                    $mesa_result = mysqli_stmt_get_result($stmt_mesa);
-                    $mesa = mysqli_fetch_assoc($mesa_result);
-
-                    // Guardar datos del ticket en sesión
-                    $_SESSION['ticket_data'] = [
-                        'mesa_numero' => $mesa['numero_mesa'],
-                        'productos' => $productos_ticket,
-                        'total' => $total_ticket,
-                        'fecha' => date('Y-m-d H:i:s'),
-                        'mesa_id' => $mesa_id,
-                        'return_url' => 'cuenta.php' // URL de retorno en caso de error
-                    ];
+                    mysqli_query($conexion, "UPDATE pedidos 
+                                           SET estado = 'completado' 
+                                           WHERE mesa_id = $mesa_id AND estado = 'pendiente'");
 
                     mysqli_commit($conexion);
-
-                    // Intentar generar el ticket
-                    header("Location: ../imprimir_tickets/example/interface/ethernet.php");
+                    header("Location: cuenta.php?mesa_id=$mesa_id");
                     exit;
 
                 } catch (Exception $e) {
                     mysqli_rollback($conexion);
-                    $_SESSION['error_ticket'] = "Error al procesar el pedido: " . $e->getMessage();
-                    header("Location: cuenta.php?mesa_id=$mesa_id&status=error");
+                    header("Location: gestionar_pedido.php?mesa_id=$mesa_id&error=true");
                     exit;
                 }
+                break;
                 
         }
         header("Location: gestionar_pedido.php?mesa_id=$mesa_id");

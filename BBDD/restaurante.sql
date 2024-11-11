@@ -83,20 +83,6 @@ CREATE TABLE `cuenta` (
   CONSTRAINT `cuenta_ibfk_2` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Tabla temporal para tickets
-CREATE TABLE `temp_ticket` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `mesa_id` bigint(20) NOT NULL,
-  `producto` varchar(100) NOT NULL,
-  `cantidad` int(11) NOT NULL,
-  `precio_unitario` decimal(10,2) NOT NULL,
-  `subtotal` decimal(10,2) NOT NULL,
-  `fecha_hora` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `mesa_id` (`mesa_id`),
-  CONSTRAINT `temp_ticket_ibfk_1` FOREIGN KEY (`mesa_id`) REFERENCES `mesas` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 -- Mantener solo las tablas esenciales
 DROP TABLE IF EXISTS `tickets_pagados`;
 DROP TABLE IF EXISTS `historial_pagos`;
@@ -104,7 +90,6 @@ DROP TABLE IF EXISTS `detalle_pagos`;
 DROP TABLE IF EXISTS `cuentas_pagadas`;
 
 -- Eliminar tablas innecesarias
-DROP TABLE IF EXISTS `temp_ticket`;
 DROP TABLE IF EXISTS `historial_pedidos`;
 
 -- Crear tabla para almacenar cuentas pagadas
