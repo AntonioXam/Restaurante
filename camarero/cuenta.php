@@ -54,29 +54,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 break;
                 
             case 'pagar':
-                // Guardar cada producto en cuentas_pagadas para historial
-                foreach ($productos_cuenta as $item) {
-                    $insert_cuenta = "INSERT INTO cuentas_pagadas 
-                                    (mesa_id, producto, cantidad, precio_unitario, subtotal) 
-                                    VALUES (?, ?, ?, ?, ?)";
-                    $stmt = mysqli_prepare($conexion, $insert_cuenta);
-                    mysqli_stmt_bind_param($stmt, "isids",
-                        $mesa_id,
-                        $item['nombre_producto'],
-                        $item['cantidad'],
-                        $item['precio_unitario'],
-                        $item['subtotal']
-                    );
-                    mysqli_stmt_execute($stmt);
+                try {
+                    // Primero generamos el ticket
+                    header("Location: generar_ticket.php?mesa_id=$mesa_id&action=pagar");
+                    exit;
+                } catch (Exception $e) {
+                    $_SESSION['error_ticket'] = "Error al generar ticket: " . $e->getMessage();
+                    header("Location: cuenta.php?mesa_id=$mesa_id&status=error");
+                    exit;
                 }
-                
-                // Limpiar cuenta actual y liberar mesa
-                mysqli_query($conexion, "DELETE FROM cuenta WHERE mesa_id = $mesa_id");
-                mysqli_query($conexion, "UPDATE mesas SET estado = 'inactiva', comensales = NULL WHERE id = $mesa_id");
-                
-                mysqli_commit($conexion);
-                header("Location: gestionar_mesas.php?status=success");
-                exit;
+                break;
         }
         
         mysqli_commit($conexion);

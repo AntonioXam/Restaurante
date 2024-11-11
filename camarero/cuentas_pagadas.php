@@ -84,18 +84,25 @@ $cuentas_result = mysqli_query($conexion, $query);
                                             <strong><?php echo number_format($cuenta['total'], 2); ?>€</strong>
                                         </td>
                                         <td class="action-cell text-center">
-                                            <button class="btn btn-sm btn-outline-primary" 
-                                                    onclick="verDetalle('<?php echo $cuenta['mesa_id']; ?>', 
-                                                                      '<?php echo $cuenta['fecha']; ?>', 
-                                                                      '<?php echo $cuenta['hora']; ?>')">
-                                                <i class="fas fa-eye"></i>
-                                                <span class="d-none d-sm-inline ms-1">Ver Detalle</span>
-                                            </button>
+                                            <div class="btn-group">
+                                                <button class="btn btn-sm btn-outline-primary" 
+                                                        onclick="verDetalle('<?php echo $cuenta['mesa_id']; ?>', 
+                                                                          '<?php echo $cuenta['fecha']; ?>', 
+                                                                          '<?php echo $cuenta['hora']; ?>')">
+                                                    <i class="fas fa-eye"></i>
+                                                    <span class="d-none d-sm-inline ms-1">Ver Detalle</span>
+                                                </button>
+                                                <a href="reimprimir_ticket.php?mesa_id=<?php echo $cuenta['mesa_id']; ?>&fecha=<?php echo $cuenta['fecha']; ?>&hora=<?php echo $cuenta['hora']; ?>" 
+                                                   class="btn btn-sm btn-outline-success">
+                                                    <i class="fas fa-print"></i>
+                                                    <span class="d-none d-sm-inline ms-1">Reimprimir</span>
+                                                </a>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endwhile; ?>
                             </tbody>
-                        </table>
+                        </table> <!-- Añadir cierre de tabla que faltaba -->
                     </div>
                 <?php else: ?>
                     <div class="text-center py-5">
