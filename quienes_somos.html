@@ -86,15 +86,24 @@
         
         .valores-lista li {
             margin-bottom: 0.75rem;
-            padding: 0.5rem;
+            padding: 1rem;
             border-radius: 0.5rem;
-            background-color: rgba(0,0,0,0.02);
+            background-color: rgba(255, 255, 255, 0.9);
             transition: all 0.3s ease;
+            color: #333;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .valores-lista li:hover {
-            background-color: rgba(0,0,0,0.05);
+            background-color: rgba(255, 255, 255, 1);
             transform: translateX(5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .valores-lista h2 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 1.5rem;
         }
         
         @media (max-width: 768px) {
