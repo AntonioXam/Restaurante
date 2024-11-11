@@ -46,12 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                        SET cantidad = $cantidad, 
                                            subtotal = $subtotal 
                                        WHERE id = $item_id");
-                break;
                 
             case 'eliminar_cuenta':
                 $item_id = (int)$_POST['item_id'];
                 mysqli_query($conexion, "DELETE FROM cuenta WHERE id = $item_id");
-                break;
                 
             case 'pagar':
                 try {
@@ -63,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     header("Location: cuenta.php?mesa_id=$mesa_id&status=error");
                     exit;
                 }
-                break;
+          
         }
         
         mysqli_commit($conexion);
