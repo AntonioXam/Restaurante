@@ -14,6 +14,7 @@ include '../conexion.php';
         .nav-button {
             margin: 8px 0;
             transition: all 0.3s ease;
+            width: 100%;
         }
         .nav-button:hover {
             transform: translateY(-2px);
@@ -48,6 +49,31 @@ include '../conexion.php';
                 flex: 0 0 calc(33.333% - 20px);
             }
         }
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            .card {
+                margin-bottom: 20px;
+            }
+            .action-buttons .col-sm-12 {
+                margin-bottom: 10px;
+            }
+            .card-deck {
+                display: block;
+            }
+            .card-deck .card {
+                margin-right: 0;
+                margin-left: 0;
+                margin-bottom: 15px;
+            }
+            h1.h3 {
+                font-size: 1.5rem;
+            }
+            .icon-feature {
+                font-size: 1.75rem;
+            }
+        }
         .icon-feature {
             font-size: 2rem;
             margin-bottom: 1rem;
@@ -62,7 +88,7 @@ include '../conexion.php';
     
     <div class="container">
         <div class="action-buttons mb-4">
-            <div class="row">
+            <div class="row g-3">
                 <div class="col-sm-12 col-md-4">
                     <a href="registrar_camarero.php" class="btn btn-primary btn-block nav-button">
                         <i class="fas fa-user-plus"></i> Registrar Camarero
@@ -86,7 +112,7 @@ include '../conexion.php';
                 <h2 class="h4 mb-0">Panel de Control - Encargado</h2>
             </div>
             <div class="card-body">
-                <div class="row">
+                <div class="row g-3">
                     <div class="col-md-4">
                         <div class="card h-100 border-0 shadow-sm">
                             <div class="card-body text-center">

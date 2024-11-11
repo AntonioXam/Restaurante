@@ -17,12 +17,24 @@ include '../conexion.php';
             margin: 10px 0;
         }
         @media (max-width: 768px) {
-            .btn-back {
-                width: 100%;
-                padding: 12px;
+            .container {
+                padding: 10px;
             }
-            .container { padding: 0 15px; }
-            .form-group { margin-bottom: 1rem; }
+            .btn-block {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            .form-group {
+                margin-bottom: 1.5rem;
+            }
+            .btn-back {
+                margin-bottom: 20px;
+                width: 100%;
+            }
+            h2 {
+                font-size: 1.5rem;
+                margin-bottom: 20px;
+            }
         }
     </style>
     <!-- Agregar FontAwesome para los iconos -->
@@ -33,47 +45,52 @@ include '../conexion.php';
         <h1 class="h3">Bienvenido, <?php echo $_SESSION['nombre']; ?></h1>
     </header>
     
-    <div class="container mt-3 mt-lg-5">
-        <a href="index.php" class="btn btn-secondary btn-lg back-button mb-4 btn-back">
-            <i class="fas fa-arrow-left"></i> Volver al Panel
-        </a>
-        
-        <section>
-            <h2 class="h4 mb-4">Registrar Camarero</h2>
-            <form action="registro.php" method="post" class="needs-validation" enctype="multipart/form-data" novalidate>
-                <div class="form-group">
-                    <label for="nombre">Nombre:</label>
-                    <input type="text" class="form-control" name="nombre" id="nombre" required>
-                    <div class="invalid-feedback">Por favor, ingrese el nombre.</div>
-                </div>
-                <div class="form-group">
-                    <label for="apellido">Apellido:</label>
-                    <input type="text" class="form-control" name="apellido" id="apellido" required>
-                    <div class="invalid-feedback">Por favor, ingrese el apellido.</div>
-                </div>
-                <div class="form-group">
-                    <label for="dni">DNI:</label>
-                    <input type="text" class="form-control" name="dni" id="dni" maxlength="9" required>
-                    <div class="invalid-feedback">Por favor, ingrese el DNI.</div>
-                </div>
-                <div class="form-group">
-                    <label for="usuario">Usuario:</label>
-                    <input type="text" class="form-control" name="usuario" id="usuario" required>
-                    <div class="invalid-feedback">Por favor, ingrese el usuario.</div>
-                </div>
-                <div class="form-group">
-                    <label for="password">Contraseña:</label>
-                    <input type="password" class="form-control" name="contrasena" id="contrasena" required>
-                    <div class="invalid-feedback">Por favor, ingrese la contraseña.</div>
-                </div>
-                <div class="form-group">
-                    <label for="foto">Foto:</label>
-                    <input type="file" class="form-control-file" name="foto" id="foto" accept="image/*">
-                    <small class="form-text text-muted">Seleccione una imagen para el camarero (opcional)</small>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block btn-lg mt-4">Registrar</button>
-            </form>
-        </section>
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-12">
+                <a href="index.php" class="btn btn-secondary btn-lg back-button mb-4 btn-back">
+                    <i class="fas fa-arrow-left"></i> Volver al Panel
+                </a>
+            </div>
+            <div class="col-12 col-md-8 offset-md-2">
+                <section>
+                    <h2 class="h4 mb-4">Registrar Camarero</h2>
+                    <form action="registro.php" method="post" class="needs-validation" enctype="multipart/form-data" novalidate>
+                        <div class="form-group">
+                            <label for="nombre">Nombre:</label>
+                            <input type="text" class="form-control" name="nombre" id="nombre" required>
+                            <div class="invalid-feedback">Por favor, ingrese el nombre.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="apellido">Apellido:</label>
+                            <input type="text" class="form-control" name="apellido" id="apellido" required>
+                            <div class="invalid-feedback">Por favor, ingrese el apellido.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="dni">DNI:</label>
+                            <input type="text" class="form-control" name="dni" id="dni" maxlength="9" required>
+                            <div class="invalid-feedback">Por favor, ingrese el DNI.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="usuario">Usuario:</label>
+                            <input type="text" class="form-control" name="usuario" id="usuario" required>
+                            <div class="invalid-feedback">Por favor, ingrese el usuario.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Contraseña:</label>
+                            <input type="password" class="form-control" name="contrasena" id="contrasena" required>
+                            <div class="invalid-feedback">Por favor, ingrese la contraseña.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="foto">Foto:</label>
+                            <input type="file" class="form-control-file" name="foto" id="foto" accept="image/*">
+                            <small class="form-text text-muted">Seleccione una imagen para el camarero (opcional)</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block btn-lg mt-4">Registrar</button>
+                    </form>
+                </section>
+            </div>
+        </div>
     </div>
     <!-- bootstrap scripts -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
