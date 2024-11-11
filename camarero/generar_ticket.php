@@ -4,7 +4,7 @@ include '../conexion.php';
 require_once '../vendor/autoload.php';
 
 use Mike42\Escpos\Printer;
-use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Mike42\Escpos\EscposImage;
 
 $mesa_id = isset($_GET['mesa_id']) ? (int)$_GET['mesa_id'] : null;
@@ -21,9 +21,10 @@ try {
     mysqli_stmt_execute($stmt);
     $cuenta_result = mysqli_stmt_get_result($stmt);
 
-    // Configurar impresora - Usar el nombre de la impresora compartida
-    $nombreImpresora = "XP-80";  // Cambiar al nombre de tu impresora
-    $connector = new WindowsPrintConnector($nombreImpresora);
+    // Configurar impresora - Usar conexión de red
+    $ipImpresora = "192.168.0.169";  // Cambiar a la IP de tu impresora
+    $puertoImpresora = 9100;         // Puerto por defecto para impresoras ESC/POS
+    $connector = new NetworkPrintConnector($ipImpresora, $puertoImpresora);
     $printer = new Printer($connector);
     
     // Configuración inicial de la impresora
