@@ -25,7 +25,7 @@ try {
     $cuenta_result = mysqli_stmt_get_result($stmt);
 
     // Configurar impresora
-    $ipImpresora = "192.168.0.169";  // Cambiar a la IP de tu impresora
+    $ipImpresora = "192.168.36.169";  // Cambiar a la IP de tu impresora
     $puertoImpresora = 9100;         // Puerto por defecto para impresoras ESC/POS
     $connector = new NetworkPrintConnector($ipImpresora, $puertoImpresora);
     $printer = new Printer($connector);
