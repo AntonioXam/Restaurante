@@ -1,60 +1,61 @@
 <?php 
 include '../sesion.php';
 include '../conexion.php';
-// ...existing code...
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Camarero</title>
-    <!-- bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        .back-button {
-            margin: 10px 0;
-        }
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
+            .container { 
+                padding: 10px; 
             }
             .btn-block {
                 width: 100%;
                 margin-bottom: 10px;
             }
-            .form-group {
-                margin-bottom: 1.5rem;
-            }
-            .btn-back {
-                margin-bottom: 20px;
-                width: 100%;
-            }
-            h2 {
-                font-size: 1.5rem;
-                margin-bottom: 20px;
-            }
+        }
+        .form-card {
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            background: white;
+        }
+        .form-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .form-group label {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        .form-control {
+            border-radius: 8px;
         }
     </style>
-    <!-- Agregar FontAwesome para los iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
-<body>
+<body class="bg-light">
     <header class="bg-primary text-white text-center py-3">
         <h1 class="h3">Bienvenido, <?php echo $_SESSION['nombre']; ?></h1>
     </header>
-    
+
     <div class="container mt-3">
         <div class="row">
             <div class="col-12">
-                <a href="index.php" class="btn btn-secondary btn-lg back-button mb-4 btn-back">
+                <a href="index.php" class="btn btn-secondary btn-block mb-4">
                     <i class="fas fa-arrow-left"></i> Volver al Panel
                 </a>
             </div>
             <div class="col-12 col-md-8 offset-md-2">
-                <section>
-                    <h2 class="h4 mb-4">Registrar Camarero</h2>
+                <div class="form-card">
+                    <h2 class="h4 mb-4 text-center">Registrar Nuevo Camarero</h2>
                     <form action="registro.php" method="post" class="needs-validation" enctype="multipart/form-data" novalidate>
                         <div class="form-group">
                             <label for="nombre">Nombre:</label>
@@ -88,11 +89,10 @@ include '../conexion.php';
                         </div>
                         <button type="submit" class="btn btn-primary btn-block btn-lg mt-4">Registrar</button>
                     </form>
-                </section>
+                </div>
             </div>
         </div>
     </div>
-    <!-- bootstrap scripts -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
