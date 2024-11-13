@@ -26,43 +26,63 @@ $historial_result = mysqli_query($conexion, $query);
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <header class="bg-primary text-white text-center py-3">
-        <div class="container d-flex justify-content-between align-items-center">
-            <h1 class="h4 mb-0">Bienvenido, <?php echo $_SESSION['nombre']; ?></h1>
-            <a href="../logout.php" class="btn btn-outline-light btn-sm">
-                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-utensils me-2"></i>
+                Restaurante
             </a>
+            <div class="d-flex align-items-center">
+                <span class="text-light me-3">Bienvenido, <?php echo $_SESSION['nombre']; ?></span>
+                <a href="../logout.php" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-sign-out-alt me-2"></i>Salir
+                </a>
+            </div>
         </div>
-    </header>
+    </nav>
 
     <div class="container py-4">
         <div class="row justify-content-center">
             <div class="col-12 col-md-8 col-lg-6">
-                <a href="gestionar_mesas.php" class="text-decoration-none mb-3 d-block">
-                    <div class="card shadow-sm hover-effect">
-                        <div class="card-body text-center p-5">
-                            <i class="fas fa-chair fs-1 mb-3 text-primary"></i>
-                            <h3 class="card-title h4">Gestionar Mesas</h3>
-                            <p class="card-text text-muted">Gestionar mesas, pedidos y cuentas</p>
-                        </div>
+                <div class="card shadow-sm hover-card mb-4">
+                    <div class="card-body p-0">
+                        <a href="gestionar_mesas.php" class="text-decoration-none text-dark">
+                            <div class="d-flex align-items-center p-4">
+                                <div class="icon-box bg-primary bg-opacity-10 rounded-3 me-3">
+                                    <i class="fas fa-chair text-primary"></i>
+                                </div>
+                                <div>
+                                    <h3 class="h5 mb-1">Gestionar Mesas</h3>
+                                    <p class="text-muted small mb-0">Gestionar mesas, pedidos y cuentas</p>
+                                </div>
+                                <i class="fas fa-chevron-right ms-auto text-muted"></i>
+                            </div>
+                        </a>
                     </div>
-                </a>
+                </div>
 
-                <a href="cuentas_pagadas.php" class="text-decoration-none">
-                    <div class="card shadow-sm hover-effect">
-                        <div class="card-body text-center p-5">
-                            <i class="fas fa-history fs-1 mb-3 text-primary"></i>
-                            <h3 class="card-title h4">Historial de Cuentas</h3>
-                            <p class="card-text text-muted">Ver historial de cuentas pagadas</p>
-                        </div>
+                <div class="card shadow-sm hover-card mb-4">
+                    <div class="card-body p-0">
+                        <a href="cuentas_pagadas.php" class="text-decoration-none text-dark">
+                            <div class="d-flex align-items-center p-4">
+                                <div class="icon-box bg-success bg-opacity-10 rounded-3 me-3">
+                                    <i class="fas fa-history text-success"></i>
+                                </div>
+                                <div>
+                                    <h3 class="h5 mb-1">Historial de Cuentas</h3>
+                                    <p class="text-muted small mb-0">Ver historial de cuentas pagadas</p>
+                                </div>
+                                <i class="fas fa-chevron-right ms-auto text-muted"></i>
+                            </div>
+                        </a>
                     </div>
-                </a>
+                </div>
 
-                <!-- Nueva sección de historial -->
-                <div class="card mt-4">
-                    <div class="card-header bg-light py-3">
+                <!-- Historial -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-dark text-white py-3">
                         <h5 class="card-title mb-0">
-                            <i class="fas fa-history me-2"></i>
+                            <i class="fas fa-clock me-2"></i>
                             Últimas Cuentas Pagadas
                         </h5>
                     </div>
@@ -70,24 +90,31 @@ $historial_result = mysqli_query($conexion, $query);
                         <?php if ($historial_result && mysqli_num_rows($historial_result) > 0): ?>
                             <div class="list-group list-group-flush">
                                 <?php while ($pago = mysqli_fetch_assoc($historial_result)): ?>
-                                    <div class="list-group-item">
+                                    <div class="list-group-item hover-list-item">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div>
                                                 <h6 class="mb-1">Mesa <?php echo $pago['numero_mesa']; ?></h6>
-                                                <p class="small text-muted mb-0">
+                                                <div class="d-flex align-items-center text-muted small">
+                                                    <i class="fas fa-calendar-alt me-1"></i>
                                                     <?php echo date('d/m/Y H:i', strtotime($pago['fecha_hora'])); ?>
-                                                    (<?php echo $pago['num_productos']; ?> productos)
-                                                </p>
+                                                    <i class="fas fa-shopping-basket ms-2 me-1"></i>
+                                                    <?php echo $pago['num_productos']; ?> productos
+                                                </div>
                                             </div>
                                             <div class="text-end">
-                                                <h6 class="mb-0"><?php echo number_format($pago['total'], 2); ?>€</h6>
+                                                <span class="badge bg-success rounded-pill">
+                                                    <?php echo number_format($pago['total'], 2); ?>€
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
                                 <?php endwhile; ?>
                             </div>
                         <?php else: ?>
-                            <p class="text-center text-muted py-3">No hay historial de pagos</p>
+                            <div class="text-center py-5">
+                                <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No hay historial de pagos</p>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -95,82 +122,90 @@ $historial_result = mysqli_query($conexion, $query);
         </div>
     </div>
 
-    <!-- Modal para mostrar detalles -->
-    <div class="modal fade" id="detalleModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Detalle de Cuenta</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Producto</th>
-                                    <th class="text-center">Cant.</th>
-                                    <th class="text-end">Precio</th>
-                                    <th class="text-end">Subtotal</th>
-                                </tr>
-                            </thead>
-                            <tbody id="detalleBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <style>
-    .hover-effect {
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    
-    .hover-effect:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+    :root {
+        --restaurant-primary: #2c3e50;    /* Azul oscuro principal */
+        --restaurant-secondary: #34495e;   /* Azul oscuro secundario */
+        --restaurant-accent: #3498db;      /* Azul claro para acentos */
+        --restaurant-light: #ecf0f1;       /* Gris muy claro para fondos */
+        --restaurant-dark: #1a252f;        /* Azul muy oscuro */
     }
 
-    .fas {
-        display: inline-flex;
+    body {
+        background-color: var(--restaurant-light);
+    }
+
+    .navbar {
+        background: var(--restaurant-dark) !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Cards principales */
+    .hover-card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(44, 62, 80, 0.15);
+    }
+
+    /* Iconos y elementos visuales */
+    .icon-box {
+        background-color: var(--restaurant-accent);
+        color: white;
+        width: 48px;
+        height: 48px;
+        display: flex;
         align-items: center;
         justify-content: center;
-        width: 1.5em;
-        height: 1.5em;
+        border-radius: 8px;
+        transition: all 0.3s ease;
     }
 
-    @media (max-width: 576px) {
-        .card-body {
-            padding: 2rem 1rem;
-        }
-        
-        .fs-1 {
-            font-size: 2.5rem !important;
-        }
+    .hover-card:hover .icon-box {
+        transform: scale(1.1);
+        background-color: var(--restaurant-primary);
     }
 
-    /* Estilos para el historial */
+    /* Historial de cuentas */
     .list-group-item {
-        transition: background-color 0.2s;
+        border: none;
+        border-left: 3px solid transparent;
+        transition: all 0.2s ease;
     }
 
     .list-group-item:hover {
-        background-color: rgba(0,0,0,0.02);
+        background-color: var(--restaurant-light);
+        border-left-color: var(--restaurant-accent);
+        transform: translateX(5px);
     }
 
-    .btn-outline-primary {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
+    .badge {
+        background-color: var(--restaurant-accent) !important;
+    }
+
+    /* Botones y acciones */
+    .btn-outline-light:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: white;
     }
 
     @media (max-width: 576px) {
-        .list-group-item {
-            padding: 0.75rem;
+        .icon-box {
+            width: 40px;
+            height: 40px;
         }
-        
-        .btn-sm {
-            font-size: 0.75rem;
+
+        .icon-box i {
+            font-size: 1.2rem;
+        }
+
+        .card-body {
+            padding: 0.75rem;
         }
     }
     </style>

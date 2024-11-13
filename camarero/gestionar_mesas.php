@@ -56,12 +56,192 @@ $mesas_activas_result = obtener_mesas_activas($conexion);
     <title>Gestionar Mesas - Restaurante</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+    :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #34495e;
+        --accent-color: #3498db;
+        --success-color: #27ae60;
+        --light-color: #ecf0f1;
+        --dark-color: #2c3e50;
+    }
+
+    body {
+        background-color: var(--light-color);
+    }
+
+    .navbar {
+        background: var(--primary-color) !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+        background: var(--primary-color) !important;
+        border-radius: 8px 8px 0 0 !important;
+        padding: 1rem 1.5rem;
+    }
+
+    .mesa-card {
+        transition: all 0.3s ease;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .mesa-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    }
+
+    .mesa-card.active {
+        border: 2px solid var(--accent-color);
+    }
+
+    .mesa-card .fa-chair {
+        color: var(--accent-color);
+        transition: all 0.3s ease;
+    }
+
+    .mesa-card:hover .fa-chair {
+        transform: scale(1.1);
+    }
+
+    .btn-primary {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+        padding: 0.5rem 1.2rem;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        transform: translateY(-1px);
+    }
+
+    .btn-outline-primary {
+        color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+
+    .btn-outline-primary:hover {
+        background-color: var(--accent-color);
+        color: white;
+    }
+
+    .modal-header {
+        background: var(--primary-color);
+        color: white;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .modal-content {
+        border-radius: 8px;
+        border: none;
+    }
+
+    .form-control:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+
+    @media (max-width: 768px) {
+        .container-fluid {
+            padding: 1rem;
+        }
+
+        .mesa-card .card-body {
+            padding: 1rem;
+        }
+
+        .btn {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Mejoras de accesibilidad */
+    .btn {
+        font-weight: 500;
+        letter-spacing: 0.5px;
+    }
+
+    .card-title {
+        font-weight: 600;
+        color: var(--dark-color);
+    }
+
+    .badge {
+        padding: 0.5em 1em;
+        font-weight: 500;
+    }
+
+    /* Animaciones suaves */
+    .btn, .card, .mesa-card, .fa-chair {
+        transition: all 0.3s ease-in-out;
+    }
+
+    .mesa-card.active {
+        background: white;
+        border: none !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .mesa-card .mesa-icon {
+        position: relative;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .mesa-card.active .fa-chair {
+        color: var(--accent-color);
+    }
+
+    .badge {
+        font-size: 0.7rem;
+        padding: 0.35em 0.65em;
+        border-radius: 4px;
+    }
+
+    .mesa-card .btn-primary,
+    .mesa-card .btn-outline-primary {
+        border-radius: 6px;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .mesa-card .card-body {
+            padding: 1rem !important;
+        }
+        
+        .mesa-card .badge {
+            font-size: 0.65rem;
+        }
+        
+        .mesa-card .btn {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+        }
+    }
+    </style>
 </head>
 <body>
     <!-- Navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="#">Restaurante</a>
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-utensils me-2"></i>
+                Restaurante
+            </a>
             <div class="d-flex align-items-center">
                 <a href="index.php" class="btn btn-outline-light">
                     <i class="fas fa-arrow-left me-2"></i>Volver
@@ -75,29 +255,41 @@ $mesas_activas_result = obtener_mesas_activas($conexion);
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title mb-4">Mesas Activas</h5>
-                        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+                    <div class="card-header py-3">
+                        <h5 class="card-title mb-0 text-white">
+                            <i class="fas fa-chair me-2"></i>
+                            Mesas Ocupadas
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4">
                             <?php 
                             $mesas_activas = obtener_mesas_activas($conexion);
                             while ($mesa = mysqli_fetch_assoc($mesas_activas)):
                             ?>
                             <div class="col">
-                                <div class="card h-100 mesa-card active">
-                                    <div class="card-body text-center">
-                                        <i class="fas fa-chair fa-2x mb-2"></i>
-                                        <h5 class="card-title">Mesa <?php echo $mesa['numero_mesa']; ?></h5>
-                                        <p class="card-text"><small class="text-muted"><?php echo $mesa['comensales']; ?> comensales</small></p>
+                                <div class="card h-100 mesa-card active border-0">
+                                    <div class="card-body text-center p-3">
+                                        <div class="mesa-icon mb-3">
+                                            <i class="fas fa-chair fa-2x"></i>
+                                            <span class="badge bg-success position-absolute top-0 end-0 mt-2 me-2">
+                                                Ocupada
+                                            </span>
+                                        </div>
+                                        <h5 class="card-title h6 mb-2">Mesa <?php echo $mesa['numero_mesa']; ?></h5>
+                                        <p class="card-text text-muted mb-3">
+                                            <small><i class="fas fa-users me-1"></i><?php echo $mesa['comensales']; ?> comensales</small>
+                                        </p>
                                         <div class="d-grid gap-2">
                                             <a href="gestionar_pedido.php?mesa_id=<?php echo $mesa['id']; ?>" 
                                                class="btn btn-primary btn-sm">
                                                <i class="fas fa-utensils me-1"></i>
-                                               <span>Gestionar</span>
+                                               Gestionar
                                             </a>
                                             <a href="cuenta.php?mesa_id=<?php echo $mesa['id']; ?>" 
-                                               class="btn btn-info btn-sm text-white">
+                                               class="btn btn-outline-primary btn-sm">
                                                <i class="fas fa-receipt me-1"></i>
-                                               <span>Cuenta</span>
+                                               Cuenta
                                             </a>
                                         </div>
                                     </div>
@@ -166,92 +358,6 @@ $mesas_activas_result = obtener_mesas_activas($conexion);
             </div>
         </div>
     </div>
-
-    <style>
-    .mesa-card {
-        transition: transform 0.2s, box-shadow 0.2s;
-        cursor: pointer;
-    }
-    
-    .mesa-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    
-    .mesa-card.active .fa-chair {
-        color: #0d6efd;
-    }
-    
-    .mesa-card.inactive .fa-chair {
-        color: #6c757d;
-    }
-    
-    @media (max-width: 576px) {
-        .mesa-card {
-            margin-bottom: 0.5rem;
-        }
-        
-        .mesa-card .card-body {
-            padding: 0.75rem;
-        }
-        
-        .mesa-card .btn {
-            padding: 0.4rem;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .mesa-card .btn i {
-            font-size: 0.9rem;
-            margin-right: 0.3rem;
-        }
-        
-        .d-grid.gap-2 {
-            gap: 0.25rem !important;
-        }
-    }
-
-    @media (max-width: 360px) {
-        .mesa-card .btn span {
-            font-size: 0.75rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .mesa-card .card-body {
-            padding: 1rem;
-        }
-        
-        .mesa-card .fa-2x {
-            font-size: 1.5em;
-        }
-        
-        .mesa-card .card-title {
-            font-size: 1rem;
-        }
-        
-        .mesa-card .card-text {
-            font-size: 0.8rem;
-        }
-    }
-
-    .fa-chair {
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        height: 1em !important;
-        font-size: 2em !important;
-        margin-bottom: 0.5rem !important;
-    }
-
-    @media (max-width: 576px) {
-        .fa-chair {
-            font-size: 1.5em !important;
-        }
-    }
-    </style>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>

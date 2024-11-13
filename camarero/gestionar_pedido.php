@@ -204,32 +204,237 @@ $mesa_numero = isset($mesa) ? $mesa['numero_mesa'] : 'No seleccionada';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link href="../css/styles.css" rel="stylesheet">
+    <style>
+    :root {
+        --restaurant-primary: #2c3e50;    /* Azul oscuro principal */
+        --restaurant-secondary: #34495e;   /* Azul oscuro secundario */
+        --restaurant-accent: #3498db;      /* Azul claro para acentos */
+        --restaurant-light: #ecf0f1;       /* Gris muy claro para fondos */
+        --restaurant-dark: #1a252f;        /* Azul muy oscuro */
+    }
+
+    /* Estilos base */
+    body {
+        background-color: var(--restaurant-light);
+    }
+
+    /* Navegación y encabezados */
+    .navbar, .card-header {
+        background: var(--restaurant-primary) !important;
+        color: white;
+    }
+
+    /* Tarjetas y contenedores */
+    .card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    /* Navegación por pestañas */
+    .nav-container {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .nav-pills .nav-link {
+        color: var(--restaurant-dark);
+        border-radius: 6px;
+        padding: 0.5rem 1.2rem;
+        transition: all 0.3s ease;
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: var(--restaurant-primary);
+        color: white;
+        box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
+    }
+
+    .nav-pills .nav-link:hover {
+        background-color: rgba(52, 152, 219, 0.1);
+        transform: translateY(-1px);
+    }
+
+    /* Productos */
+    .product-item {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .product-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    /* Botones */
+    .btn-primary {
+        background-color: var(--restaurant-primary);
+        border-color: var(--restaurant-primary);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--restaurant-secondary);
+        border-color: var(--restaurant-secondary);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .add-btn {
+        background-color: var(--restaurant-primary);
+        border-color: var(--restaurant-primary);
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .add-btn:hover {
+        background-color: var(--restaurant-secondary);
+        transform: scale(1.1);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    /* Badges y elementos pequeños */
+    .badge {
+        padding: 0.5em 1em;
+        border-radius: 4px;
+    }
+
+    .badge.bg-primary {
+        background-color: var(--restaurant-primary) !important;
+    }
+
+    /* Tablas */
+    .table-hover tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(52, 152, 219, 0.05);
+        transform: scale(1.01);
+    }
+
+    /* Botones de acción en tabla */
+    .action-buttons .btn {
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+
+    .action-buttons .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Modales */
+    .modal-content {
+        border-radius: 8px;
+        border: none;
+    }
+
+    .modal-header {
+        background: var(--restaurant-primary);
+        color: white;
+        border-radius: 8px 8px 0 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .nav-container {
+            margin: 0 -1rem;
+            border-radius: 0;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .product-item {
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    /* Ajustes específicos de categorías */
+    .hide-scrollbar {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .nav-pills {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 0.5rem;
+        padding: 0.5rem;
+    }
+
+    .products-header {
+        padding: 1.5rem;
+        background: var(--restaurant-primary);
+        color: white;
+        border-radius: 8px 8px 0 0;
+        margin-bottom: 1rem;
+    }
+
+    .products-header h5 {
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .scroll-hint {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    </style>
 </head>
 <body>
     <!-- Navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="#">Restaurante</a>
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-utensils me-2"></i>
+                Restaurante
+            </a>
             <div class="d-flex align-items-center">
                 <?php if(isset($mesa) && $mesa): ?>
-                    <span class="navbar-text me-3 d-none d-sm-inline">
-                        Mesa: <?php echo htmlspecialchars($mesa_numero); ?>
+                    <span class="navbar-text me-3 text-white">
+                        <i class="fas fa-chair me-1"></i>
+                        Mesa <?php echo htmlspecialchars($mesa_numero); ?>
                     </span>
                     <a href="cuenta.php?mesa_id=<?php echo $mesa_id; ?>" 
-                       class="btn btn-info btn-sm text-white me-2">
+                       class="btn btn-outline-success btn-sm me-2">
                         <i class="fas fa-receipt"></i>
                         <span class="d-none d-sm-inline ms-1">Cuenta</span>
                     </a>
                 <?php endif; ?>
-                <a href="index.php" class="btn btn-outline-light d-flex align-items-center">
-                    <i class="fas fa-arrow-left"></i>
-                    <span class="ms-2">Volver</span>
+                <a href="gestionar_mesas.php" class="btn btn-outline-light">
+                    <i class="fas fa-arrow-left me-2"></i>Volver
                 </a>
             </div>
         </div>
     </nav>
-
-
 
     <!-- Contenido principal -->
     <div class="container-fluid py-3">
@@ -274,16 +479,17 @@ $mesa_numero = isset($mesa) ? $mesa['numero_mesa'] : 'No seleccionada';
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="card shadow">
-                        <div class="card-header bg-light py-3">
+                        <div class="products-header">
                             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                                <div class="d-flex align-items-center">
-                                    <h5 class="card-title mb-0 me-3">Añadir Productos</h5>
-                                    <span class="text-muted small">
-                                        <i class="fas fa-arrows-alt-h me-1"></i>
-                                        <span class="d-none d-sm-inline">Desliza para</span>
-                                        <span>más categorías</span>
-                                    </span>
-                                </div>
+                                <h5>
+                                    <i class="fas fa-utensils me-2"></i>
+                                    Añadir Productos
+                                </h5>
+                                <span class="scroll-hint">
+                                    <i class="fas fa-arrows-alt-h"></i>
+                                    <span class="d-none d-sm-inline">Desliza para</span>
+                                    <span>más categorías</span>
+                                </span>
                             </div>
                         </div>
                         <div class="card-body">
@@ -900,6 +1106,7 @@ $mesa_numero = isset($mesa) ? $mesa['numero_mesa'] : 'No seleccionada';
         border-radius: 1rem;
         padding: 0.5rem;
         margin-bottom: 1.5rem;
+        box-shadow: 0 2px 4px rgba(33, 37, 41, 0.1);
     }
 
     .nav-pills {
@@ -1090,6 +1297,190 @@ $mesa_numero = isset($mesa) ? $mesa['numero_mesa'] : 'No seleccionada';
         .btn-danger i {
             margin-right: 0 !important;
         }
+    }
+
+    /* Actualizar estilos existentes y agregar nuevos */
+    .card {
+        border: none;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
+    }
+
+    .card-header {
+        background-color: #212529;
+        color: white;
+        border-bottom: none;
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: #212529;
+        box-shadow: 0 2px 4px rgba(33, 37, 41, 0.3);
+    }
+
+    .nav-pills .nav-link {
+        color: #212529;
+        padding: 0.5rem 1.2rem;
+        margin: 0 0.25rem;
+        border-radius: 2rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .nav-pills .nav-link:hover {
+        background-color: rgba(33, 37, 41, 0.1);
+    }
+
+    .nav-container {
+        background: #f8f9fa;
+        border-radius: 1rem;
+        padding: 0.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 4px rgba(33, 37, 41, 0.1);
+    }
+
+    .product-item {
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 0.5rem;
+    }
+
+    .product-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .btn-success {
+        background-color: #198754;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(33, 37, 41, 0.05);
+    }
+
+    /* Actualizar colores de botones */
+    .btn-primary {
+        background-color: #212529;
+        border-color: #212529;
+    }
+
+    .btn-primary:hover {
+        background-color: #343a40;
+        border-color: #343a40;
+    }
+
+    .btn-outline-primary {
+        color: #212529;
+        border-color: #212529;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #212529;
+        border-color: #212529;
+        color: #fff;
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: #212529;
+    }
+
+    .nav-pills .nav-link:hover {
+        background-color: rgba(33, 37, 41, 0.1);
+    }
+
+    .badge.bg-primary {
+        background-color: #212529 !important;
+    }
+
+    .add-btn {
+        background-color: #212529;
+        border-color: #212529;
+    }
+
+    .add-btn:hover {
+        background-color: #343a40;
+        border-color: #343a40;
+    }
+
+    :root {
+        --restaurant-primary: #2c3e50;    /* Azul oscuro principal */
+        --restaurant-secondary: #34495e;   /* Azul oscuro secundario */
+        --restaurant-accent: #3498db;      /* Azul claro para acentos */
+        --restaurant-light: #ecf0f1;       /* Gris muy claro para fondos */
+        --restaurant-dark: #1a252f;        /* Azul muy oscuro */
+    }
+
+    .card-header {
+        background: var(--restaurant-primary) !important;
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: var(--restaurant-primary);
+        box-shadow: 0 2px 4px rgba(44, 62, 80, 0.3);
+    }
+
+    .navbar {
+        background: var(--restaurant-dark) !important;
+    }
+
+    .btn-primary {
+        background-color: var(--restaurant-primary);
+        border-color: var(--restaurant-primary);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--restaurant-secondary);
+        border-color: var(--restaurant-secondary);
+    }
+
+    .badge.bg-primary {
+        background-color: var(--restaurant-primary) !important;
+    }
+
+    .add-btn {
+        background-color: var(--restaurant-primary);
+        border-color: var(--restaurant-primary);
+    }
+
+    .add-btn:hover {
+        background-color: var(--restaurant-secondary);
+        border-color: var(--restaurant-secondary);
+    }
+
+    .product-item:hover {
+        box-shadow: 0 5px 15px rgba(44, 62, 80, 0.2);
+    }
+
+    .nav-pills .nav-link:hover {
+        background-color: var(--restaurant-light);
+    }
+
+    .btn-outline-primary {
+        color: var(--restaurant-primary);
+        border-color: var(--restaurant-primary);
+    }
+
+    .btn-outline-primary:hover {
+        background-color: var(--restaurant-primary);
+        border-color: var(--restaurant-primary);
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: var(--restaurant-primary);
+        box-shadow: 0 2px 4px rgba(44, 62, 80, 0.3);
+    }
+
+    .badge.bg-success {
+        background-color: var(--restaurant-accent) !important;
+    }
+
+    .mesa-card:hover {
+        box-shadow: 0 8px 15px rgba(44, 62, 80, 0.2);
+    }
+
+    .product-item {
+        border: none;
+        box-shadow: 0 2px 4px rgba(44, 62, 80, 0.1);
     }
     </style>
 </body>

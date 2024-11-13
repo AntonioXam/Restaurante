@@ -46,10 +46,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                        SET cantidad = $cantidad, 
                                            subtotal = $subtotal 
                                        WHERE id = $item_id");
+                break;
                 
             case 'eliminar_cuenta':
                 $item_id = (int)$_POST['item_id'];
                 mysqli_query($conexion, "DELETE FROM cuenta WHERE id = $item_id");
+                break;
                 
             case 'pagar':
                 try {
@@ -61,7 +63,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     header("Location: cuenta.php?mesa_id=$mesa_id&status=error");
                     exit;
                 }
-          
         }
         
         mysqli_commit($conexion);
@@ -83,13 +84,176 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     <title>Cuenta Mesa <?php echo $mesa_id; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+    :root {
+        --restaurant-primary: #2c3e50;    /* Azul oscuro principal */
+        --restaurant-secondary: #34495e;   /* Azul oscuro secundario */
+        --restaurant-accent: #3498db;      /* Azul claro para acentos */
+        --restaurant-light: #ecf0f1;       /* Gris muy claro para fondos */
+        --restaurant-dark: #1a252f;        /* Azul muy oscuro */
+    }
+
+    /* Estilos base */
+    body {
+        background-color: var(--restaurant-light);
+    }
+
+    /* Navegación y encabezados */
+    .navbar {
+        background: var(--restaurant-dark) !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+        background: var(--restaurant-primary) !important;
+        color: white;
+        border-radius: 8px 8px 0 0 !important;
+        padding: 1rem 1.5rem;
+    }
+
+    /* Botones principales */
+    .btn-primary {
+        background-color: var(--restaurant-primary);
+        border-color: var(--restaurant-primary);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--restaurant-secondary);
+        border-color: var(--restaurant-secondary);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .btn-outline-primary {
+        color: var(--restaurant-primary);
+        border-color: var(--restaurant-primary);
+    }
+
+    .btn-outline-primary:hover {
+        background-color: var(--restaurant-primary);
+        color: white;
+    }
+
+    /* Badges y elementos pequeños */
+    .badge {
+        padding: 0.5em 1em;
+        border-radius: 4px;
+    }
+
+    .badge.bg-primary {
+        background-color: var(--restaurant-primary) !important;
+    }
+
+    .badge.bg-secondary {
+        background-color: var(--restaurant-accent) !important;
+    }
+
+    /* Botones de acción */
+    .header-action-btn {
+        border-color: white;
+        color: white;
+    }
+
+    .header-action-btn:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: white;
+        color: white;
+    }
+
+    /* Tabla de productos */
+    .table-hover tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(44, 62, 80, 0.05);
+        transform: scale(1.01);
+    }
+
+    /* Botón de procesar pago */
+    .btn-success {
+        background-color: var(--restaurant-accent);
+        border-color: var(--restaurant-accent);
+    }
+
+    .btn-success:hover {
+        background-color: var(--restaurant-secondary);
+        border-color: var(--restaurant-secondary);
+        transform: translateY(-1px);
+    }
+
+    /* Modal */
+    .modal-content {
+        border-radius: 8px;
+        border: none;
+    }
+
+    .modal-header {
+        background: var(--restaurant-primary);
+        color: white;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .modal-header .btn-close {
+        filter: brightness(0) invert(1);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1rem;
+        }
+
+        .btn-group-sm .btn {
+            padding: 0.25rem 0.5rem;
+        }
+
+        .header-action-btn {
+            min-width: 32px;
+            height: 32px;
+            padding: 0.25rem;
+        }
+
+        .header-action-btn span {
+            display: none;
+        }
+
+        .header-action-btn i {
+            margin: 0;
+            font-size: 0.875rem;
+        }
+
+        .mobile-table td.action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 0.5rem;
+            margin-top: 0.5rem;
+            border-top: 1px solid #dee2e6;
+        }
+    }
+
+    </style>
 </head>
 <body>
     <!-- Navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="#">Restaurante</a>
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-utensils me-2"></i>
+                Restaurante
+            </a>
             <div class="d-flex align-items-center">
+                <span class="navbar-text me-3 text-white">
+                    <i class="fas fa-chair me-1"></i>
+                    Mesa <?php echo $mesa_id; ?>
+                </span>
                 <a href="gestionar_pedido.php?mesa_id=<?php echo $mesa_id; ?>" class="btn btn-outline-light">
                     <i class="fas fa-arrow-left me-2"></i>Volver
                 </a>
@@ -108,19 +272,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         <div class="row justify-content-center">
             <div class="col-12 col-lg-8">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-light py-3">
+                    <div class="card-header bg-dark text-white py-3">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">
+                            <div class="d-flex align-items-center">
                                 <i class="fas fa-receipt me-2"></i>
-                                Cuenta Mesa <?php echo $mesa_id; ?>
-                            </h5>
-                            <div class="btn-group">
-                                <a href="generar_ticket.php?mesa_id=<?php echo $mesa_id; ?>" 
-                                   class="btn btn-primary btn-sm">
-                                    <i class="fas fa-file-pdf me-2"></i>
-                                    Generar Ticket
-                                </a>
+                                <h5 class="card-title mb-0">Cuenta Mesa <?php echo $mesa_id; ?></h5>
                             </div>
+                            <a href="generar_ticket.php?mesa_id=<?php echo $mesa_id; ?>" 
+                               class="btn btn-sm btn-outline-light header-action-btn">
+                                <i class="fas fa-file-pdf"></i>
+                                <span class="d-none d-sm-inline ms-1">Ticket</span>
+                            </a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -216,134 +378,151 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     </div>
 
     <style>
-    /* Actualizar estilos existentes y agregar nuevos */
-    @media (max-width: 576px) {
-        .mobile-table tbody tr {
-            display: flex;
-            flex-wrap: wrap;
-            border-bottom: 1px solid #dee2e6;
-            padding: 0.5rem 0;
-        }
-
-        .mobile-table td {
-            border: none;
-            padding: 0.25rem 0.5rem;
-        }
-
-        .producto-cell {
-            width: 100%;
-            font-weight: bold;
-        }
-
-        .cantidad-cell, .precio-cell {
-            width: 50%;
-            text-align: center;
-        }
-
-        .subtotal-cell {
-            width: 100%;
-            text-align: right;
-            font-weight: bold;
-            border-top: 1px dashed #dee2e6;
-            margin-top: 0.25rem;
-            padding-top: 0.25rem;
-        }
-
-        .table thead {
-            display: none;
-        }
-
-        .table tfoot tr td {
-            width: 100%;
-            text-align: right;
-            padding: 0.75rem;
-            font-size: 1.1rem;
-        }
-
-        .btn-group {
-            width: 100%;
-        }
-
-        .btn-group .btn {
-            flex: 1;
-        }
+    :root {
+        --restaurant-primary: #2c3e50;    /* Azul oscuro principal */
+        --restaurant-secondary: #34495e;   /* Azul oscuro secundario */
+        --restaurant-accent: #3498db;      /* Azul claro para acentos */
+        --restaurant-light: #ecf0f1;       /* Gris muy claro para fondos */
+        --restaurant-dark: #1a252f;        /* Azul muy oscuro */
     }
 
-    .badge {
-        min-width: 2rem;
-        padding: 0.35em 0.65em;
+    /* Estilos base */
+    body {
+        background-color: var(--restaurant-light);
     }
 
-    /* Mejoras visuales generales */
-    .card {
-        border: none;
+    /* Navegación y encabezados */
+    .navbar {
+        background: var(--restaurant-dark) !important;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
+    .card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        margin-bottom: 1.5rem;
+    }
+
     .card-header {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid rgba(0,0,0,0.1);
+        background: var(--restaurant-primary) !important;
+        color: white;
+        border-radius: 8px 8px 0 0 !important;
+        padding: 1rem 1.5rem;
+    }
+
+    /* Botones principales */
+    .btn-primary {
+        background-color: var(--restaurant-primary);
+        border-color: var(--restaurant-primary);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--restaurant-secondary);
+        border-color: var(--restaurant-secondary);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .btn-outline-primary {
+        color: var(--restaurant-primary);
+        border-color: var(--restaurant-primary);
+    }
+
+    .btn-outline-primary:hover {
+        background-color: var(--restaurant-primary);
+        color: white;
+    }
+
+    /* Badges y elementos pequeños */
+    .badge {
+        padding: 0.5em 1em;
+        border-radius: 4px;
+    }
+
+    .badge.bg-primary {
+        background-color: var(--restaurant-primary) !important;
+    }
+
+    .badge.bg-secondary {
+        background-color: var(--restaurant-accent) !important;
+    }
+
+    /* Botones de acción */
+    .header-action-btn {
+        border-color: white;
+        color: white;
+    }
+
+    .header-action-btn:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: white;
+        color: white;
+    }
+
+    /* Tabla de productos */
+    .table-hover tbody tr {
+        transition: all 0.2s ease;
     }
 
     .table-hover tbody tr:hover {
-        background-color: rgba(0,0,0,0.02);
+        background-color: rgba(44, 62, 80, 0.05);
+        transform: scale(1.01);
     }
 
+    /* Botón de procesar pago */
     .btn-success {
-        padding: 0.75rem;
+        background-color: var(--restaurant-accent);
+        border-color: var(--restaurant-accent);
     }
 
-    .btn-group-sm .btn {
-        padding: 0.25rem 0.5rem;
+    .btn-success:hover {
+        background-color: var(--restaurant-secondary);
+        border-color: var(--restaurant-secondary);
+        transform: translateY(-1px);
     }
 
-    .cantidad-cell .btn-link {
-        text-decoration: none;
+    /* Modal */
+    .modal-content {
+        border-radius: 8px;
+        border: none;
     }
 
-    .cantidad-cell .btn-link:hover .badge {
-        background-color: #0d6efd !important;
+    .modal-header {
+        background: var(--restaurant-primary);
+        color: white;
+        border-radius: 8px 8px 0 0;
     }
 
-    @media (max-width: 576px) {
+    .modal-header .btn-close {
+        filter: brightness(0) invert(1);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1rem;
+        }
+
         .btn-group-sm .btn {
-            padding: 0.2rem 0.4rem;
-        }
-        
-        .btn-group-sm .btn i {
-            font-size: 0.8rem;
-        }
-    }
-
-    /* Estilos para los botones de acción */
-    .action-buttons .btn-group {
-        gap: 0.25rem;
-    }
-
-    .action-buttons .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.375rem 0.75rem;
-    }
-
-    .action-buttons .btn i {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 1em;
-        height: 1em;
-    }
-
-    @media (max-width: 576px) {
-        .action-buttons .btn {
             padding: 0.25rem 0.5rem;
         }
-        
-        .action-buttons .btn i {
+
+        .header-action-btn {
+            min-width: 32px;
+            height: 32px;
+            padding: 0.25rem;
+        }
+
+        .header-action-btn span {
+            display: none;
+        }
+
+        .header-action-btn i {
+            margin: 0;
             font-size: 0.875rem;
         }
-        
+
         .mobile-table td.action-buttons {
             display: flex;
             justify-content: flex-end;
@@ -351,16 +530,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             margin-top: 0.5rem;
             border-top: 1px solid #dee2e6;
         }
-        
-        .btn-group {
-            display: flex;
-            gap: 0.25rem;
-        }
-        
-        .btn-group .btn {
-            flex: 1;
-        }
     }
+
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

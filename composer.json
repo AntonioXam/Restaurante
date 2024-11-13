@@ -1,6 +1,7 @@
 {
     "require": {
         "mike42/escpos-php": "^2.2",
-        "dompdf/dompdf": "^3.0"
+        "dompdf/dompdf": "^3.0",
+        "tecnickcom/tcpdf": "^6.7"
     }
 }
