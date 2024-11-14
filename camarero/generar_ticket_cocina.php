@@ -8,7 +8,7 @@ use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 
 function generarTicketCocina($conexion, $mesa_id, $productos) {
     try {
-        $ipImpresora = "192.168.0.169";  // Cambiar a la IP de tu impresora
+        $ipImpresora = "192.168.36.169";  // Cambiar a la IP de tu impresora
         $puertoImpresora = 9100;         // Puerto por defecto para impresoras ESC/POS
         $connector = new NetworkPrintConnector($ipImpresora, $puertoImpresora);
         $printer = new Printer($connector);
@@ -40,12 +40,15 @@ function generarTicketCocina($conexion, $mesa_id, $productos) {
                 $printer->text("  * " . $item['notas'] . "\n");
             }
             $printer->text("\n");
+            
         }
 
         // Pie del ticket
         $printer->text("------------------------\n");
         $printer->setJustification(Printer::JUSTIFY_CENTER);
         $printer->text("*** PREPARAR PEDIDO ***\n");
+        $printer->text("\n\n");
+        $printer->text("\n\n");
         
         // Cortar el papel y cerrar
         $printer->cut();
