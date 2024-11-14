@@ -1,20 +1,18 @@
 <?php
-// conexion.php
-$host = 'localhost';
-$usuario = 'root';
-$contrasena = '';
-$base_datos = 'restaurante';
+$servername = "localhost";
+$username = "root"; // Cambia 'tu_usuario' por tu usuario de MySQL real
+$password = ""; // Cambia 'tu_contraseña' por tu contraseña de MySQL real
+$dbname = "restaurante";
 
-$conexion = mysqli_connect($host, $usuario, $contrasena, $base_datos);
+// Crear conexión
+$conexion = new mysqli($servername, $username, $password, $dbname);
 
-if (!$conexion) {
-    die("Error de conexión: " . mysqli_connect_error());
+// Verificar conexión
+if ($conexion->connect_error) {
+    die("Connection failed: " . $conexion->connect_error);
 }
 
-//caracteres especiales
-mysqli_set_charset($conexion, 'utf8mb4');
-
-//comprobar errores en la conexion
-
-mysqli_error($conexion);
+// Establecer conjunto de caracteres
+$conexion->set_charset("utf8mb4");
+?>
 

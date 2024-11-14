@@ -19,13 +19,13 @@ CREATE TABLE `mesas` (
   UNIQUE KEY `numero_mesa` (`numero_mesa`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 2. Tabla productos
-CREATE TABLE `productos` (
+-- 2. Tabla productos (actualizada)
+CREATE TABLE IF NOT EXISTS `productos` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `nombre` text DEFAULT NULL,
-  `categoria` text DEFAULT NULL,
-  `precio` decimal(10,2) DEFAULT NULL,
-  `stock` int(11) DEFAULT NULL,
+  `nombre` varchar(255) NOT NULL,
+  `categoria` varchar(100) NOT NULL,
+  `precio` decimal(10,2) NOT NULL,
+  `stock` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

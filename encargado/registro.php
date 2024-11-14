@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         
         $foto = uniqid() . "_" . basename($_FILES["foto"]["name"]);
-        $target_file = $target_dir . $foto;
+        $target_file = $dir . $foto;
         
         if (move_uploaded_file($_FILES["foto"]["tmp_name"], $target_file)) {
             // Imagen subida correctamente

@@ -1,7 +1,39 @@
-
 <?php 
 include '../sesion.php';
 include '../conexion.php';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nombre = $_POST['nombre'];
+    $apellidos = $_POST['apellidos'];
+    $dni = $_POST['dni'];
+    $rol = $_POST['rol'];
+    $usuario = $_POST['usuario'];
+    $contrasena = password_hash($_POST['contrasena'], PASSWORD_DEFAULT);
+    
+    // Manejar la foto si se sube
+    if(isset($_FILES['foto']) && $_FILES['foto']['error'] == 0){
+        $nombre_foto = $_FILES['foto']['name'];
+        $tmp_foto = $_FILES['foto']['tmp_name'];
+        $ruta_foto = '../uploads/' . basename($nombre_foto);
+        move_uploaded_file($tmp_foto, $ruta_foto);
+    } else {
+        $nombre_foto = 'default_usuario.png';
+    }
+
+    $sql = "INSERT INTO usuarios (nombre, apellidos, dni, rol, usuario, contrasena, foto) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $conexion->prepare($sql);
+    $stmt->bind_param("sssssss", $nombre, $apellidos, $dni, $rol, $usuario, $contrasena, $nombre_foto);
+    
+    if ($stmt->execute()) {
+        header("Location: listar_usuarios.php");
+        exit();
+    } else {
+        echo "Error al registrar el usuario: " . $conexion->error;
+    }
+
+    $stmt->close();
+    $conexion->close();
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -57,16 +89,16 @@ include '../conexion.php';
             <div class="col-12 col-md-8 offset-md-2">
                 <div class="form-card">
                     <h2 class="h4 mb-4 text-center">Registrar Nuevo Usuario</h2>
-                    <form action="registro.php" method="post" class="needs-validation" enctype="multipart/form-data" novalidate>
+                    <form action="registrar_usuario.php" method="post" class="needs-validation" enctype="multipart/form-data" novalidate>
                         <div class="form-group">
                             <label for="nombre">Nombre:</label>
                             <input type="text" class="form-control" name="nombre" id="nombre" required>
                             <div class="invalid-feedback">Por favor, ingrese el nombre.</div>
                         </div>
                         <div class="form-group">
-                            <label for="apellido">Apellido:</label>
-                            <input type="text" class="form-control" name="apellido" id="apellido" required>
-                            <div class="invalid-feedback">Por favor, ingrese el apellido.</div>
+                            <label for="apellidos">Apellidos:</label>
+                            <input type="text" class="form-control" name="apellidos" id="apellidos" required>
+                            <div class="invalid-feedback">Por favor, ingrese los apellidos.</div>
                         </div>
                         <div class="form-group">
                             <label for="dni">DNI:</label>

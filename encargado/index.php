@@ -116,6 +116,18 @@ include '../conexion.php';
                     </div>
                 </div>
             </div>
+
+            <!-- Tarjeta Gestionar Productos -->
+            <div class="col-12 col-md-3 mb-4">
+                <div class="action-card card text-white bg-warning card-hover">
+                    <div class="card-body text-center">
+                        <i class="fas fa-box-open card-icon"></i>
+                        <h5>Gestionar Productos</h5>
+                        <p class="text-light">Añadir, modificar y eliminar productos</p>
+                        <a href="listar_productos.php" class="btn btn-light mt-3"><i class="fas fa-arrow-right"></i> Gestionar</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
