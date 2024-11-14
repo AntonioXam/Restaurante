@@ -52,9 +52,9 @@ include '../conexion.php';
                 <div class="action-card card">
                     <div class="card-body text-center">
                         <i class="fas fa-user-plus card-icon"></i>
-                        <h5>Registrar Camarero</h5>
-                        <p class="text-muted">Añade nuevos camareros al sistema</p>
-                        <a href="registrar_camarero.php" class="btn btn-primary btn-block">Registrar</a>
+                        <h5>Registrar Usuario</h5>
+                        <p class="text-muted">Añade nuevos usuarios al sistema</p>
+                        <a href="registrar_usuario.php" class="btn btn-primary btn-block">Registrar</a>
                     </div>
                 </div>
             </div>
@@ -63,9 +63,9 @@ include '../conexion.php';
                 <div class="action-card card">
                     <div class="card-body text-center">
                         <i class="fas fa-list card-icon"></i>
-                        <h5>Listar Camareros</h5>
-                        <p class="text-muted">Ver y gestionar camareros existentes</p>
-                        <a href="listar_camareros.php" class="btn btn-info btn-block">Listar</a>
+                        <h5>Listar Usuarios</h5>
+                        <p class="text-muted">Ver y gestionar usuarios existentes</p>
+                        <a href="listar_usuarios.php" class="btn btn-info btn-block">Listar</a>
                     </div>
                 </div>
             </div>

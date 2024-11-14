@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $sql = "DELETE FROM usuarios WHERE id = ?";
             break;
         default:
-            header("Location: listar_camareros.php");
+            header("Location: listar_usuarios.php");
             exit;
     }
     
@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("i", $id);
     
     if ($stmt->execute()) {
-        header("Location: listar_camareros.php");
+        header("Location: listar_usuarios.php");
     } else {
         echo "Error al ejecutar la acción: " . $conexion->error;
     }

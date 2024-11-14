@@ -1,3 +1,4 @@
+
 <?php 
 include '../sesion.php';
 include '../conexion.php';
@@ -7,7 +8,7 @@ include '../conexion.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Camarero</title>
+    <title>Registrar Usuario</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         @media (max-width: 768px) {
@@ -55,7 +56,7 @@ include '../conexion.php';
             </div>
             <div class="col-12 col-md-8 offset-md-2">
                 <div class="form-card">
-                    <h2 class="h4 mb-4 text-center">Registrar Nuevo Camarero</h2>
+                    <h2 class="h4 mb-4 text-center">Registrar Nuevo Usuario</h2>
                     <form action="registro.php" method="post" class="needs-validation" enctype="multipart/form-data" novalidate>
                         <div class="form-group">
                             <label for="nombre">Nombre:</label>
@@ -83,9 +84,18 @@ include '../conexion.php';
                             <div class="invalid-feedback">Por favor, ingrese la contraseña.</div>
                         </div>
                         <div class="form-group">
+                            <label for="rol">Rol:</label>
+                            <select class="form-control" name="rol" id="rol" required>
+                                <option value="">Seleccione un rol</option>
+                                <option value="camarero">Camarero</option>
+                                <option value="encargado">Encargado</option>
+                            </select>
+                            <div class="invalid-feedback">Por favor, seleccione el rol.</div>
+                        </div>
+                        <div class="form-group">
                             <label for="foto">Foto:</label>
                             <input type="file" class="form-control-file" name="foto" id="foto" accept="image/*">
-                            <small class="form-text text-muted">Seleccione una imagen para el camarero (opcional)</small>
+                            <small class="form-text text-muted">Seleccione una imagen para el usuario (opcional)</small>
                         </div>
                         <button type="submit" class="btn btn-primary btn-block btn-lg mt-4">Registrar</button>
                     </form>

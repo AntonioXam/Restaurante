@@ -8,6 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $dni = $_POST['dni'];
     $usuario = $_POST['usuario'];
     $contrasena = $_POST['contrasena'];
+    $rol = $_POST['rol']; // Nuevo campo para el rol
     
     // Procesar la imagen
     $foto = null;
@@ -29,10 +30,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $sql = "INSERT INTO usuarios (nombre, apellidos, dni, usuario, contrasena, rol, foto, estado) 
-            VALUES (?, ?, ?, ?, ?, 'camarero', ?, 1)";
+            VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
     
     $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("ssssss", $nombre, $apellido, $dni, $usuario, $contrasena, $foto);
+    $stmt->bind_param("sssssss", $nombre, $apellido, $dni, $usuario, $contrasena, $rol, $foto);
     
     if ($stmt->execute()) {
         header("Location: listar_camareros.php");
