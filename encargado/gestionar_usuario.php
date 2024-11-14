@@ -1,4 +1,3 @@
-
 <?php
 include '../sesion.php';
 include '../conexion.php';
@@ -6,6 +5,12 @@ include '../conexion.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id = $_POST['id'];
     $accion = $_POST['accion'];
+    
+    // Verificar si el ID es 1 y prevenir la acción
+    if ($id == 1) {
+        echo "No se puede modificar el usuario principal.";
+        exit;
+    }
     
     switch($accion) {
         case 'suspender':

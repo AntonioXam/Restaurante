@@ -1,10 +1,19 @@
-
 <?php
 include '../sesion.php';
 include '../conexion.php';
 
-// hacer consulta a la base de datos listado de los usuarios
-$sql = "SELECT * FROM usuarios WHERE rol IN ('camarero', 'encargado')";
+// Obtener el rol de la URL si está presente
+$rol = isset($_GET['rol']) ? $_GET['rol'] : null;
+
+// Modificar la consulta para excluir al usuario con ID 1 y filtrar por rol si está definido
+if ($rol) {
+    // Validar que el rol es permitido
+    $rol = mysqli_real_escape_string($conexion, $rol);
+    $sql = "SELECT * FROM usuarios WHERE rol = '$rol' AND id != 1";
+} else {
+    $sql = "SELECT * FROM usuarios WHERE rol IN ('camarero', 'encargado') AND id != 1";
+}
+
 $resultado = $conexion->query($sql);
 
 ?>
@@ -161,7 +170,9 @@ $resultado = $conexion->query($sql);
             </div>
             <div class="col-12">
                 <div class="list-card">
-                    <h2 class="h4 mb-4 text-center">Listado de Usuarios</h2>
+                    <h2 class="h4 mb-4 text-center">
+                        <?php echo $rol ? 'Listado de ' . ucfirst($rol) . 's' : 'Listado de Usuarios'; ?>
+                    </h2>
                     <div class="table-responsive table-desktop">
                         <table class="table table-striped table-hover">
                             <thead>

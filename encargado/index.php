@@ -9,6 +9,7 @@ include '../conexion.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Encargado</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         @media (max-width: 768px) {
             .container { 
@@ -34,49 +35,84 @@ include '../conexion.php';
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         .card-icon {
-            font-size: 2rem;
+            font-size: 3rem;
             margin-bottom: 1rem;
-            color: #007bff;
+            color: #ffffff;
+        }
+        .card-primary {
+            background-color: #007bff;
+            border: none;
+        }
+        .card-info {
+            background-color: #17a2b8;
+            border: none;
+        }
+        .card-success {
+            background-color: #28a745;
+            border: none;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    <header class="bg-primary text-white text-center py-3">
-        <h1 class="h3">Bienvenido, <?php echo $_SESSION['nombre']; ?></h1>
+    <header class="bg-primary text-white py-3">
+        <div class="container d-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-0">Bienvenido, <?php echo $_SESSION['nombre']; ?></h1>
+            <a href="../logout.php" class="btn btn-outline-light btn-sm">
+                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+            </a>
+        </div>
     </header>
 
-    <div class="container mt-3">
+    <div class="container mt-4">
         <div class="row">
-            <div class="col-12 col-md-4 mb-3">
-                <div class="action-card card">
+            <!-- Tarjeta Registrar Usuario -->
+            <div class="col-12 col-md-3 mb-4">
+                <div class="action-card card text-white card-primary card-hover">
                     <div class="card-body text-center">
                         <i class="fas fa-user-plus card-icon"></i>
                         <h5>Registrar Usuario</h5>
-                        <p class="text-muted">Añade nuevos usuarios al sistema</p>
-                        <a href="registrar_usuario.php" class="btn btn-primary btn-block">Registrar</a>
+                        <p class="text-light">Añade nuevos usuarios al sistema</p>
+                        <a href="registrar_usuario.php" class="btn btn-light mt-3"><i class="fas fa-arrow-right"></i> Registrar</a>
                     </div>
                 </div>
             </div>
 
-            <div class="col-12 col-md-4 mb-3">
-                <div class="action-card card">
+            <!-- Tarjeta Listar Usuarios -->
+            <div class="col-12 col-md-3 mb-4">
+                <div class="action-card card text-white card-info card-hover">
                     <div class="card-body text-center">
                         <i class="fas fa-list card-icon"></i>
                         <h5>Listar Usuarios</h5>
-                        <p class="text-muted">Ver y gestionar usuarios existentes</p>
-                        <a href="listar_usuarios.php" class="btn btn-info btn-block">Listar</a>
+                        <p class="text-light">Ver y gestionar usuarios existentes</p>
+                        <a href="listar_usuarios.php" class="btn btn-light mt-3"><i class="fas fa-arrow-right"></i> Listar</a>
                     </div>
                 </div>
             </div>
 
-            <div class="col-12 col-md-4 mb-3">
-                <div class="action-card card">
+            <!-- Tarjeta Gestionar Camareros -->
+            <div class="col-12 col-md-3 mb-4">
+                <div class="action-card card text-white card-success card-hover">
                     <div class="card-body text-center">
-                        <i class="fas fa-sign-out-alt card-icon"></i>
-                        <h5>Cerrar Sesión</h5>
-                        <p class="text-muted">Salir del sistema de forma segura</p>
-                        <a href="../logout.php" class="btn btn-danger btn-block">Salir</a>
+                        <i class="fas fa-concierge-bell card-icon"></i>
+                        <h5>Gestionar Camareros</h5>
+                        <p class="text-light">Ver y administrar camareros</p>
+                        <a href="listar_usuarios.php?rol=camarero" class="btn btn-light mt-3"><i class="fas fa-arrow-right"></i> Gestionar</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarjeta Acceder como Camarero -->
+            <div class="col-12 col-md-3 mb-4">
+                <div class="action-card card text-white bg-secondary card-hover">
+                    <div class="card-body text-center">
+                        <i class="fas fa-hamburger card-icon"></i>
+                        <h5>Acceder como Camarero</h5>
+                        <p class="text-light">Gestionar tareas como camarero</p>
+                        <a href="../camarero/index.php" class="btn btn-light mt-3"><i class="fas fa-arrow-right"></i> Entrar</a>
                     </div>
                 </div>
             </div>
