@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $apellido = $_POST['apellido'];
     $dni = $_POST['dni'];
     $usuario = $_POST['usuario'];
-    $contrasena = password_hash($_POST['contrasena'], PASSWORD_DEFAULT);
+    $contrasena = $_POST['contrasena'];
     
     // Procesar la imagen
     $foto = null;

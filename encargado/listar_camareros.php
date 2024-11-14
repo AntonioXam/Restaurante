@@ -196,20 +196,23 @@ $resultado = $conexion->query($sql);
                                         <td><?php echo $camarero['contrasena']; ?></td>
                                         <td><?php echo $camarero['estado'] ? 'Activo' : 'Suspendido'; ?></td>
                                         <td class="actions-column">
-                                            <div class="btn-group btn-group-sm">
-                                                <form action="gestionar_camarero.php" method="POST" class="d-inline">
-                                                    <input type="hidden" name="id" value="<?php echo $camarero['id']; ?>">
-                                                    <input type="hidden" name="accion" value="<?php echo $camarero['estado'] ? 'suspender' : 'activar'; ?>">
-                                                    <button type="submit" class="btn btn-<?php echo $camarero['estado'] ? 'warning' : 'success'; ?> btn-sm">
-                                                        <?php echo $camarero['estado'] ? 'Suspender' : 'Activar'; ?>
-                                                    </button>
-                                                </form>
-                                                <form action="gestionar_camarero.php" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar este camarero?');">
-                                                    <input type="hidden" name="id" value="<?php echo $camarero['id']; ?>">
-                                                    <input type="hidden" name="accion" value="eliminar">
-                                                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                                                </form>
-                                            </div>
+                                            <!-- Botón para suspender/activar -->
+                                            <button type="button" class="btn btn-<?php echo $camarero['estado'] ? 'warning' : 'success'; ?> btn-sm"
+                                                data-toggle="modal"
+                                                data-target="#confirmarSuspenderModal"
+                                                data-id="<?php echo $camarero['id']; ?>"
+                                                data-accion="<?php echo $camarero['estado'] ? 'suspender' : 'activar'; ?>"
+                                                data-nombre="<?php echo $camarero['nombre']; ?>">
+                                                <?php echo $camarero['estado'] ? 'Suspender' : 'Activar'; ?>
+                                            </button>
+                                            <!-- Botón para eliminar -->
+                                            <button type="button" class="btn btn-danger btn-sm"
+                                                data-toggle="modal"
+                                                data-target="#confirmarEliminarModal"
+                                                data-id="<?php echo $camarero['id']; ?>"
+                                                data-nombre="<?php echo $camarero['nombre']; ?>">
+                                                Eliminar
+                                            </button>
                                         </td>
                                     </tr>
                                 <?php } ?>
@@ -290,9 +293,86 @@ $resultado = $conexion->query($sql);
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Modales de confirmación -->
+
+    <!-- Modal Confirmar Suspender/Activar -->
+    <div class="modal fade" id="confirmarSuspenderModal" tabindex="-1" role="dialog" aria-labelledby="confirmarSuspenderLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method="POST" action="gestionar_camarero.php">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmarSuspenderLabel"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Mensaje de confirmación -->
+                    </div>
+                    <div class="modal-footer">
+                        <input type="hidden" name="id" value="">
+                        <input type="hidden" name="accion" value="">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Confirmar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmar Eliminar -->
+    <div class="modal fade" id="confirmarEliminarModal" tabindex="-1" role="dialog" aria-labelledby="confirmarEliminarLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method="POST" action="gestionar_camarero.php">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmarEliminarLabel">Eliminar Camarero</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Mensaje de confirmación -->
+                    </div>
+                    <div class="modal-footer">
+                        <input type="hidden" name="id" value="">
+                        <input type="hidden" name="accion" value="eliminar">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+    // ...código existente...
+    $('#confirmarSuspenderModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var camareroId = button.data('id');
+        var accion = button.data('accion');
+        var nombre = button.data('nombre');
+        var modal = $(this);
+        modal.find('.modal-title').text((accion.charAt(0).toUpperCase() + accion.slice(1)) + ' Camarero');
+        modal.find('.modal-body').text('¿Está seguro que desea ' + accion + ' al camarero ' + nombre + '?');
+        modal.find('input[name="id"]').val(camareroId);
+        modal.find('input[name="accion"]').val(accion);
+    });
+
+    $('#confirmarEliminarModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var camareroId = button.data('id');
+        var nombre = button.data('nombre');
+        var modal = $(this);
+        modal.find('.modal-body').text('¿Está seguro que desea eliminar al camarero ' + nombre + '?');
+        modal.find('input[name="id"]').val(camareroId);
+    });
+    </script>
 </body>
 </html>
 <?php
 // cerrar la conexion
 $conexion->close();
-?>
+?> 

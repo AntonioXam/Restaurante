@@ -63,6 +63,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     header("Location: cuenta.php?mesa_id=$mesa_id&status=error");
                     exit;
                 }
+            case 'pagar_sin_ticket':
+                try {
+                    // Procesar el pago sin generar ticket
+                    $query = "SELECT c.*, p.nombre as nombre_producto 
+                             FROM cuenta c 
+                             INNER JOIN productos p ON c.producto_id = p.id 
+                             WHERE c.mesa_id = ?";
+                             
+                    $stmt = mysqli_prepare($conexion, $query);
+                    mysqli_stmt_bind_param($stmt, "i", $mesa_id);
+                    mysqli_stmt_execute($stmt);
+                    $productos_cuenta = mysqli_stmt_get_result($stmt);
+                    
+                    // Guardar cada producto en cuentas_pagadas para historial
+                    while ($item = mysqli_fetch_assoc($productos_cuenta)) {
+                        $insert_cuenta = "INSERT INTO cuentas_pagadas 
+                                        (mesa_id, producto, cantidad, precio_unitario, subtotal) 
+                                        VALUES (?, ?, ?, ?, ?)";
+                        $stmt = mysqli_prepare($conexion, $insert_cuenta);
+                        mysqli_stmt_bind_param($stmt, "isids",
+                            $mesa_id,
+                            $item['nombre_producto'],
+                            $item['cantidad'],
+                            $item['precio_unitario'],
+                            $item['subtotal']
+                        );
+                        mysqli_stmt_execute($stmt);
+                    }
+                    
+                    // Limpiar cuenta actual y liberar mesa
+                    mysqli_query($conexion, "DELETE FROM cuenta WHERE mesa_id = $mesa_id");
+                    mysqli_query($conexion, "UPDATE mesas SET estado = 'inactiva', comensales = NULL WHERE id = $mesa_id");
+                    
+                    mysqli_commit($conexion);
+                    header("Location: gestionar_mesas.php?status=success");
+                    exit;
+                } catch (Exception $e) {
+                    mysqli_rollback($conexion);
+                    $_SESSION['error_ticket'] = "Error al procesar el pago: " . $e->getMessage();
+                    header("Location: cuenta.php?mesa_id=$mesa_id&status=error");
+                    exit;
+                }
         }
         
         mysqli_commit($conexion);
@@ -264,8 +306,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     <?php if (isset($error_mensaje)): ?>
         <div class="alert alert-danger alert-dismissible fade show mx-3 mt-3" role="alert">
             <?php echo htmlspecialchars($error_mensaje); ?>
+            <?php if (isset($_GET['confirmar_pago']) && $_GET['confirmar_pago'] === 'true'): ?>
+                <form method="POST" class="d-inline">
+                    <input type="hidden" name="action" value="pagar_sin_ticket">
+                    <button type="submit" class="btn btn-danger btn-sm ms-2">Procesar Pago</button>
+                </form>
+            <?php endif; ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+    <?php endif; ?>
+    <?php if (isset($_SESSION['error_ticket'])): ?>
+        <div class="alert alert-warning alert-dismissible fade show mx-3 mt-3" role="alert">
+            <?php echo htmlspecialchars($_SESSION['error_ticket']); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php unset($_SESSION['error_ticket']); ?>
     <?php endif; ?>
 
     <div class="container-fluid py-4">
@@ -278,11 +333,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                 <i class="fas fa-receipt me-2"></i>
                                 <h5 class="card-title mb-0">Cuenta Mesa <?php echo $mesa_id; ?></h5>
                             </div>
-                            <a href="generar_ticket.php?mesa_id=<?php echo $mesa_id; ?>" 
-                               class="btn btn-sm btn-outline-light header-action-btn">
-                                <i class="fas fa-file-pdf"></i>
-                                <span class="d-none d-sm-inline ms-1">Ticket</span>
-                            </a>
+                            <div>
+                                <a href="generar_ticket.php?mesa_id=<?php echo $mesa_id; ?>" 
+                                   class="btn btn-sm btn-outline-light header-action-btn">
+                                    <i class="fas fa-receipt"></i>
+                                    <span class="d-none d-sm-inline ms-1">Ticket Cuenta</span>
+                                </a>
+                                <a href="generar_ticket_cocina.php?mesa_id=<?php echo $mesa_id; ?>" 
+                                   class="btn btn-sm btn-outline-light header-action-btn">
+                                    <i class="fas fa-utensils"></i>
+                                    <span class="d-none d-sm-inline ms-1">Ticket Cocina</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body">
@@ -330,15 +392,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                                             <i class="fas fa-edit"></i>
                                                             <span class="d-none d-sm-inline ms-1">Modificar</span>
                                                         </button>
-                                                        <form action="" method="POST" class="d-inline">
-                                                            <input type="hidden" name="action" value="eliminar_cuenta">
-                                                            <input type="hidden" name="item_id" value="<?php echo $item['id']; ?>">
-                                                            <button type="submit" class="btn btn-danger" 
-                                                                    onclick="return confirm('¿Está seguro de eliminar este producto?')">
-                                                                <i class="fas fa-trash"></i>
-                                                                <span class="d-none d-sm-inline ms-1">Eliminar</span>
-                                                            </button>
-                                                        </form>
+                                                        <button class="btn btn-danger" 
+                                                                onclick="mostrarModalEliminar(<?php echo $item['id']; ?>, 
+                                                                                              '<?php echo htmlspecialchars($item['nombre_producto']); ?>')">
+                                                            <i class="fas fa-trash"></i>
+                                                            <span class="d-none d-sm-inline ms-1">Eliminar</span>
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -356,15 +415,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                     </tfoot>
                                 </table>
                             </div>
-                            <form method="POST" class="mt-4">
-                                <input type="hidden" name="action" value="pagar">
-                                <button type="submit" 
-                                        class="btn btn-success w-100" 
-                                        onclick="return confirm('¿Confirmar pago?')">
-                                    <i class="fas fa-cash-register me-2"></i>
-                                    Procesar Pago
-                                </button>
-                            </form>
+                            <button type="button" class="btn btn-success w-100 mt-4" onclick="mostrarModalPago()">
+                                <i class="fas fa-cash-register me-2"></i>
+                                Procesar Pago
+                            </button>
                         <?php else: ?>
                             <div class="text-center py-5">
                                 <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
@@ -418,7 +472,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     }
 
     .btn-primary:hover {
-        background-color: var(--restaurant-secondary);
+        background-color: var (--restaurant-secondary);
         border-color: var(--restaurant-secondary);
         transform: translateY(-1px);
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -564,6 +618,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             form.submit();
         }
     }
+
+    function mostrarModalPago() {
+        new bootstrap.Modal(document.getElementById('pagoModal')).show();
+    }
+
+    function mostrarModalEliminar(itemId, nombreProducto) {
+        document.getElementById('itemEliminarId').value = itemId;
+        document.getElementById('productoEliminar').textContent = nombreProducto;
+        new bootstrap.Modal(document.getElementById('eliminarModal')).show();
+    }
     </script>
 
     <!-- Añadir el modal de modificación antes del cierre del body -->
@@ -595,6 +659,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         <button type="submit" class="btn btn-primary">Guardar cambios</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para confirmar pago -->
+    <div class="modal fade" id="pagoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Pago</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center">Total a pagar:</p>
+                    <h3 class="text-center text-danger"><?php echo number_format($total, 2); ?>€</h3>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form method="POST">
+                        <input type="hidden" name="action" value="pagar">
+                        <button type="submit" class="btn btn-success">Pagar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para confirmar eliminación -->
+    <div class="modal fade" id="eliminarModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro de eliminar <strong id="productoEliminar"></strong> de la cuenta?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form action="" method="POST">
+                        <input type="hidden" name="action" value="eliminar_cuenta">
+                        <input type="hidden" name="item_id" id="itemEliminarId">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

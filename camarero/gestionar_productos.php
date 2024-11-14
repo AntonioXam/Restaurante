@@ -84,7 +84,8 @@ $categorias = [
     'carne' => 'Carnes',
     'pasta' => 'Pasta',
     'pescado' => 'Pescado',
-    'vino' => 'Vinos'
+    'vino' => 'Vinos',
+    'extras' => 'Extras'  // Añadir la nueva categoría
 ];
 ?>
 
@@ -136,6 +137,9 @@ $categorias = [
                                                             <?php echo number_format($producto['precio'], 2); ?>€
                                                         </option>
                                                     <?php endwhile; ?>
+                                                    <?php if ($key === 'extras'): ?>
+                                                        <option value="personalizado">Extra Personalizado</option>
+                                                    <?php endif; ?>
                                                 </select>
                                             </div>
                                             <div class="col-12 col-md-3">
@@ -178,6 +182,43 @@ $categorias = [
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="personalizadoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Añadir Extra Personalizado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="procesar_pedido.php" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="mesa_id" value="<?php echo $mesa_id; ?>">
+                        <input type="hidden" name="producto_id" value="personalizado">
+                        <div class="form-group mb-3">
+                            <label>Nombre del Extra:</label>
+                            <input type="text" name="nombre_personalizado" class="form-control" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Precio:</label>
+                            <input type="number" name="precio_personalizado" class="form-control" step="0.01" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Cantidad:</label>
+                            <input type="number" name="cantidad" class="form-control" min="1" value="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Notas:</label>
+                            <textarea name="notas" class="form-control" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Añadir</button>
                     </div>
                 </form>
             </div>
@@ -246,6 +287,12 @@ $categorias = [
         document.querySelector('#modificarModal input[name="cantidad"]').value = cantidad_actual;
         new bootstrap.Modal(document.getElementById('modificarModal')).show();
     }
+
+    document.querySelector('select[name="producto_id"]').addEventListener('change', function() {
+        if (this.value === 'personalizado') {
+            new bootstrap.Modal(document.getElementById('personalizadoModal')).show();
+        }
+    });
     </script>
 </body>
 </html>

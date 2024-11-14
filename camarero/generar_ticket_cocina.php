@@ -6,69 +6,71 @@ require_once '../vendor/autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 
-function generarTicketCocina($conexion, $mesa_id, $productos) {
+function generar_ticket_cocina($conexion, $mesa_id, $productos) {
     try {
+        // Configurar impresora - Usar conexión de red
         $ipImpresora = "192.168.36.169";  // Cambiar a la IP de tu impresora
         $puertoImpresora = 9100;         // Puerto por defecto para impresoras ESC/POS
         $connector = new NetworkPrintConnector($ipImpresora, $puertoImpresora);
         $printer = new Printer($connector);
-
-        // Encabezado del ticket
-        $printer->setJustification(Printer::JUSTIFY_CENTER);
-        $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH | Printer::MODE_DOUBLE_HEIGHT);
-        $printer->text("*** COCINA ***\n");
-        $printer->selectPrintMode();
-        $printer->text("------------------------\n");
-
-        // Información de la mesa
-        $printer->setEmphasis(true);
-        $printer->text("MESA: " . $mesa_id . "\n");
-        $printer->text("FECHA: " . date('d/m/Y H:i') . "\n");
-        $printer->setEmphasis(false);
-        $printer->text("------------------------\n\n");
-
-        // Detalles de los productos
-        $printer->setJustification(Printer::JUSTIFY_LEFT);
         
-        // Iterar directamente sobre el array de productos
+        // Configuración inicial de la impresora
+        $printer->setPrintLeftMargin(0);
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->setTextSize(1, 1);
+        
+        // Cabecera del ticket
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+        $printer->text("TICKET DE COCINA\n");
+        $printer->selectPrintMode();
+        $printer->text("Mesa: " . $mesa_id . "\n");
+        $printer->text("Fecha: " . date('d/m/Y H:i') . "\n");
+        $printer->text(str_repeat("-", 32) . "\n");
+
+        // Detalles de productos
         foreach ($productos as $item) {
-            $printer->setEmphasis(true);
-            $printer->text($item['cantidad'] . "x " . $item['nombre_producto'] . "\n");
-            $printer->setEmphasis(false);
+            $nombre = substr($item['nombre_producto'], 0, 16);
+            $cantidad = str_pad($item['cantidad'], 3, ' ', STR_PAD_LEFT);
             
-            if (!empty($item['notas'])) {
-                $printer->text("  * " . $item['notas'] . "\n");
-            }
-            $printer->text("\n");
-            
+            $printer->text(sprintf("%-16s %3s\n", $nombre, $cantidad));
         }
 
         // Pie del ticket
-        $printer->text("------------------------\n");
         $printer->setJustification(Printer::JUSTIFY_CENTER);
-        $printer->text("*** PREPARAR PEDIDO ***\n");
+        $printer->text("\n");
+        $printer->text("FIN DEL TICKET\n");
         $printer->text("\n\n");
-        $printer->text("\n\n");
-        
-        // Cortar el papel y cerrar
+
+        // Cortar ticket
         $printer->cut();
         $printer->close();
-        
+
         return true;
     } catch (Exception $e) {
-        // Si hay algún error con la impresora, lo registramos pero permitimos continuar
         error_log("Error al imprimir ticket de cocina: " . $e->getMessage());
-        
-        try {
-            // Intentar cerrar la conexión con la impresora si existe
-            if (isset($printer)) {
-                $printer->close();
-            }
-        } catch (Exception $closeError) {
-            error_log("Error al cerrar la impresora: " . $closeError->getMessage());
-        }
-        
-        return true; // Retornamos true para permitir continuar con el proceso
+        return false;
     }
+}
+
+if (isset($_GET['mesa_id'])) {
+    $mesa_id = (int)$_GET['mesa_id'];
+    $query = "SELECT dp.*, p.nombre as nombre_producto 
+             FROM detalle_pedidos dp 
+             INNER JOIN productos p ON dp.producto_id = p.id 
+             INNER JOIN pedidos ped ON dp.pedido_id = ped.id 
+             WHERE ped.mesa_id = ? AND ped.estado = 'pendiente'";
+    
+    $stmt = mysqli_prepare($conexion, $query);
+    mysqli_stmt_bind_param($stmt, "i", $mesa_id);
+    mysqli_stmt_execute($stmt);
+    $productos = mysqli_stmt_get_result($stmt)->fetch_all(MYSQLI_ASSOC);
+
+    if (generar_ticket_cocina($conexion, $mesa_id, $productos)) {
+        header("Location: cuenta.php?mesa_id=$mesa_id&print=success");
+    } else {
+        header("Location: cuenta.php?mesa_id=$mesa_id&print=error");
+    }
+    exit;
 }
 ?>

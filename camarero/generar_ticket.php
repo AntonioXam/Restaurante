@@ -152,7 +152,12 @@ try {
     
 } catch (Exception $e) {
     $_SESSION['error_ticket'] = "Error al imprimir ticket: " . $e->getMessage();
-    header("Location: cuenta.php?mesa_id=$mesa_id&print=error");
+    if (isset($_GET['action']) && $_GET['action'] === 'pagar') {
+        $_SESSION['error_ticket'] .= " ¿Desea procesar el pago igualmente?";
+        header("Location: cuenta.php?mesa_id=$mesa_id&confirmar_pago=true");
+    } else {
+        header("Location: cuenta.php?mesa_id=$mesa_id");
+    }
     exit;
 }
 ?>

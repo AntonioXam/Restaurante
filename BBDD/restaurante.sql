@@ -153,7 +153,10 @@ INSERT INTO `productos` (`id`, `nombre`, `categoria`, `precio`, `stock`) VALUES
 (27, 'Merluza a la Romana', 'pescado', '11.00', 10),
 (28, 'Entrecot de Ternera', 'carne', '15.00', 10),
 (29, 'Solomillo de Cerdo', 'carne', '14.00', 10),
-(30, 'Pollo Asado', 'carne', '10.00', 10);
+(30, 'Pollo Asado', 'carne', '10.00', 10),
+(31, 'Extra Queso', 'extras', '1.00', 50),
+(32, 'Extra Salsa', 'extras', '0.50', 50),
+(33, 'Extra Aceitunas', 'extras', '0.75', 50);
 
 -- 3. Insertar usuarios (actualizado con estado y foto)
 INSERT INTO `usuarios` (`id`, `nombre`, `apellidos`, `dni`, `rol`, `usuario`, `contrasena`, `foto`, `estado`) VALUES

@@ -83,106 +83,103 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
                 
             case 'enviar_cocina':
-                try {
-                    mysqli_begin_transaction($conexion);
-                    
-                    // 1. Obtener todos los productos del pedido pendiente
-                    $query = "SELECT dp.*, p.nombre as nombre_producto, p.precio 
-                             FROM detalle_pedidos dp 
-                             INNER JOIN productos p ON dp.producto_id = p.id 
-                             INNER JOIN pedidos ped ON dp.pedido_id = ped.id 
-                             WHERE ped.mesa_id = ? AND ped.estado = 'pendiente'";
-                    
-                    $stmt = mysqli_prepare($conexion, $query);
-                    mysqli_stmt_bind_param($stmt, "i", $mesa_id);
-                    mysqli_stmt_execute($stmt);
-                    $detalles = mysqli_stmt_get_result($stmt);
-                    
-                    // Guardar los resultados en un array para usarlos múltiples veces
-                    $productos = [];
-                    while ($row = mysqli_fetch_assoc($detalles)) {
-                        $productos[] = $row;
-                    }
+                mysqli_begin_transaction($conexion);
+                
+                // 1. Obtener todos los productos del pedido pendiente
+                $query = "SELECT dp.*, p.nombre as nombre_producto, p.precio 
+                         FROM detalle_pedidos dp 
+                         INNER JOIN productos p ON dp.producto_id = p.id 
+                         INNER JOIN pedidos ped ON dp.pedido_id = ped.id 
+                         WHERE ped.mesa_id = ? AND ped.estado = 'pendiente'";
+                
+                $stmt = mysqli_prepare($conexion, $query);
+                mysqli_stmt_bind_param($stmt, "i", $mesa_id);
+                mysqli_stmt_execute($stmt);
+                $detalles = mysqli_stmt_get_result($stmt);
+                
+                // Guardar los resultados en un array para usarlos múltiples veces
+                $productos = [];
+                while ($row = mysqli_fetch_assoc($detalles)) {
+                    $productos[] = $row;
+                }
 
-                    if (empty($productos)) {
-                        throw new Exception("No hay productos para enviar a cocina");
-                    }
-
-                    // 2. Generar el ticket de cocina primero
-                    require_once 'generar_ticket_cocina.php';
-                    $ticket_generado = generarTicketCocina($conexion, $mesa_id, $productos);
-                    
-                    // 3. Procesar la cuenta solo si el ticket se generó correctamente
-                    if ($ticket_generado) {
-                        foreach ($productos as $detalle) {
-                            $subtotal = $detalle['cantidad'] * $detalle['precio'];
-                            
-                            // Verificar si ya existe en la cuenta
-                            $check_query = "SELECT id, cantidad FROM cuenta 
-                                          WHERE mesa_id = ? AND producto_id = ?";
-                            $check_stmt = mysqli_prepare($conexion, $check_query);
-                            mysqli_stmt_bind_param($check_stmt, "ii", $mesa_id, $detalle['producto_id']);
-                            mysqli_stmt_execute($check_stmt);
-                            $existing = mysqli_fetch_assoc(mysqli_stmt_get_result($check_stmt));
-
-                            if ($existing) {
-                                // Actualizar cantidad y subtotal existente
-                                $nueva_cantidad = $existing['cantidad'] + $detalle['cantidad'];
-                                $nuevo_subtotal = $nueva_cantidad * $detalle['precio'];
-                                
-                                $update = "UPDATE cuenta 
-                                          SET cantidad = ?, subtotal = ? 
-                                          WHERE id = ?";
-                                $update_stmt = mysqli_prepare($conexion, $update);
-                                mysqli_stmt_bind_param($update_stmt, "idi", 
-                                    $nueva_cantidad, 
-                                    $nuevo_subtotal, 
-                                    $existing['id']
-                                );
-                                mysqli_stmt_execute($update_stmt);
-                            } else {
-                                // Insertar nuevo producto en cuenta
-                                $insert = "INSERT INTO cuenta 
-                                          (mesa_id, producto_id, cantidad, precio_unitario, subtotal) 
-                                          VALUES (?, ?, ?, ?, ?)";
-                                $insert_stmt = mysqli_prepare($conexion, $insert);
-                                mysqli_stmt_bind_param($insert_stmt, "iiidd",
-                                    $mesa_id,
-                                    $detalle['producto_id'],
-                                    $detalle['cantidad'],
-                                    $detalle['precio'],
-                                    $subtotal
-                                );
-                                mysqli_stmt_execute($insert_stmt);
-                            }
-                        }
-
-                        // 4. Limpiar el pedido actual
-                        mysqli_query($conexion, "DELETE FROM detalle_pedidos 
-                                               WHERE pedido_id IN (
-                                                   SELECT id FROM pedidos 
-                                                   WHERE mesa_id = $mesa_id AND estado = 'pendiente'
-                                               )");
-
-                        mysqli_query($conexion, "UPDATE pedidos 
-                                               SET estado = 'completado' 
-                                               WHERE mesa_id = $mesa_id AND estado = 'pendiente'");
-
-                        mysqli_commit($conexion);
-                        
-                        // 5. Redirigir a la cuenta
-                        header("Location: cuenta.php?mesa_id=$mesa_id");
-                        exit;
-                    } else {
-                        throw new Exception("Error al generar el ticket de cocina");
-                    }
-
-                } catch (Exception $e) {
+                if (empty($productos)) {
                     mysqli_rollback($conexion);
-                    error_log("Error en enviar_cocina: " . $e->getMessage());
+                    $_SESSION['error_ticket'] = "No hay productos para enviar a cocina";
                     header("Location: gestionar_pedido.php?mesa_id=$mesa_id&error=true");
                     exit;
                 }
+
+                try {
+                    // Procesar la cuenta primero
+                    foreach ($productos as $detalle) {
+                        $subtotal = $detalle['cantidad'] * $detalle['precio'];
+
+                        // Verificar si ya existe en la cuenta
+                        $check_query = "SELECT id, cantidad FROM cuenta 
+                                      WHERE mesa_id = ? AND producto_id = ?";
+                        $check_stmt = mysqli_prepare($conexion, $check_query);
+                        mysqli_stmt_bind_param($check_stmt, "ii", $mesa_id, $detalle['producto_id']);
+                        mysqli_stmt_execute($check_stmt);
+                        $existing = mysqli_stmt_get_result($check_stmt)->fetch_assoc();
+
+                        if ($existing) {
+                            // Actualizar cantidad y subtotal existente
+                            $nueva_cantidad = $existing['cantidad'] + $detalle['cantidad'];
+                            $nuevo_subtotal = $nueva_cantidad * $detalle['precio'];
+                            $update = "UPDATE cuenta 
+                                      SET cantidad = ?, subtotal = ? 
+                                      WHERE id = ?";
+                            $update_stmt = mysqli_prepare($conexion, $update);
+                            mysqli_stmt_bind_param($update_stmt, "idi", 
+                                $nueva_cantidad, 
+                                $nuevo_subtotal, 
+                                $existing['id']
+                            );
+                            mysqli_stmt_execute($update_stmt);
+                        } else {
+                            // Insertar nuevo producto en cuenta
+                            $insert = "INSERT INTO cuenta 
+                                      (mesa_id, producto_id, cantidad, precio_unitario, subtotal) 
+                                      VALUES (?, ?, ?, ?, ?)";
+                            $insert_stmt = mysqli_prepare($conexion, $insert);
+                            mysqli_stmt_bind_param($insert_stmt, "iiidd",
+                                $mesa_id,
+                                $detalle['producto_id'],
+                                $detalle['cantidad'],
+                                $detalle['precio'],
+                                $subtotal
+                            );
+                            mysqli_stmt_execute($insert_stmt);
+                        }
+                    }
+                    // Actualizar el estado del pedido a completado
+                    mysqli_query($conexion, "UPDATE pedidos 
+                                           SET estado = 'completado' 
+                                           WHERE mesa_id = $mesa_id AND estado = 'pendiente'");
+
+                    // Confirmar la transacción
+                    mysqli_commit($conexion);
+
+                } catch (Exception $e) {
+                    // En caso de error, revertir la transacción y mostrar mensaje de error
+                    mysqli_rollback($conexion);
+                    $_SESSION['error_ticket'] = "Error al procesar el pedido: " . $e->getMessage();
+                    header("Location: cuenta.php?mesa_id=$mesa_id");
+                    exit;
+                }
+
+                // Intentar generar el ticket de cocina fuera de la transacción
+                require_once 'generar_ticket_cocina.php';
+                $ticket_generado = generar_ticket_cocina($conexion, $mesa_id, $productos);
+
+                if (!$ticket_generado) {
+                    $_SESSION['error_ticket'] = "Error al imprimir ticket de cocina. Los productos se han añadido a la cuenta.";
+                }
+
+                // Redirigir a la página de cuenta
+                header("Location: cuenta.php?mesa_id=$mesa_id");
+                exit;
                
         }
         header("Location: gestionar_pedido.php?mesa_id=$mesa_id");
@@ -654,15 +651,12 @@ $mesa_numero = isset($mesa) ? $mesa['numero_mesa'] : 'No seleccionada';
                                                             <i class="fas fa-edit"></i>
                                                             <span class="d-none d-sm-inline ms-1">Modificar</span>
                                                         </button>
-                                                        <form action="" method="POST" class="d-inline">
-                                                            <input type="hidden" name="action" value="eliminar">
-                                                            <input type="hidden" name="detalle_id" value="<?php echo $detalle['id']; ?>">
-                                                            <button type="submit" class="btn btn-danger" 
-                                                                    onclick="return confirm('¿Está seguro de eliminar este producto?')">
-                                                                <i class="fas fa-trash"></i>
-                                                                <span class="d-none d-sm-inline ms-1">Eliminar</span>
-                                                            </button>
-                                                        </form>
+                                                        <button class="btn btn-danger" 
+                                                                onclick="mostrarModalEliminar(<?php echo $detalle['id']; ?>, 
+                                                                                              '<?php echo htmlspecialchars($detalle['nombre_producto']); ?>')">
+                                                            <i class="fas fa-trash"></i>
+                                                            <span class="d-none d-sm-inline ms-1">Eliminar</span>
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -727,6 +721,29 @@ $mesa_numero = isset($mesa) ? $mesa['numero_mesa'] : 'No seleccionada';
         </div>
     </div>
 
+    <!-- Modal para confirmar eliminación -->
+    <div class="modal fade" id="eliminarModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro de eliminar <strong id="productoEliminar"></strong> del pedido?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form action="" method="POST">
+                        <input type="hidden" name="action" value="eliminar">
+                        <input type="hidden" name="detalle_id" id="detalleEliminarId">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
     function modificarCantidad(detalle_id, cantidad, notas) {
         document.getElementById('mod_detalle_id').value = detalle_id;
@@ -749,6 +766,12 @@ $mesa_numero = isset($mesa) ? $mesa['numero_mesa'] : 'No seleccionada';
         if (nuevoValor >= 1) {
             input.value = nuevoValor;
         }
+    }
+
+    function mostrarModalEliminar(detalleId, nombreProducto) {
+        document.getElementById('detalleEliminarId').value = detalleId;
+        document.getElementById('productoEliminar').textContent = nombreProducto;
+        new bootstrap.Modal(document.getElementById('eliminarModal')).show();
     }
     </script>
 
