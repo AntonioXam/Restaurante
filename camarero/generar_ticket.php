@@ -5,6 +5,7 @@ require_once '../vendor/autoload.php';
 
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\EscposImage;
 
 $mesa_id = isset($_GET['mesa_id']) ? (int)$_GET['mesa_id'] : null;
@@ -25,6 +26,7 @@ try {
     $ipImpresora = "192.168.36.169";  // Cambiar a la IP de tu impresora
     $puertoImpresora = 9100;         // Puerto por defecto para impresoras ESC/POS
     $connector = new NetworkPrintConnector($ipImpresora, $puertoImpresora);
+    $connector2 = new WindowsPrintConnector("Jolimark TP510");
     $printer = new Printer($connector);
     
     // Configuración inicial de la impresora

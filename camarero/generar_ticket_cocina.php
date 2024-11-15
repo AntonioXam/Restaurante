@@ -5,6 +5,7 @@ require_once '../vendor/autoload.php';
 
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 function generar_ticket_cocina($conexion, $mesa_id, $productos) {
     try {
@@ -12,6 +13,7 @@ function generar_ticket_cocina($conexion, $mesa_id, $productos) {
         $ipImpresora = "192.168.36.169";  // Cambiar a la IP de tu impresora
         $puertoImpresora = 9100;         // Puerto por defecto para impresoras ESC/POS
         $connector = new NetworkPrintConnector($ipImpresora, $puertoImpresora);
+        $connector2 = new WindowsPrintConnector("Jolimark TP510");
         $printer = new Printer($connector);
         
         // Configuración inicial de la impresora
