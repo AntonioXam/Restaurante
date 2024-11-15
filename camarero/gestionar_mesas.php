@@ -32,6 +32,22 @@ function obtener_mesas_activas($conexion) {
     return mysqli_query($conexion, "SELECT * FROM mesas WHERE estado = 'activa'");
 }
 
+/**
+ * Verifica si una mesa tiene productos en la cuenta
+ * @param mysqli $conexion - Conexión a la base de datos
+ * @param int $mesa_id - ID de la mesa
+ * @return bool - True si tiene productos, False en caso contrario
+ */
+function mesa_tiene_productos($conexion, $mesa_id) {
+    $query = "SELECT COUNT(*) as total FROM cuenta WHERE mesa_id = ?";
+    $stmt = mysqli_prepare($conexion, $query);
+    mysqli_stmt_bind_param($stmt, "i", $mesa_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($result);
+    return $row['total'] > 0;
+}
+
 // Lógica para activar mesa
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activar_mesa'])) {
     $mesa_id = $_POST['mesa_id'];
@@ -42,6 +58,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activar_mesa'])) {
 
     header("Location: gestionar_pedido.php?mesa_id=$mesa_id");
     exit();
+}
+
+// Lógica para cerrar mesa
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cerrar_mesa'])) {
+    $mesa_id = $_POST['mesa_id'];
+    if (!mesa_tiene_productos($conexion, $mesa_id)) {
+        mysqli_query($conexion, "UPDATE mesas SET estado = 'inactiva', comensales = NULL WHERE id = $mesa_id");
+        header("Location: gestionar_mesas.php?status=success");
+        exit();
+    }
 }
 
 $mesa_id = isset($_GET['mesa_id']) ? $_GET['mesa_id'] : null;
@@ -232,6 +258,105 @@ $mesas_activas_result = obtener_mesas_activas($conexion);
             padding: 0.4rem 0.8rem;
         }
     }
+
+    .btn-outline-danger.disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-outline-danger.disabled::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: rgba(220, 53, 69, 0.1);
+        animation: disabledAnimation 2s infinite;
+    }
+
+    @keyframes disabledAnimation {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+
+    .mesa-estado {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .mesa-card .botones-mesa {
+        display: grid;
+        gap: 0.5rem;
+    }
+
+    .mesa-card .botones-mesa .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem;
+        font-size: 0.875rem;
+        width: 100%;
+    }
+
+    .mesa-card .botones-mesa i {
+        margin-right: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .mesa-estado {
+        font-size: 0.65rem;
+        padding: 0.15rem 0.5rem;
+        margin-left: 0.5rem;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    @media (max-width: 576px) {
+        .mesa-card .botones-mesa {
+            gap: 0.35rem;
+        }
+
+        .mesa-card .botones-mesa .btn {
+            font-size: 0.8rem;
+            padding: 0.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mesa-card .botones-mesa .btn i {
+            font-size: 0.9rem;
+            margin-right: 0.3rem;
+        }
+
+        .mesa-estado {
+            position: static;
+            display: inline-flex;
+            align-items: center;
+            margin-left: 0.3rem;
+            font-size: 0.65rem;
+            padding: 0.1rem 0.3rem;
+        }
+
+        .mesa-card .card-body {
+            padding: 0.75rem !important;
+        }
+
+        .mesa-card h5.card-title {
+            font-size: 1rem;
+        }
+
+        .mesa-card .card-text {
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+    }
     </style>
 </head>
 <body>
@@ -265,7 +390,8 @@ $mesas_activas_result = obtener_mesas_activas($conexion);
                         <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4">
                             <?php 
                             $mesas_activas = obtener_mesas_activas($conexion);
-                            while ($mesa = mysqli_fetch_assoc($mesas_activas)):
+                            while ($mesa = mysqli_fetch_assoc($mesas_activas)): 
+                                $tiene_productos = mesa_tiene_productos($conexion, $mesa['id']);
                             ?>
                             <div class="col">
                                 <div class="card h-100 mesa-card active border-0">
@@ -280,17 +406,39 @@ $mesas_activas_result = obtener_mesas_activas($conexion);
                                         <p class="card-text text-muted mb-3">
                                             <small><i class="fas fa-users me-1"></i><?php echo $mesa['comensales']; ?> comensales</small>
                                         </p>
-                                        <div class="d-grid gap-2">
+                                        <div class="botones-mesa">
                                             <a href="gestionar_pedido.php?mesa_id=<?php echo $mesa['id']; ?>" 
-                                               class="btn btn-primary btn-sm">
-                                               <i class="fas fa-utensils me-1"></i>
-                                               Gestionar
+                                               class="btn btn-primary d-flex align-items-center justify-content-center">
+                                               <i class="fas fa-utensils"></i>
+                                               <span>Gestionar</span>
                                             </a>
                                             <a href="cuenta.php?mesa_id=<?php echo $mesa['id']; ?>" 
-                                               class="btn btn-outline-primary btn-sm">
-                                               <i class="fas fa-receipt me-1"></i>
-                                               Cuenta
+                                               class="btn btn-outline-primary d-flex align-items-center justify-content-center">
+                                               <i class="fas fa-receipt"></i>
+                                               <span>Cuenta</span>
                                             </a>
+                                            <?php if (!$tiene_productos): ?>
+                                                <button onclick="cerrarMesa(<?php echo $mesa['id']; ?>)" 
+                                                        class="btn btn-outline-danger d-flex align-items-center justify-content-center">
+                                                    <i class="fas fa-door-open"></i>
+                                                    <span>Cerrar</span>
+                                                    <span class="badge bg-success mesa-estado">
+                                                        Libre
+                                                    </span>
+                                                </button>
+                                            <?php else: ?>
+                                                <button class="btn btn-outline-danger disabled d-flex align-items-center justify-content-center" 
+                                                        disabled
+                                                        data-bs-toggle="tooltip" 
+                                                        data-bs-placement="top" 
+                                                        title="No se puede cerrar la mesa mientras tenga productos pendientes">
+                                                    <i class="fas fa-door-open"></i>
+                                                    <span>Cerrar</span>
+                                                    <span class="badge bg-warning mesa-estado">
+                                                        Ocupada
+                                                    </span>
+                                                </button>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -359,6 +507,33 @@ $mesas_activas_result = obtener_mesas_activas($conexion);
         </div>
     </div>
 
+    <!-- Modal Cerrar Mesa -->
+    <div class="modal fade" id="cerrarMesaModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Cierre de Mesa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center mb-1">¿Está seguro que desea cerrar esta mesa?</p>
+                    <p class="text-center text-muted small">Esta acción liberará la mesa para nuevos clientes</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form action="" method="POST">
+                        <input type="hidden" name="mesa_id" id="cerrarMesaId">
+                        <input type="hidden" name="cerrar_mesa" value="1">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-door-open me-2"></i>
+                            Cerrar Mesa
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     /**
@@ -384,6 +559,19 @@ $mesas_activas_result = obtener_mesas_activas($conexion);
             input.value = nuevoValor;
         }
     }
+
+    function cerrarMesa(mesaId) {
+        document.getElementById('cerrarMesaId').value = mesaId;
+        new bootstrap.Modal(document.getElementById('cerrarMesaModal')).show();
+    }
+
+    // Inicializar tooltips de Bootstrap
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
     </script>
 </body>
 </html>
