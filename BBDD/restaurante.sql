@@ -29,6 +29,10 @@ CREATE TABLE `productos` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Asegurarse de que la tabla productos tiene los campos necesarios
+ALTER TABLE `productos` 
+    ADD COLUMN `stock` int(11) DEFAULT NULL AFTER `precio`;
+
 -- 3. Tabla usuarios (actualizada con columna estado)
 CREATE TABLE `usuarios` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
