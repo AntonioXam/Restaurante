@@ -29,9 +29,11 @@ try {
     $connector = new NetworkPrintConnector($ipImpresora, $puertoImpresora);
     $printer = new Printer($connector);
     
-    // Establecer la página de códigos
-    $printer->text("\x1B\x74\x01");
-
+   // Configuración inicial de la impresora
+   $printer->setPrintLeftMargin(0);
+   $printer->setJustification(Printer::JUSTIFY_CENTER);
+   $printer->setTextSize(1, 1);
+   
     // Generar número de factura (reimpresión)
     $num_factura = date('YmdHi', strtotime("$fecha $hora")) . sprintf("%03d", $mesa_id);
 
