@@ -25,14 +25,16 @@ try {
     $cuenta_result = mysqli_stmt_get_result($stmt);
 
     // Configurar impresora
-    $ipImpresora = "192.168.0.169";  // Cambiar a la IP de tu impresora
+    $ipImpresora = "192.168.36.169";  // Cambiar a la IP de tu impresora
     $puertoImpresora = 9100;         // Puerto por defecto para impresoras ESC/POS
     $connector = new NetworkPrintConnector($ipImpresora, $puertoImpresora);
     $connector2 = new WindowsPrintConnector("Jolimark TP510");
     $printer = new Printer($connector);
     
-    // Establecer la página de códigos
-    $printer->text("\x1B\x74\x01");
+ // Configuración inicial de la impresora
+ $printer->setPrintLeftMargin(0);
+ $printer->setJustification(Printer::JUSTIFY_CENTER);
+ $printer->setTextSize(1, 1);
 
     // Generar número de factura (reimpresión)
     $num_factura = date('YmdHi', strtotime("$fecha $hora")) . sprintf("%03d", $mesa_id);
