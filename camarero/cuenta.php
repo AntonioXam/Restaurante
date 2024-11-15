@@ -339,11 +339,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                     <i class="fas fa-receipt"></i>
                                     <span class="d-none d-sm-inline ms-1">Ticket Cuenta</span>
                                 </a>
-                                <a href="generar_ticket_cocina.php?mesa_id=<?php echo $mesa_id; ?>" 
-                                   class="btn btn-sm btn-outline-light header-action-btn">
-                                    <i class="fas fa-utensils"></i>
-                                    <span class="d-none d-sm-inline ms-1">Ticket Cocina</span>
-                                </a>
                             </div>
                         </div>
                     </div>
