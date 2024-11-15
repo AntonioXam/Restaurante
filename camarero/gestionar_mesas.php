@@ -263,23 +263,6 @@ $mesas_activas_result = obtener_mesas_activas($conexion);
         opacity: 0.6;
         cursor: not-allowed;
         position: relative;
-        overflow: hidden;
-    }
-
-    .btn-outline-danger.disabled::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: rgba(220, 53, 69, 0.1);
-        animation: disabledAnimation 2s infinite;
-    }
-
-    @keyframes disabledAnimation {
-        0% { left: -100%; }
-        100% { left: 100%; }
     }
 
     .mesa-estado {
