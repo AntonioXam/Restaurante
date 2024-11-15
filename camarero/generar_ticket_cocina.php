@@ -6,7 +6,7 @@ require_once '../vendor/autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 
-function generar_ticket_cocina($conexion, $mesa_id, $productos) {
+function generar_ticket_cocina($conexion, $mesa_id) {
     try {
         // Configurar impresora - Usar conexión de red
         $ipImpresora = "192.168.0.169";  // Cambiar a la IP de tu impresora
@@ -28,12 +28,27 @@ function generar_ticket_cocina($conexion, $mesa_id, $productos) {
         $printer->text("Fecha: " . date('d/m/Y H:i') . "\n");
         $printer->text(str_repeat("-", 32) . "\n");
 
+        // Obtener los productos del pedido pendiente
+        $query = "SELECT dp.*, p.nombre as nombre_producto 
+                  FROM detalle_pedidos dp 
+                  INNER JOIN productos p ON dp.producto_id = p.id 
+                  INNER JOIN pedidos ped ON dp.pedido_id = ped.id 
+                  WHERE ped.mesa_id = ? AND ped.estado = 'pendiente'";
+        
+        $stmt = mysqli_prepare($conexion, $query);
+        mysqli_stmt_bind_param($stmt, "i", $mesa_id);
+        mysqli_stmt_execute($stmt);
+        $productos = mysqli_stmt_get_result($stmt)->fetch_all(MYSQLI_ASSOC);
+
         // Detalles de productos
         foreach ($productos as $item) {
             $nombre = substr($item['nombre_producto'], 0, 16);
             $cantidad = str_pad($item['cantidad'], 3, ' ', STR_PAD_LEFT);
             
             $printer->text(sprintf("%-16s %3s\n", $nombre, $cantidad));
+            if (!empty($item['notas'])) {
+                $printer->text("  Notas: " . $item['notas'] . "\n");
+            }
         }
 
         // Pie del ticket
@@ -46,6 +61,12 @@ function generar_ticket_cocina($conexion, $mesa_id, $productos) {
         $printer->cut();
         $printer->close();
 
+        // Actualizar el estado del pedido a 'enviado'
+        $update_query = "UPDATE pedidos SET estado = 'enviado' WHERE mesa_id = ? AND estado = 'pendiente'";
+        $update_stmt = mysqli_prepare($conexion, $update_query);
+        mysqli_stmt_bind_param($update_stmt, "i", $mesa_id);
+        mysqli_stmt_execute($update_stmt);
+
         return true;
     } catch (Exception $e) {
         error_log("Error al imprimir ticket de cocina: " . $e->getMessage());
@@ -55,18 +76,8 @@ function generar_ticket_cocina($conexion, $mesa_id, $productos) {
 
 if (isset($_GET['mesa_id'])) {
     $mesa_id = (int)$_GET['mesa_id'];
-    $query = "SELECT dp.*, p.nombre as nombre_producto 
-             FROM detalle_pedidos dp 
-             INNER JOIN productos p ON dp.producto_id = p.id 
-             INNER JOIN pedidos ped ON dp.pedido_id = ped.id 
-             WHERE ped.mesa_id = ? AND ped.estado = 'pendiente'";
-    
-    $stmt = mysqli_prepare($conexion, $query);
-    mysqli_stmt_bind_param($stmt, "i", $mesa_id);
-    mysqli_stmt_execute($stmt);
-    $productos = mysqli_stmt_get_result($stmt)->fetch_all(MYSQLI_ASSOC);
 
-    if (generar_ticket_cocina($conexion, $mesa_id, $productos)) {
+    if (generar_ticket_cocina($conexion, $mesa_id)) {
         header("Location: cuenta.php?mesa_id=$mesa_id&print=success");
     } else {
         header("Location: cuenta.php?mesa_id=$mesa_id&print=error");
