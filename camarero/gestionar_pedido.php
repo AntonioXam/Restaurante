@@ -111,6 +111,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 try {
+                    // Intentar imprimir el ticket de cocina primero
+                    require_once 'generar_ticket_cocina.php';
+                    $ticket_impreso = generar_ticket_cocina($conexion, $mesa_id, $productos);
+                    
+                    if (!$ticket_impreso) {
+                        // Si falla la impresión, logueamos el error pero continuamos
+                        error_log("Error al imprimir ticket de cocina para mesa $mesa_id");
+                    }
+
+                    // Continuar con el proceso normal
                     // Procesar la cuenta primero
                     foreach ($productos as $detalle) {
                         $subtotal = $detalle['cantidad'] * $detalle['precio'];
