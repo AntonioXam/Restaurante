@@ -64,8 +64,13 @@ function generar_ticket_cocina($conexion, $mesa_id) {
         // Actualizar el estado del pedido a 'enviado'
         $update_query = "UPDATE pedidos SET estado = 'enviado' WHERE mesa_id = ? AND estado = 'pendiente'";
         $update_stmt = mysqli_prepare($conexion, $update_query);
+        if (!$update_stmt) {
+            throw new Exception("Error al preparar la actualización del pedido: " . mysqli_error($conexion));
+        }
         mysqli_stmt_bind_param($update_stmt, "i", $mesa_id);
-        mysqli_stmt_execute($update_stmt);
+        if (!mysqli_stmt_execute($update_stmt)) {
+            throw new Exception("Error al ejecutar la actualización del pedido: " . mysqli_stmt_error($update_stmt));
+        }
 
         return true;
     } catch (Exception $e) {

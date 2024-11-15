@@ -67,6 +67,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     echo "Error: " . mysqli_error($conexion);
                 }
 
+                // Obtener precio_unitario del producto
+                $precio_query = "SELECT precio FROM productos WHERE id = ?";
+                $precio_stmt = mysqli_prepare($conexion, $precio_query);
+                if (!$precio_stmt) {
+                    // Registrar error y mostrar mensaje al usuario
+                    error_log("Error al preparar la consulta de precio: " . mysqli_error($conexion));
+                    $_SESSION['error_ticket'] = "Error al obtener el precio del producto.";
+                    header("Location: cuenta.php?mesa_id=$mesa_id&status=error");
+                    exit;
+                }
+                mysqli_stmt_bind_param($precio_stmt, "i", $producto_id);
+                if (!mysqli_stmt_execute($precio_stmt)) {
+                    // Registrar error y mostrar mensaje al usuario
+                    error_log("Error al ejecutar la consulta de precio: " . mysqli_stmt_error($precio_stmt));
+                    $_SESSION['error_ticket'] = "Error al obtener el precio del producto.";
+                    header("Location: cuenta.php?mesa_id=$mesa_id&status=error");
+                    exit;
+                }
+                mysqli_stmt_bind_result($precio_stmt, $precio_unitario);
+                mysqli_stmt_fetch($precio_stmt);
+                mysqli_stmt_close($precio_stmt);
+                
+                if ($precio_unitario === null) {
+                    // Registrar error y mostrar mensaje al usuario
+                    error_log("Precio unitario no encontrado para producto ID: " . $producto_id);
+                    $_SESSION['error_ticket'] = "Precio del producto no disponible.";
+                    header("Location: cuenta.php?mesa_id=$mesa_id&status=error");
+                    exit;
+                }
+                
+                // Calcular subtotal
+                $subtotal = $cantidad * $precio_unitario;
+                
+                // Insertar producto en cuenta
+                $insert_query = "INSERT INTO cuenta (mesa_id, producto_id, cantidad, precio_unitario, subtotal) VALUES (?, ?, ?, ?, ?)";
+                $insert_stmt = mysqli_prepare($conexion, $insert_query);
+                if (!$insert_stmt) {
+                    // Registrar error y mostrar mensaje al usuario
+                    error_log("Error al preparar la inserción en cuenta: " . mysqli_error($conexion));
+                    $_SESSION['error_ticket'] = "Error al agregar el producto a la cuenta.";
+                    header("Location: cuenta.php?mesa_id=$mesa_id&status=error");
+                    exit;
+                }
+                mysqli_stmt_bind_param($insert_stmt, "iiidd", $mesa_id, $producto_id, $cantidad, $precio_unitario, $subtotal);
+                if (!mysqli_stmt_execute($insert_stmt)) {
+                    // Registrar error y mostrar mensaje al usuario
+                    error_log("Error al ejecutar la inserción en cuenta: " . mysqli_stmt_error($insert_stmt));
+                    $_SESSION['error_ticket'] = "Error al agregar el producto a la cuenta.";
+                    header("Location: cuenta.php?mesa_id=$mesa_id&status=error");
+                    exit;
+                }
+
+                break;
+
             case 'eliminar':
                 $detalle_id = mysqli_real_escape_string($conexion, $_POST['detalle_id']);
                 mysqli_query($conexion, "DELETE FROM detalle_pedidos WHERE id = '$detalle_id'");

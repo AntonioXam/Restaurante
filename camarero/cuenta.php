@@ -306,12 +306,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     <?php if (isset($error_mensaje)): ?>
         <div class="alert alert-danger alert-dismissible fade show mx-3 mt-3" role="alert">
             <?php echo htmlspecialchars($error_mensaje); ?>
-            <?php if (isset($_GET['confirmar_pago']) && $_GET['confirmar_pago'] === 'true'): ?>
-                <form method="POST" class="d-inline">
-                    <input type="hidden" name="action" value="pagar_sin_ticket">
-                    <button type="submit" class="btn btn-danger btn-sm ms-2">Procesar Pago</button>
-                </form>
-            <?php endif; ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     <?php endif; ?>

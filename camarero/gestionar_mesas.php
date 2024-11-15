@@ -44,6 +44,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activar_mesa'])) {
     exit();
 }
 
+// Al enviar a cocina
+if (isset($_POST['enviar_cocina'])) {
+    $mesa_id = (int)$_POST['mesa_id'];
+    header("Location: generar_ticket_cocina.php?mesa_id=$mesa_id");
+    exit;
+}
+
 $mesa_id = isset($_GET['mesa_id']) ? $_GET['mesa_id'] : null;
 $mesas_inactivas_result = mysqli_query($conexion, "SELECT * FROM mesas WHERE estado = 'inactiva'");
 $mesas_activas_result = obtener_mesas_activas($conexion);
