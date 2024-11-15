@@ -54,7 +54,7 @@ function generar_ticket_cocina($conexion, $mesa_id) {
         // Pie del ticket
         $printer->setJustification(Printer::JUSTIFY_CENTER);
         $printer->text("\n");
-        $printer->text("FIN DEL TICKET\n");
+        $printer->text(str_repeat("-", 32) . "\n");
         $printer->text("\n\n");
 
         // Cortar ticket
