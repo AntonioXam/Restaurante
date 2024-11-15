@@ -111,16 +111,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 try {
-                    // Intentar imprimir el ticket de cocina primero
-                    require_once 'generar_ticket_cocina.php';
-                    $ticket_impreso = generar_ticket_cocina($conexion, $mesa_id, $productos);
-                    
-                    if (!$ticket_impreso) {
-                        // Si falla la impresión, logueamos el error pero continuamos
-                        error_log("Error al imprimir ticket de cocina para mesa $mesa_id");
-                    }
-
-                    // Continuar con el proceso normal
                     // Procesar la cuenta primero
                     foreach ($productos as $detalle) {
                         $subtotal = $detalle['cantidad'] * $detalle['precio'];
@@ -168,6 +158,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                            SET estado = 'completado' 
                                            WHERE mesa_id = $mesa_id AND estado = 'pendiente'");
 
+                    // Intentar generar el ticket de cocina
+                    require_once 'generar_ticket_cocina.php';
+                    $ticket_generado = generar_ticket_cocina($conexion, $mesa_id, $productos);
+
+                    if (!$ticket_generado) {
+                        error_log("Error al imprimir ticket de cocina para mesa $mesa_id");
+                        $_SESSION['error_ticket'] = "Error al imprimir ticket de cocina. Los productos se han añadido a la cuenta.";
+                    }
+
                     // Confirmar la transacción
                     mysqli_commit($conexion);
 
@@ -177,14 +176,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['error_ticket'] = "Error al procesar el pedido: " . $e->getMessage();
                     header("Location: cuenta.php?mesa_id=$mesa_id");
                     exit;
-                }
-
-                // Intentar generar el ticket de cocina fuera de la transacción
-                require_once 'generar_ticket_cocina.php';
-                $ticket_generado = generar_ticket_cocina($conexion, $mesa_id, $productos);
-
-                if (!$ticket_generado) {
-                    $_SESSION['error_ticket'] = "Error al imprimir ticket de cocina. Los productos se han añadido a la cuenta.";
                 }
 
                 // Redirigir a la página de cuenta
