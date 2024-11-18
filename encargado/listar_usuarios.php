@@ -1,4 +1,6 @@
 <?php
+
+// Incluir archivos de sesión y conexión
 include 'sesion_encargado.php';
 include '../conexion.php';
 
@@ -15,16 +17,19 @@ if ($rol) {
 }
 
 $resultado = $conexion->query($sql);
-
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Metadatos y título -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Listado de Usuarios</title>
+    <!-- CSS de Bootstrap -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Estilos personalizados -->
     <style>
+        /* Estilos responsivos */
         @media (max-width: 768px) {
             .table-responsive { font-size: 0.85rem; }
             .container { padding: 10px; }
@@ -157,10 +162,12 @@ $resultado = $conexion->query($sql);
     </style>
 </head>
 <body class="bg-light">
+    <!-- Cabecera -->
     <header class="bg-primary text-white text-center py-3">
         <h1 class="h3">Bienvenido, <?php echo $_SESSION['nombre']; ?></h1>
     </header>
 
+    <!-- Contenido principal -->
     <div class="container mt-3 mt-lg-5">
         <div class="row">
             <div class="col-12">
@@ -173,6 +180,7 @@ $resultado = $conexion->query($sql);
                     <h2 class="h4 mb-4 text-center">
                         <?php echo $rol ? 'Listado de ' . ucfirst($rol) . 's' : 'Listado de Usuarios'; ?>
                     </h2>
+                    <!-- Tabla de usuarios para escritorio -->
                     <div class="table-responsive table-desktop">
                         <table class="table table-striped table-hover">
                             <thead>
@@ -208,7 +216,7 @@ $resultado = $conexion->query($sql);
                                         <td><?php echo $usuario['contrasena']; ?></td>
                                         <td><?php echo $usuario['estado'] ? 'Activo' : 'Suspendido'; ?></td>
                                         <td class="actions-column">
-                                            <!-- Botón para suspender/activar -->
+                                            <!-- Botones para suspender/activar y eliminar -->
                                             <button type="button" class="btn btn-<?php echo $usuario['estado'] ? 'warning' : 'success'; ?> btn-sm"
                                                 data-toggle="modal"
                                                 data-target="#confirmarSuspenderModal"
@@ -217,7 +225,6 @@ $resultado = $conexion->query($sql);
                                                 data-nombre="<?php echo $usuario['nombre']; ?>">
                                                 <?php echo $usuario['estado'] ? 'Suspender' : 'Activar'; ?>
                                             </button>
-                                            <!-- Botón para eliminar -->
                                             <button type="button" class="btn btn-danger btn-sm"
                                                 data-toggle="modal"
                                                 data-target="#confirmarEliminarModal"
@@ -231,14 +238,15 @@ $resultado = $conexion->query($sql);
                             </tbody>
                         </table>
                     </div>
+                    <!-- Tarjetas de usuarios para móvil -->
                     <div class="cards-mobile">
                         <?php 
-                        // Reset the result pointer
+                        // Resetear el puntero del resultado
                         $resultado->data_seek(0);
                         while ($usuario = $resultado->fetch_assoc()) { ?>
                             <div class="card card-mobile">
                                 <div class="card-body">
-                                    <!-- Foto y nombre en la primera fila -->
+                                    <!-- Información del usuario -->
                                     <div class="user-info">
                                         <div class="user-image">
                                             <?php if ($usuario['foto']): ?>
@@ -257,7 +265,7 @@ $resultado = $conexion->query($sql);
                                         </div>
                                     </div>
 
-                                    <!-- Información detallada -->
+                                    <!-- Detalles adicionales -->
                                     <div class="info-row">
                                         <span class="info-label">Apellidos:</span>
                                         <span class="info-content"><?php echo $usuario['apellidos']; ?></span>
@@ -275,7 +283,7 @@ $resultado = $conexion->query($sql);
                                         <span class="info-content"><?php echo $usuario['contrasena']; ?></span>
                                     </div>
 
-                                    <!-- Botones de acción -->
+                                    <!-- Acciones -->
                                     <div class="actions">
                                         <form action="gestionar_usuario.php" method="POST">
                                             <input type="hidden" name="id" value="<?php echo $usuario['id']; ?>">
@@ -302,13 +310,14 @@ $resultado = $conexion->query($sql);
             </div>
         </div>
     </div>
+
+    <!-- Scripts de JavaScript -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <!-- Modales de confirmación -->
-
-    <!-- Modal Confirmar Suspender/Activar -->
+    <!-- Modal para Suspender/Activar Usuario -->
     <div class="modal fade" id="confirmarSuspenderModal" tabindex="-1" role="dialog" aria-labelledby="confirmarSuspenderLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -333,7 +342,7 @@ $resultado = $conexion->query($sql);
         </div>
     </div>
 
-    <!-- Modal Confirmar Eliminar -->
+    <!-- Modal para Eliminar Usuario -->
     <div class="modal fade" id="confirmarEliminarModal" tabindex="-1" role="dialog" aria-labelledby="confirmarEliminarLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -358,33 +367,34 @@ $resultado = $conexion->query($sql);
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Script para manejar los modales -->
     <script>
-    // ...código existente...
-    $('#confirmarSuspenderModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        var usuarioId = button.data('id');
-        var accion = button.data('accion');
-        var nombre = button.data('nombre');
-        var modal = $(this);
-        modal.find('.modal-title').text((accion.charAt(0).toUpperCase() + accion.slice(1)) + ' Usuario');
-        modal.find('.modal-body').text('¿Está seguro que desea ' + accion + ' al usuario ' + nombre + '?');
-        modal.find('input[name="id"]').val(usuarioId);
-        modal.find('input[name="accion"]').val(accion);
-    });
+        // Manejar la apertura del modal para suspender/activar usuario
+        $('#confirmarSuspenderModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var usuarioId = button.data('id');
+            var accion = button.data('accion');
+            var nombre = button.data('nombre');
+            var modal = $(this);
+            modal.find('.modal-title').text((accion.charAt(0).toUpperCase() + accion.slice(1)) + ' Usuario');
+            modal.find('.modal-body').text('¿Está seguro que desea ' + accion + ' al usuario ' + nombre + '?');
+            modal.find('input[name="id"]').val(usuarioId);
+            modal.find('input[name="accion"]').val(accion);
+        });
 
-    $('#confirmarEliminarModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        var usuarioId = button.data('id');
-        var nombre = button.data('nombre');
-        var modal = $(this);
-        modal.find('.modal-body').text('¿Está seguro que desea eliminar al usuario ' + nombre + '?');
-        modal.find('input[name="id"]').val(usuarioId);
-    });
+        // Manejar la apertura del modal para eliminar usuario
+        $('#confirmarEliminarModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var usuarioId = button.data('id');
+            var nombre = button.data('nombre');
+            var modal = $(this);
+            modal.find('.modal-body').text('¿Está seguro que desea eliminar al usuario ' + nombre + '?');
+            modal.find('input[name="id"]').val(usuarioId);
+        });
     </script>
 </body>
 </html>
 <?php
-// cerrar la conexion
+// Cerrar conexión
 $conexion->close();
 ?>

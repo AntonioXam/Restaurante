@@ -1,5 +1,8 @@
 <?php
+// Iniciar sesión
 session_start();
+
+// Destruir sesión
 session_destroy();
 
 // Borrar cache
@@ -10,3 +13,4 @@ header("Pragma: no-cache");
 // Redirigir al usuario a la página de inicio
 header("Location: index.php");
 exit();
+?>

@@ -29,11 +29,11 @@ try {
     $connector = new NetworkPrintConnector($ipImpresora, $puertoImpresora);
     $printer = new Printer($connector);
     
-   // Configuración inicial de la impresora
-   $printer->setPrintLeftMargin(0);
-   $printer->setJustification(Printer::JUSTIFY_CENTER);
-   $printer->setTextSize(1, 1);
-   
+    // Configuración inicial de la impresora
+    $printer->setPrintLeftMargin(0);
+    $printer->setJustification(Printer::JUSTIFY_CENTER);
+    $printer->setTextSize(1, 1);
+    
     // Generar número de factura (reimpresión)
     $num_factura = date('YmdHi', strtotime("$fecha $hora")) . sprintf("%03d", $mesa_id);
 
@@ -101,3 +101,4 @@ try {
     header("Location: cuentas_pagadas.php?print=error");
     exit;
 }
+?> 

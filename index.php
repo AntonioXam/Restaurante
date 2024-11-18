@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Metadatos y títulos -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Restaurante - Sistema de gestión">
     <title>Restaurante - Login</title>
+    
+    <!-- Enlaces a CSS externos -->
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Estilos internos -->
     <style>
+        /* Variables de colores */
         :root {
             --primary-color: #1a237e;
             --secondary-color: #3949ab;
             --accent-color: #7986cb;
         }
         
+        /* Estilos generales */
         body {
             background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
                         url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3') !important;
@@ -24,11 +31,13 @@
             background-attachment: fixed !important;
         }
 
+        /* Estilos de la navbar */
         .navbar {
             background: linear-gradient(to right, #1a237e, #3949ab) !important;
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
         }
 
+        /* Tarjeta de login */
         .card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -36,6 +45,7 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
+        /* Botones */
         .btn-primary {
             background: linear-gradient(to right, #1a237e, #3949ab);
             border: none;
@@ -55,11 +65,13 @@
             border-color: white;
         }
 
+        /* Campos de formulario */
         .form-control:focus {
             border-color: var(--accent-color);
             box-shadow: 0 0 0 0.25rem rgba(121, 134, 203, 0.25);
         }
 
+        /* Footer */
         .footer {
             background: linear-gradient(to right, #1a237e, #3949ab) !important;
             color: white !important;
@@ -75,6 +87,7 @@
             border: none;
         }
 
+        /* Enlaces de navbar */
         .navbar .nav-link {
             margin: 0.25rem;
             border-radius: 0.5rem;
@@ -85,6 +98,8 @@
             background-color: rgba(255,255,255,0.1);
             transform: translateY(-1px);
         }
+        
+        /* Media queries para responsividad */
         @media (max-width: 991.98px) {
             .navbar-collapse {
                 background: rgba(0,0,0,0.1);
@@ -141,6 +156,7 @@
             }
         }
         
+        /* Botones de navegación */
         .nav-buttons {
             display: flex;
             gap: 10px;
@@ -173,7 +189,7 @@
     </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
-    <!-- Restaurar navbar -->
+    <!-- Header con Navbar -->
     <header>
         <nav class="navbar navbar-dark bg-primary py-2 flex-column">
             <div class="container flex-column">
@@ -195,6 +211,7 @@
         </nav>
     </header>
     
+    <!-- Contenido principal -->
     <main class="container my-5">
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-4">
@@ -231,15 +248,17 @@
         </div>
     </main>
 
+    <!-- Footer -->
     <footer class="footer mt-auto py-3 bg-light">
         <div class="container text-center">
             <span class="text-muted">© 2024 Restaurante. Todos los derechos reservados.</span>
         </div>
     </footer>
 
-    <!-- Bootstrap 5 JS -->
+    <!-- Scripts de Bootstrap y validación -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Activar validación de formularios
         (() => {
             'use strict'
             const forms = document.querySelectorAll('.needs-validation')

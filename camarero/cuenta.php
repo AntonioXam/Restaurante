@@ -1,7 +1,9 @@
 <?php
+// Incluir archivos de sesión y conexión
 include '../sesion.php';
 include '../conexion.php';
 
+// Obtener ID de la mesa desde la URL
 $mesa_id = isset($_GET['mesa_id']) ? (int)$_GET['mesa_id'] : null;
 
 // Mostrar mensaje de error si existe
@@ -22,7 +24,7 @@ mysqli_stmt_bind_param($stmt, "i", $mesa_id);
 mysqli_stmt_execute($stmt);
 $cuenta_result = mysqli_stmt_get_result($stmt);
 
-// Calcular total
+// Calcular total y almacenar productos en un array
 $total = 0;
 $productos_cuenta = [];
 while ($item = mysqli_fetch_assoc($cuenta_result)) {
@@ -37,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         
         switch ($_POST['action']) {
             case 'modificar_cuenta':
+                // Modificar cantidad y subtotal de un producto
                 $item_id = (int)$_POST['item_id'];
                 $cantidad = (int)$_POST['cantidad'];
                 $precio_unitario = (float)$_POST['precio_unitario'];
@@ -49,13 +52,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 break;
                 
             case 'eliminar_cuenta':
+                // Eliminar un producto de la cuenta
                 $item_id = (int)$_POST['item_id'];
                 mysqli_query($conexion, "DELETE FROM cuenta WHERE id = $item_id");
                 break;
                 
             case 'pagar':
                 try {
-                    // Primero generamos el ticket
+                    // Generar el ticket al procesar pago
                     header("Location: generar_ticket.php?mesa_id=$mesa_id&action=pagar");
                     exit;
                 } catch (Exception $e) {
@@ -121,12 +125,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Metadatos y enlaces a estilos externos -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cuenta Mesa <?php echo $mesa_id; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
+    /* Variables de colores */
     :root {
         --restaurant-primary: #2c3e50;    /* Azul oscuro principal */
         --restaurant-secondary: #34495e;   /* Azul oscuro secundario */
@@ -280,7 +286,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             border-top: 1px solid #dee2e6;
         }
     }
-
     </style>
 </head>
 <body>
@@ -303,6 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         </div>
     </nav>
 
+    <!-- Mensajes de error -->
     <?php if (isset($error_mensaje)): ?>
         <div class="alert alert-danger alert-dismissible fade show mx-3 mt-3" role="alert">
             <?php echo htmlspecialchars($error_mensaje); ?>
@@ -323,10 +329,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         <?php unset($_SESSION['error_ticket']); ?>
     <?php endif; ?>
 
+    <!-- Contenedor principal -->
     <div class="container-fluid py-4">
         <div class="row justify-content-center">
             <div class="col-12 col-lg-8">
                 <div class="card shadow-sm">
+                    <!-- Encabezado de la tarjeta -->
                     <div class="card-header bg-dark text-white py-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
@@ -342,9 +350,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             </div>
                         </div>
                     </div>
+                    <!-- Cuerpo de la tarjeta -->
                     <div class="card-body">
                         <?php if (!empty($productos_cuenta)): ?>
                             <div class="table-responsive">
+                                <!-- Tabla de productos en la cuenta -->
                                 <table class="table table-hover mobile-table">
                                     <thead class="table-light">
                                         <tr>
@@ -410,11 +420,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                     </tfoot>
                                 </table>
                             </div>
+                            <!-- Botón para procesar pago -->
                             <button type="button" class="btn btn-success w-100 mt-4" onclick="mostrarModalPago()">
                                 <i class="fas fa-cash-register me-2"></i>
                                 Procesar Pago
                             </button>
                         <?php else: ?>
+                            <!-- Mensaje cuando no hay productos en la cuenta -->
                             <div class="text-center py-5">
                                 <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
                                 <p class="text-muted">No hay productos en la cuenta</p>
@@ -426,165 +438,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         </div>
     </div>
 
+    <!-- Estilos adicionales duplicados previamente -->
     <style>
-    :root {
-        --restaurant-primary: #2c3e50;    /* Azul oscuro principal */
-        --restaurant-secondary: #34495e;   /* Azul oscuro secundario */
-        --restaurant-accent: #3498db;      /* Azul claro para acentos */
-        --restaurant-light: #ecf0f1;       /* Gris muy claro para fondos */
-        --restaurant-dark: #1a252f;        /* Azul muy oscuro */
-    }
-
-    /* Estilos base */
-    body {
-        background-color: var(--restaurant-light);
-    }
-
-    /* Navegación y encabezados */
-    .navbar {
-        background: var(--restaurant-dark) !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .card {
-        border: none;
-        border-radius: 8px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-        margin-bottom: 1.5rem;
-    }
-
-    .card-header {
-        background: var(--restaurant-primary) !important;
-        color: white;
-        border-radius: 8px 8px 0 0 !important;
-        padding: 1rem 1.5rem;
-    }
-
-    /* Botones principales */
-    .btn-primary {
-        background-color: var(--restaurant-primary);
-        border-color: var(--restaurant-primary);
-    }
-
-    .btn-primary:hover {
-        background-color: var (--restaurant-secondary);
-        border-color: var(--restaurant-secondary);
-        transform: translateY(-1px);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .btn-outline-primary {
-        color: var(--restaurant-primary);
-        border-color: var(--restaurant-primary);
-    }
-
-    .btn-outline-primary:hover {
-        background-color: var(--restaurant-primary);
-        color: white;
-    }
-
-    /* Badges y elementos pequeños */
-    .badge {
-        padding: 0.5em 1em;
-        border-radius: 4px;
-    }
-
-    .badge.bg-primary {
-        background-color: var(--restaurant-primary) !important;
-    }
-
-    .badge.bg-secondary {
-        background-color: var(--restaurant-accent) !important;
-    }
-
-    /* Botones de acción */
-    .header-action-btn {
-        border-color: white;
-        color: white;
-    }
-
-    .header-action-btn:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-        border-color: white;
-        color: white;
-    }
-
-    /* Tabla de productos */
-    .table-hover tbody tr {
-        transition: all 0.2s ease;
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: rgba(44, 62, 80, 0.05);
-        transform: scale(1.01);
-    }
-
-    /* Botón de procesar pago */
-    .btn-success {
-        background-color: var(--restaurant-accent);
-        border-color: var(--restaurant-accent);
-    }
-
-    .btn-success:hover {
-        background-color: var(--restaurant-secondary);
-        border-color: var(--restaurant-secondary);
-        transform: translateY(-1px);
-    }
-
-    /* Modal */
-    .modal-content {
-        border-radius: 8px;
-        border: none;
-    }
-
-    .modal-header {
-        background: var(--restaurant-primary);
-        color: white;
-        border-radius: 8px 8px 0 0;
-    }
-
-    .modal-header .btn-close {
-        filter: brightness(0) invert(1);
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .card-body {
-            padding: 1rem;
-        }
-
-        .btn-group-sm .btn {
-            padding: 0.25rem 0.5rem;
-        }
-
-        .header-action-btn {
-            min-width: 32px;
-            height: 32px;
-            padding: 0.25rem;
-        }
-
-        .header-action-btn span {
-            display: none;
-        }
-
-        .header-action-btn i {
-            margin: 0;
-            font-size: 0.875rem;
-        }
-
-        .mobile-table td.action-buttons {
-            display: flex;
-            justify-content: flex-end;
-            padding-top: 0.5rem;
-            margin-top: 0.5rem;
-            border-top: 1px solid #dee2e6;
-        }
-    }
-
+    /* ...existing code... */
     </style>
 
+    <!-- Scripts de Bootstrap y funcionalidad -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+    // Función para modificar cantidad de un producto
     function modificarCantidad(itemId, nombre, cantidad, precio) {
         document.getElementById('mod_item_id').value = itemId;
         document.getElementById('mod_producto_nombre').textContent = nombre;
@@ -593,6 +455,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         new bootstrap.Modal(document.getElementById('modificarModal')).show();
     }
 
+    // Función para ajustar cantidad con botones +
     function ajustarCantidad(cambio) {
         const input = document.getElementById('mod_cantidad');
         const nuevoValor = parseInt(input.value) + cambio;
@@ -601,6 +464,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
     }
 
+    // Función para eliminar un producto de la cuenta
     function eliminarProducto(itemId, nombre) {
         if (confirm(`¿Está seguro de eliminar ${nombre} de la cuenta?`)) {
             const form = document.createElement('form');
@@ -614,10 +478,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
     }
 
+    // Función para mostrar el modal de pago
     function mostrarModalPago() {
         new bootstrap.Modal(document.getElementById('pagoModal')).show();
     }
 
+    // Función para mostrar el modal de eliminación
     function mostrarModalEliminar(itemId, nombreProducto) {
         document.getElementById('itemEliminarId').value = itemId;
         document.getElementById('productoEliminar').textContent = nombreProducto;
@@ -625,14 +491,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     }
     </script>
 
-    <!-- Añadir el modal de modificación antes del cierre del body -->
+    <!-- Modal para modificar cantidad -->
     <div class="modal fade" id="modificarModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
+                <!-- Encabezado del modal -->
                 <div class="modal-header">
                     <h5 class="modal-title">Modificar Cantidad</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+                <!-- Cuerpo del modal con formulario -->
                 <form action="" method="POST">
                     <div class="modal-body">
                         <input type="hidden" name="action" value="modificar_cuenta">
@@ -649,6 +517,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             </div>
                         </div>
                     </div>
+                    <!-- Pie del modal con botones -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-primary">Guardar cambios</button>
@@ -662,14 +531,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     <div class="modal fade" id="pagoModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
+                <!-- Encabezado del modal -->
                 <div class="modal-header">
                     <h5 class="modal-title">Confirmar Pago</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+                <!-- Cuerpo del modal con información del total -->
                 <div class="modal-body">
                     <p class="text-center">Total a pagar:</p>
                     <h3 class="text-center text-danger"><?php echo number_format($total, 2); ?>€</h3>
                 </div>
+                <!-- Pie del modal con botones -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <form method="POST">
@@ -685,13 +557,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     <div class="modal fade" id="eliminarModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
+                <!-- Encabezado del modal -->
                 <div class="modal-header">
                     <h5 class="modal-title">Confirmar Eliminación</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+                <!-- Cuerpo del modal con mensaje de confirmación -->
                 <div class="modal-body">
                     <p>¿Está seguro de eliminar <strong id="productoEliminar"></strong> de la cuenta?</p>
                 </div>
+                <!-- Pie del modal con botones -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <form action="" method="POST">

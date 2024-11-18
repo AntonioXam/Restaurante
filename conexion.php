@@ -5,16 +5,18 @@ $usuario = 'root';
 $contrasena = '';
 $base_datos = 'restaurante';
 
+// Establecer conexión con la base de datos
 $conexion = mysqli_connect($host, $usuario, $contrasena, $base_datos);
 
+// Verificar conexión
 if (!$conexion) {
     die("Error de conexión: " . mysqli_connect_error());
 }
 
-//caracteres especiales
+// Configurar caracteres especiales
 mysqli_set_charset($conexion, 'utf8mb4');
 
-//comprobar errores en la conexion
-
+// Comprobar errores en la conexión
 mysqli_error($conexion);
+?>
 

@@ -1,15 +1,20 @@
-<?php 
-// include '../sesion.php';
+<?php
+
+// Incluir sesión de encargado
 include 'sesion_encargado.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Metadatos y títulos -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Usuario</title>
+    <!-- CSS de Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Estilos personalizados -->
     <style>
+        /* Estilos responsivos */
         @media (max-width: 768px) {
             .container { 
                 padding: 10px; 
@@ -39,6 +44,7 @@ include 'sesion_encargado.php';
             border-radius: 8px;
         }
     </style>
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body class="bg-light">
@@ -57,6 +63,7 @@ include 'sesion_encargado.php';
                 <div class="form-card">
                     <h2 class="h4 mb-4 text-center">Registrar Nuevo Usuario</h2>
                     <form action="registro.php" method="post" class="needs-validation" enctype="multipart/form-data" novalidate>
+                        <!-- Campos del formulario -->
                         <div class="form-group">
                             <label for="nombre">Nombre:</label>
                             <input type="text" class="form-control" name="nombre" id="nombre" required>
@@ -99,21 +106,20 @@ include 'sesion_encargado.php';
                         <button type="submit" class="btn btn-primary btn-block btn-lg mt-4">Registrar</button>
                     </form>
                 </div>
-                </div>
             </div>
         </div>
     </div>
+
+    <!-- Scripts de JavaScript -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <!-- Agregar el script de validación personalizado -->
+    <!-- Script de validación personalizado -->
     <script>
         (function () {
             'use strict';
             window.addEventListener('load', function () {
-                // Obtener todos los formularios que vamos a validar
                 var forms = document.getElementsByClassName('needs-validation');
-                // Iterar sobre cada formulario y prevenir el envío en caso de ser inválido
                 var validation = Array.prototype.filter.call(forms, function (form) {
                     form.addEventListener('submit', function (event) {
                         if (form.checkValidity() === false) {

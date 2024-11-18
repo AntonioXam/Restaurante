@@ -1,4 +1,7 @@
 <?php
+// ...existing code...
+?>
+<?php
 include '../sesion.php';
 include '../conexion.php';
 
@@ -23,3 +26,4 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 header('Content-Type: application/json');
 echo json_encode($detalles);
+?>

@@ -1,7 +1,10 @@
 <?php
+
+// Incluir archivos de sesión y conexión
 include 'sesion_encargado.php';
 include '../conexion.php';
 
+// Manejar la solicitud POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id = $_POST['id'];
     $accion = $_POST['accion'];
@@ -12,6 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
     
+    // Determinar la acción a realizar
     switch($accion) {
         case 'suspender':
             $sql = "UPDATE usuarios SET estado = 0 WHERE id = ?";
@@ -27,6 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
     }
     
+    // Preparar y ejecutar la consulta
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("i", $id);
     
@@ -39,5 +44,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->close();
 }
 
+// Cerrar conexión
 $conexion->close();
 ?>

@@ -1,18 +1,25 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Metadatos y títulos -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiénes Somos - Restaurante Champiñón</title>
+    
+    <!-- Enlaces a CSS externos -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Estilos internos -->
     <style>
+        /* Variables de colores */
         :root {
             --primary-color: #1a237e;
             --secondary-color: #3949ab;
             --accent-color: #7986cb;
         }
         
+        /* Estilos generales */
         body {
             background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
                         url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3') !important;
@@ -22,11 +29,13 @@
             color: white;
         }
 
+        /* Estilos de la navbar */
         .navbar {
             background: linear-gradient(to right, #1a237e, #3949ab) !important;
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
         }
 
+        /* Tarjetas y listas de valores */
         .card, .valores-lista li {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -35,6 +44,7 @@
             color: #333;
         }
 
+        /* Estilos del footer */
         .footer {
             background: linear-gradient(to right, var(--primary-color), var(--secondary-color)) !important;
             color: white !important;
@@ -44,6 +54,7 @@
             color: white !important;
         }
 
+        /* Estilos de los enlaces de la navbar */
         .navbar .nav-link {
             margin: 0.25rem;
             border-radius: 0.5rem;
@@ -54,6 +65,8 @@
             background-color: rgba(255,255,255,0.1);
             transform: translateY(-1px);
         }
+        
+        /* Media queries para responsividad */
         @media (max-width: 991.98px) {
             .navbar-collapse {
                 background: rgba(0,0,0,0.1);
@@ -120,7 +133,7 @@
             }
         }
         
-        /* Nuevos estilos para el navbar responsive */
+        /* Estilos para el navbar responsive */
         .navbar-container {
             display: flex;
             align-items: center;
@@ -156,7 +169,7 @@
     </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
-    <!-- Restaurar navbar -->
+    <!-- Navbar -->
     <nav class="navbar navbar-dark bg-primary py-2">
         <div class="container">
             <div class="navbar-container">
@@ -167,6 +180,7 @@
         </div>
     </nav>
     
+    <!-- Contenido principal -->
     <main class="container my-4 main-content">
         <div class="row">
             <div class="col-md-6 mb-4">
@@ -190,12 +204,14 @@
         </div>
     </main>
 
+    <!-- Footer -->
     <footer class="footer mt-auto py-3 bg-light">
         <div class="container text-center">
             <span class="text-muted">© 2024 Restaurante Champiñón. Todos los derechos reservados.</span>
         </div>
     </footer>
 
+    <!-- Scripts de Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

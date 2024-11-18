@@ -1,4 +1,5 @@
 <?php
+// Incluir archivos de sesión y conexión
 include '../sesion.php';
 include '../conexion.php';
 
@@ -21,12 +22,14 @@ $cuentas_result = mysqli_query($conexion, $query);
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Metadatos y enlaces a estilos externos -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial de Cuentas - Restaurante</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
+    /* Variables de colores */
     :root {
         --restaurant-primary: #2c3e50;    /* Azul oscuro principal */
         --restaurant-secondary: #34495e;   /* Azul oscuro secundario */
@@ -35,6 +38,7 @@ $cuentas_result = mysqli_query($conexion, $query);
         --restaurant-dark: #1a252f;        /* Azul muy oscuro */
     }
 
+    /* Estilos generales */
     body {
         background-color: var(--restaurant-light);
     }
@@ -95,18 +99,6 @@ $cuentas_result = mysqli_query($conexion, $query);
         background-color: var(--restaurant-accent) !important;
         padding: 0.5em 1em;
         border-radius: 4px;
-    }
-
-    /* Estilos generales */
-    .card {
-        border: none;
-        border-radius: 0.5rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .card-header {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid rgba(0,0,0,0.1);
     }
 
     /* Estilos para la tabla responsive */
@@ -294,6 +286,7 @@ $cuentas_result = mysqli_query($conexion, $query);
     </style>
 </head>
 <body>
+    <!-- Navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="#">Restaurante</a>
@@ -305,8 +298,10 @@ $cuentas_result = mysqli_query($conexion, $query);
         </div>
     </nav>
 
+    <!-- Contenedor principal -->
     <div class="container py-4">
         <div class="card">
+            <!-- Encabezado de la tarjeta -->
             <div class="card-header bg-light py-3">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">
@@ -315,9 +310,11 @@ $cuentas_result = mysqli_query($conexion, $query);
                     </h5>
                 </div>
             </div>
+            <!-- Cuerpo de la tarjeta -->
             <div class="card-body">
                 <?php if (mysqli_num_rows($cuentas_result) > 0): ?>
                     <div class="table-responsive">
+                        <!-- Tabla de cuentas pagadas -->
                         <table class="table table-hover mobile-table">
                             <thead class="table-light">
                                 <tr>
@@ -376,6 +373,7 @@ $cuentas_result = mysqli_query($conexion, $query);
                         </table> <!-- Añadir cierre de tabla que faltaba -->
                     </div>
                 <?php else: ?>
+                    <!-- Mensaje cuando no hay cuentas pagadas -->
                     <div class="text-center py-5">
                         <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
                         <p class="text-muted">No hay historial de cuentas pagadas</p>
@@ -389,12 +387,15 @@ $cuentas_result = mysqli_query($conexion, $query);
     <div class="modal fade" id="detalleModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
+                <!-- Encabezado del modal -->
                 <div class="modal-header">
                     <h5 class="modal-title">Detalle de Cuenta</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+                <!-- Cuerpo del modal -->
                 <div class="modal-body">
                     <div class="table-responsive">
+                        <!-- Tabla de detalles -->
                         <table class="table table-sm">
                             <thead>
                                 <tr>
@@ -412,8 +413,10 @@ $cuentas_result = mysqli_query($conexion, $query);
         </div>
     </div>
 
+    <!-- Scripts de Bootstrap y funcionalidad -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+    // Función para ver detalles de la cuenta
     function verDetalle(mesaId, fecha, hora) {
         fetch(`obtener_detalle_cuenta.php?mesa_id=${mesaId}&fecha=${fecha}&hora=${hora}`)
             .then(response => response.json())

@@ -22,16 +22,21 @@ $query = "SELECT
           LIMIT 10";
 $historial_result = mysqli_query($conexion, $query);
 ?>
+<!-- HTML Inicio -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Metadatos y Títulos -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema Restaurante - Camarero</title>
+    
+    <!-- Enlaces a CSS externos -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 <body>
+    <!-- Barra de Navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="#">
@@ -47,9 +52,11 @@ $historial_result = mysqli_query($conexion, $query);
         </div>
     </nav>
 
+    <!-- Contenido Principal -->
     <div class="container py-4">
         <div class="row justify-content-center">
             <div class="col-12 col-md-8 col-lg-6">
+                <!-- Gestionar Mesas -->
                 <div class="card shadow-sm hover-card mb-4">
                     <div class="card-body p-0">
                         <a href="gestionar_mesas.php" class="text-decoration-none text-dark">
@@ -67,6 +74,7 @@ $historial_result = mysqli_query($conexion, $query);
                     </div>
                 </div>
 
+                <!-- Historial de Cuentas -->
                 <div class="card shadow-sm hover-card mb-4">
                     <div class="card-body p-0">
                         <a href="cuentas_pagadas.php" class="text-decoration-none text-dark">
@@ -84,7 +92,7 @@ $historial_result = mysqli_query($conexion, $query);
                     </div>
                 </div>
 
-                <!-- Historial -->
+                <!-- Historial de Pagos -->
                 <div class="card shadow-sm">
                     <div class="card-header bg-dark text-white py-3">
                         <h5 class="card-title mb-0">
@@ -124,17 +132,19 @@ $historial_result = mysqli_query($conexion, $query);
                         <?php endif; ?>
                     </div>
                 </div>
+                <!-- Fin Historial -->
             </div>
         </div>
     </div>
 
+    <!-- Estilos CSS -->
     <style>
     :root {
         --restaurant-primary: #2c3e50;    /* Azul oscuro principal */
-        --restaurant-secondary: #34495e;   /* Azul oscuro secundario */
-        --restaurant-accent: #3498db;      /* Azul claro para acentos */
-        --restaurant-light: #ecf0f1;       /* Gris muy claro para fondos */
-        --restaurant-dark: #1a252f;        /* Azul muy oscuro */
+        --restaurant-secondary: #34495e;  /* Azul oscuro secundario */
+        --restaurant-accent: #3498db;     /* Azul claro para acentos */
+        --restaurant-light: #ecf0f1;      /* Gris muy claro para fondos */
+        --restaurant-dark: #1a252f;       /* Azul muy oscuro */
     }
 
     body {
@@ -186,7 +196,7 @@ $historial_result = mysqli_query($conexion, $query);
 
     .list-group-item:hover {
         background-color: var(--restaurant-light);
-        border-left-color: var(--restaurant-accent);
+        border-left-color: var (--restaurant-accent);
         transform: translateX(5px);
     }
 
@@ -216,8 +226,10 @@ $historial_result = mysqli_query($conexion, $query);
     }
     </style>
 
+    <!-- Scripts JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+    // Función para ver detalles del pedido
     function verDetalle(detalleJson) {
         const detalle = JSON.parse(detalleJson);
         let html = '';
@@ -244,8 +256,8 @@ $historial_result = mysqli_query($conexion, $query);
         new bootstrap.Modal(document.getElementById('detalleModal')).show();
     }
 
+    // Función para cargar detalles del pago mediante AJAX
     function verDetallePago(pagoId) {
-        // Cargar detalles mediante AJAX
         fetch('obtener_detalle_pago.php?pago_id=' + pagoId)
             .then(response => response.json())
             .then(data => {

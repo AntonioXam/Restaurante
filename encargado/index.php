@@ -1,16 +1,22 @@
 <?php
+
+// Incluir archivos de sesión y conexión
 include 'sesion_encargado.php';
 include '../conexion.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Metadatos y título -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Encargado</title>
+    <!-- CSS de Bootstrap y Font Awesome -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Estilos personalizados -->
     <style>
+        /* Estilos responsivos */
         @media (max-width: 768px) {
             .container { 
                 padding: 10px; 
@@ -58,6 +64,7 @@ include '../conexion.php';
     </style>
 </head>
 <body>
+    <!-- Cabecera -->
     <header class="bg-primary text-white py-3">
         <div class="container d-flex justify-content-between align-items-center">
             <h1 class="h3 mb-0">Bienvenido, <?php echo $_SESSION['nombre']; ?></h1>
@@ -67,6 +74,7 @@ include '../conexion.php';
         </div>
     </header>
 
+    <!-- Panel de acciones -->
     <div class="container mt-4">
         <div class="row">
             <!-- Tarjeta Registrar Usuario -->
@@ -131,6 +139,7 @@ include '../conexion.php';
         </div>
     </div>
 
+    <!-- Scripts de JavaScript -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
