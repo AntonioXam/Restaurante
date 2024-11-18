@@ -8,7 +8,7 @@ function generar_ticket_cocina($conexion, $mesa_id, $productos) {
 
     try {
         // Configurar impresora
-        $connector = new NetworkPrintConnector("192.168.0.169", 9100);
+        $connector = new NetworkPrintConnector("192.168.0.207", 9100);
         $printer = new Printer($connector);
 
         // Encabezado del ticket
