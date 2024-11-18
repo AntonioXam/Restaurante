@@ -75,7 +75,7 @@ include '../conexion.php';
             <table class="table table-bordered table-hover">
                 <thead class="thead-dark">
                     <tr>
-                        <th>ID</th>
+                        <!-- <th>ID</th> -->
                         <th>Nombre</th>
                         <th>Categoría</th>
                         <th>Precio</th>
@@ -95,7 +95,7 @@ include '../conexion.php';
                     while($producto = mysqli_fetch_assoc($productos)):
                     ?>
                     <tr>
-                        <td data-label="ID"><?php echo $producto['id']; ?></td>
+                        <!-- <td data-label="ID"><?php echo $producto['id']; ?></td> -->
                         <td data-label="Nombre"><?php echo $producto['nombre']; ?></td>
                         <td data-label="Categoría"><?php echo $producto['categoria']; ?></td>
                         <td data-label="Precio"><?php echo $producto['precio']; ?></td>
@@ -106,7 +106,7 @@ include '../conexion.php';
                                 <i class="fas fa-edit"></i> Modificar
                             </a>
                             <a href="eliminar_producto.php?id=<?php echo $producto['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro de eliminar este producto?');">
-                                <i class="fas fa-trash"></i> Eliminar
+                                <i class "fas fa-trash"></i> Eliminar
                             </a>
                         </td>
                     </tr>

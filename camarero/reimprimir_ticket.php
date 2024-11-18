@@ -101,4 +101,4 @@ try {
     header("Location: cuentas_pagadas.php?print=error");
     exit;
 }
-?> 
+?>
