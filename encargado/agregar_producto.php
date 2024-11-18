@@ -1,6 +1,5 @@
-
 <?php
-include '../sesion.php';
+include 'sesion_encargado.php';
 include '../conexion.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

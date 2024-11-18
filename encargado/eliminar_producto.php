@@ -1,6 +1,5 @@
-
 <?php
-include '../sesion.php';
+include 'sesion_encargado.php';
 include '../conexion.php';
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;

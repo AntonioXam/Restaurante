@@ -1,7 +1,6 @@
-
 <?php 
-include '../sesion.php';
-include '../conexion.php';
+// include '../sesion.php';
+include 'sesion_encargado.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">

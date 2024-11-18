@@ -1,5 +1,5 @@
 <?php 
-include '../sesion.php';
+include 'sesion_encargado.php';
 include '../conexion.php';
 ?>
 <!DOCTYPE html>
