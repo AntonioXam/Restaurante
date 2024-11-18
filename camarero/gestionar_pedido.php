@@ -66,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Manejo de error si es necesario
                     echo "Error: " . mysqli_error($conexion);
                 }
+                break;
 
             case 'eliminar':
                 $detalle_id = mysqli_real_escape_string($conexion, $_POST['detalle_id']);
