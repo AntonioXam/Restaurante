@@ -1,42 +1,44 @@
 <?php
-// Iniciar buffer de salida
-ob_start();
+// Asegurarse de que no haya salida anterior
+ob_clean();
 
 // Incluir archivos necesarios
 require_once '../sesion.php';
 require_once '../conexion.php';
 require_once '../vendor/autoload.php';
 
-// Cambiar el use statement
-use TCPDF as TCPDF;
-
-// Definir la clase MYPDF extendiendo TCPDF
+// Definir la clase MYPDF antes de usarla
 class MYPDF extends TCPDF {
-    // Método Header para personalizar el encabezado del PDF
     public function Header() {
         $this->SetFont('helvetica', 'B', 14);
         $this->Cell(0, 15, 'RESTAURANTE CHAMPIÑÓN', 0, false, 'C', 0, '', 0, false, 'M', 'M');
     }
 }
 
-// Obtener parámetros de la URL
-$mesa_id = isset($_GET['mesa_id']) ? (int)$_GET['mesa_id'] : null;
-$fecha = isset($_GET['fecha']) ? $_GET['fecha'] : '';
-$hora = isset($_GET['hora']) ? $_GET['hora'] : '';
+// Verificar parámetros
+if (!isset($_GET['mesa_id']) || !isset($_GET['fecha']) || !isset($_GET['hora'])) {
+    die('Faltan parámetros necesarios');
+}
 
-// Descripción de los parámetros
-/**
- * Parámetros:
- * - `mesa_id` (int): El ID de la mesa.
- * - `fecha` (string): La fecha en formato 'YYYY-MM-DD'.
- * - `hora` (string): La hora en formato 'HH:MM:SS'.
- *
- * @param mysqli $conexion La conexión a la base de datos.
- * @param int $mesa_id El ID de la mesa.
- * @param string $fecha La fecha en formato 'YYYY-MM-DD'.
- * @param string $hora La hora en formato 'HH:MM:SS'.
- * @return mysqli_result El resultado de la consulta.
- */
+$mesa_id = (int)$_GET['mesa_id'];
+$fecha = $_GET['fecha'];
+$hora = $_GET['hora'];
+
+// Verificar si hay datos
+$query = "SELECT COUNT(*) as count FROM cuentas_pagadas 
+          WHERE mesa_id = ? 
+          AND DATE(fecha_hora) = ? 
+          AND TIME(fecha_hora) = ?";
+          
+$stmt = mysqli_prepare($conexion, $query);
+mysqli_stmt_bind_param($stmt, "iss", $mesa_id, $fecha, $hora);
+mysqli_stmt_execute($stmt);
+$count_result = mysqli_stmt_get_result($stmt);
+$count_row = mysqli_fetch_assoc($count_result);
+
+if ($count_row['count'] == 0) {
+    die('No se encontraron datos para el ticket solicitado');
+}
 
 // Obtener datos de la cuenta
 $query = "SELECT * FROM cuentas_pagadas 
@@ -102,6 +104,17 @@ $pdf->SetFont('helvetica', 'B', 10);
 $pdf->Cell(130, 7, 'TOTAL:', 1, 0, 'R');
 $pdf->Cell(40, 7, number_format($total, 2) . ' €', 1, 0, 'R');
 
-// Finalizar y enviar el PDF
-$pdf->Output('ticket_mesa_' . $mesa_id . '.pdf', 'I');
+// Antes de generar el PDF
+ob_end_clean();
+
+// Configurar headers
+header('Content-Type: application/pdf');
+header('Cache-Control: private, must-revalidate, post-check=0, pre-check=0, max-age=1');
+header('Pragma: public');
+header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
+header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+
+// Generar y enviar el PDF
+$pdf->Output('ticket_mesa_' . $mesa_id . '.pdf', 'D');
+exit();
 ?>
