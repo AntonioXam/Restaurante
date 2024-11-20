@@ -19,8 +19,8 @@ use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
  */
 try {
     // Enter the share name for your USB printer here
-    $connector = null;
-    //$connector = new WindowsPrintConnector("Receipt Printer");
+   
+    $connector = new WindowsPrintConnector("Receipt Printer");
 
     /* Print a "Hello world" receipt" */
     $printer = new Printer($connector);
