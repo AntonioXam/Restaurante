@@ -61,6 +61,25 @@ include '../conexion.php';
             transform: translateY(-5px);
             box-shadow: 0 8px 16px rgba(0,0,0,0.2);
         }
+        
+        /* Estilos para la sección de informes */
+        .report-section {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .report-form {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .chart-container {
+            height: 300px;
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
@@ -136,8 +155,24 @@ include '../conexion.php';
                     </div>
                 </div>
             </div>
+
+            <!-- Nueva Tarjeta para Informes -->
+            <div class="col-12 col-md-3 mb-4">
+                <div class="action-card card text-white bg-info card-hover">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-line card-icon"></i>
+                        <h5>Informes de Rendimiento</h5>
+                        <p class="text-light">Consulta estadísticas e informes</p>
+                        <a href="generar_informe.php" class="btn btn-light mt-3">
+                            <i class="fas fa-arrow-right"></i> Generar
+                        </a>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
+
 
     <!-- Scripts de JavaScript -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

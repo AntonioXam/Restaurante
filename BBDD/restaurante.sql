@@ -29,9 +29,7 @@ CREATE TABLE `productos` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Asegurarse de que la tabla productos tiene los campos necesarios
-ALTER TABLE `productos` 
-    ADD COLUMN `stock` int(11) DEFAULT NULL AFTER `precio`;
+
 
 -- 3. Tabla usuarios (actualizada con columna estado)
 CREATE TABLE `usuarios` (
@@ -89,14 +87,7 @@ CREATE TABLE `cuenta` (
   CONSTRAINT `cuenta_ibfk_2` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Mantener solo las tablas esenciales
-DROP TABLE IF EXISTS `tickets_pagados`;
-DROP TABLE IF EXISTS `historial_pagos`;
-DROP TABLE IF EXISTS `detalle_pagos`;
-DROP TABLE IF EXISTS `cuentas_pagadas`;
 
--- Eliminar tablas innecesarias
-DROP TABLE IF EXISTS `historial_pedidos`;
 
 -- Crear tabla para almacenar cuentas pagadas
 CREATE TABLE `cuentas_pagadas` (
@@ -160,7 +151,8 @@ INSERT INTO `productos` (`id`, `nombre`, `categoria`, `precio`, `stock`) VALUES
 (30, 'Pollo Asado', 'carne', '10.00', 10),
 (31, 'Extra Queso', 'extras', '1.00', 50),
 (32, 'Extra Salsa', 'extras', '0.50', 50),
-(33, 'Extra Aceitunas', 'extras', '0.75', 50);
+(33, 'Extra Aceitunas', 'extras', '0.75', 50),
+(34, 'Coca Cola zero', 'Bebida', '2.50', 20);
 
 -- 3. Insertar usuarios (actualizado con estado y foto)
 INSERT INTO `usuarios` (`id`, `nombre`, `apellidos`, `dni`, `rol`, `usuario`, `contrasena`, `foto`, `estado`) VALUES
