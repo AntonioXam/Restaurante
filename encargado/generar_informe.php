@@ -69,21 +69,40 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST'):
 <?php
 // ...existing code hasta else...
 else:
+/**
+ * Genera informe de ventas para el período especificado
+ * Calcula:
+ * - Número total de ventas por día
+ * - Ingresos totales por día
+ * - Totales generales del período
+ * 
+ * @param string $fecha_inicio Fecha inicial del período
+ * @param string $fecha_fin Fecha final del período
+ * @return array Resultados agrupados por día
+ */
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Obtener fechas del formulario
         $fecha_inicio = $_POST['fecha_inicio'];
         $fecha_fin = $_POST['fecha_fin'];
 
-        // Consulta SQL para obtener resumen de ventas por día
-        // Agrupa los resultados por fecha y calcula totales diarios
+        // Consulta para obtener resumen de ventas agrupado por día
+        // Ejemplo:
+        // SELECT 
+        //   DATE(fecha_hora) as fecha,
+        //   COUNT(*) as num_ventas,
+        //   SUM(subtotal) as total_dia
+        // FROM cuentas_pagadas
+        // WHERE DATE(fecha_hora) BETWEEN '2023-01-01' AND '2023-12-31'
+        // GROUP BY DATE(fecha_hora)
+        // ORDER BY fecha
         $query = "SELECT 
-                    DATE(fecha_hora) as fecha,
-                    COUNT(*) as num_ventas,        -- Cuenta el número de ventas por día
-                    SUM(subtotal) as total_dia     -- Suma el total de ingresos por día
-                 FROM cuentas_pagadas
-                 WHERE DATE(fecha_hora) BETWEEN ? AND ?
-                 GROUP BY DATE(fecha_hora)
-                 ORDER BY fecha";
+            DATE(fecha_hora) as fecha,
+            COUNT(*) as num_ventas,
+            SUM(subtotal) as total_dia
+        FROM cuentas_pagadas
+        WHERE DATE(fecha_hora) BETWEEN ? AND ?
+        GROUP BY DATE(fecha_hora)
+        ORDER BY fecha";
 
         // Preparar y ejecutar la consulta
         $stmt = mysqli_prepare($conexion, $query);

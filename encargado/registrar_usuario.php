@@ -1,6 +1,5 @@
 <?php
-
-// Incluir sesión de encargado
+// Incluimos el archivo de verificación de sesión de encargado
 include 'sesion_encargado.php';
 ?>
 <!DOCTYPE html>
@@ -48,6 +47,7 @@ include 'sesion_encargado.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body class="bg-light">
+    <!-- Cabecera que muestra el nombre del usuario logueado -->
     <header class="bg-primary text-white text-center py-3">
         <h1 class="h3">Bienvenido, <?php echo $_SESSION['nombre']; ?></h1>
     </header>
@@ -62,6 +62,7 @@ include 'sesion_encargado.php';
             <div class="col-12 col-md-8 offset-md-2">
                 <div class="form-card">
                     <h2 class="h4 mb-4 text-center">Registrar Nuevo Usuario</h2>
+                    <!-- Formulario de registro con validación del lado del cliente -->
                     <form action="registro.php" method="post" class="needs-validation" enctype="multipart/form-data" novalidate>
                         <!-- Campos del formulario -->
                         <div class="form-group">
@@ -110,22 +111,24 @@ include 'sesion_encargado.php';
         </div>
     </div>
 
-    <!-- Scripts de JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <!-- Script de validación personalizado -->
+    <!-- Script de validación del formulario -->
     <script>
+        // Función auto-ejecutable para la validación de Bootstrap
         (function () {
             'use strict';
             window.addEventListener('load', function () {
+                // Selecciona todos los formularios que necesitan validación
                 var forms = document.getElementsByClassName('needs-validation');
+                
+                // Aplica la validación a cada formulario
                 var validation = Array.prototype.filter.call(forms, function (form) {
                     form.addEventListener('submit', function (event) {
+                        // Previene el envío si hay campos inválidos
                         if (form.checkValidity() === false) {
                             event.preventDefault();
                             event.stopPropagation();
                         }
+                        // Añade las clases de validación para mostrar el feedback
                         form.classList.add('was-validated');
                     }, false);
                 });

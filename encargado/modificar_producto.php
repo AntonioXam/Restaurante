@@ -7,13 +7,29 @@ include '../conexion.php';
 // Obtener ID del producto
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
+/**
+ * Procesa la actualización de productos
+ * Permite modificar:
+ * - Nombre del producto
+ * - Categoría
+ * - Precio
+ * - Stock
+ * 
+ * @param int $id ID del producto a modificar
+ * @return void Redirecciona a la lista de productos
+ */
 // Manejar la solicitud POST para actualizar el producto
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Escapa caracteres especiales para prevenir SQL injection
     $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
     $categoria = mysqli_real_escape_string($conexion, $_POST['categoria']);
     $precio = mysqli_real_escape_string($conexion, $_POST['precio']);
     $stock = mysqli_real_escape_string($conexion, $_POST['stock']);
 
+    // Construye y ejecuta la consulta de actualización
+    // Ejemplo: UPDATE productos 
+    //         SET nombre='Coca Cola', categoria='Bebidas', precio='2.50', stock='100' 
+    //         WHERE id=5
     $sql = "UPDATE productos SET nombre='$nombre', categoria='$categoria', precio='$precio', stock='$stock' WHERE id=$id";
 
     if (mysqli_query($conexion, $sql)) {
@@ -24,6 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Obtener datos del producto
+// Ejemplo: SELECT * FROM productos WHERE id = 5
 $producto = mysqli_fetch_assoc(mysqli_query($conexion, "SELECT * FROM productos WHERE id=$id"));
 ?>
 <!DOCTYPE html>

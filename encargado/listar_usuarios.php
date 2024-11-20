@@ -7,12 +7,15 @@ include '../conexion.php';
 // Obtener el rol de la URL si está presente
 $rol = isset($_GET['rol']) ? $_GET['rol'] : null;
 
-// Modificar la consulta para excluir al usuario con ID 1 y filtrar por rol si está definido
+// Si hay un rol especificado, filtra por ese rol y excluye al admin (id=1)
+// Ejemplo: SELECT * FROM usuarios WHERE rol = 'camarero' AND id != 1
 if ($rol) {
     // Validar que el rol es permitido
     $rol = mysqli_real_escape_string($conexion, $rol);
     $sql = "SELECT * FROM usuarios WHERE rol = '$rol' AND id != 1";
 } else {
+    // Si no hay rol, muestra camareros y encargados, excluyendo admin
+    // Ejemplo: SELECT * FROM usuarios WHERE rol IN ('camarero', 'encargado') AND id != 1
     $sql = "SELECT * FROM usuarios WHERE rol IN ('camarero', 'encargado') AND id != 1";
 }
 

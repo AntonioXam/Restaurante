@@ -1,30 +1,33 @@
 <?php
-
-// Incluir archivos de sesión y conexión
+// Incluimos los archivos necesarios para la sesión y la conexión a la base de datos
 include 'sesion_encargado.php';
 include '../conexion.php';
 
-// Manejar la solicitud POST
+// Procesamiento del formulario cuando se recibe una petición POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Obtener y asignar variables del formulario
+    // Recuperamos y sanitizamos los datos del formulario
     $nombre = $_POST['nombre'];
     $apellido = $_POST['apellido'];
     $dni = $_POST['dni'];
     $usuario = $_POST['usuario'];
     $contrasena = $_POST['contrasena'];
-    $rol = $_POST['rol']; // Nuevo campo para el rol
+    $rol = $_POST['rol'];
     
-    // Procesar la imagen
+    // Manejo de la subida de imagen
     $foto = null;
     if(isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
+        // Definimos el directorio de destino para las imágenes
         $target_dir = "../uploads/";
+        // Creamos el directorio si no existe
         if (!file_exists($target_dir)) {
             mkdir($target_dir, 0777, true);
         }
         
+        // Generamos un nombre único para la imagen
         $foto = uniqid() . "_" . basename($_FILES["foto"]["name"]);
         $target_file = $target_dir . $foto;
         
+        // Movemos la imagen subida al directorio final
         if (move_uploaded_file($_FILES["foto"]["tmp_name"], $target_file)) {
             // Imagen subida correctamente
         } else {
@@ -33,12 +36,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
+    // Preparamos la consulta SQL usando prepared statements para prevenir SQL injection
     $sql = "INSERT INTO usuarios (nombre, apellidos, dni, usuario, contrasena, rol, foto, estado) 
             VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
     
+    // Preparamos y ejecutamos la consulta
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("sssssss", $nombre, $apellido, $dni, $usuario, $contrasena, $rol, $foto);
     
+    // Ejecutamos la consulta y manejamos el resultado
     if ($stmt->execute()) {
         header("Location: listar_camareros.php");
     } else {

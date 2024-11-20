@@ -7,7 +7,8 @@ include '../conexion.php';
 // Obtener ID del producto
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-// Consulta para eliminar el producto
+// Elimina el producto especificado
+// Ejemplo: DELETE FROM productos WHERE id = 5
 $sql = "DELETE FROM productos WHERE id=$id";
 
 // Ejecutar la consulta y redirigir con mensaje

@@ -87,10 +87,19 @@ include '../conexion.php';
                     <?php
                     // Manejar filtro de categoría
                     $categoriaFiltro = isset($_GET['categoria']) ? mysqli_real_escape_string($conexion, $_GET['categoria']) : '';
+                    
+                    // Obtiene todas las categorías únicas para el filtro
+                    // Ejemplo: SELECT DISTINCT categoria FROM productos
+                    $categorias = mysqli_query($conexion, "SELECT DISTINCT categoria FROM productos");
+
+                    // Construye la consulta base o filtrada por categoría
+                    // Ejemplo sin filtro: SELECT * FROM productos
+                    // Ejemplo con filtro: SELECT * FROM productos WHERE categoria = 'Bebidas'
                     $sql = "SELECT * FROM productos";
                     if($categoriaFiltro) {
                         $sql .= " WHERE categoria = '$categoriaFiltro'";
                     }
+                    
                     $productos = mysqli_query($conexion, $sql);
                     while($producto = mysqli_fetch_assoc($productos)):
                     ?>

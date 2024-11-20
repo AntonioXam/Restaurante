@@ -1,51 +1,55 @@
 <?php
-// Incluir conexión a la base de datos
+// Incluir el archivo de conexión a la base de datos
 include 'conexion.php';
 
-// Procesar formulario si se envió
+// Procesar el formulario de login cuando se recibe una petición POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    // Obtener datos del formulario
+    // Obtener y sanitizar los datos del formulario
     $usuario = $_POST['usuario'];
     $contrasena = $_POST['contrasena'];
 
-    // Consulta para verificar el usuario
+    // Consulta SQL para verificar las credenciales del usuario
+    // Busca un usuario específico en la tabla 'usuarios'
     $query = "SELECT * FROM usuarios WHERE usuario='$usuario'";
     $result = mysqli_query($conexion, $query);
 
+    // Verificar si se encontró el usuario
     if (mysqli_num_rows($result) == 1) {
         $row = mysqli_fetch_assoc($result);
+        // Verificar si la contraseña coincide
         if ($contrasena == $row['contrasena']) {
+            // Verificar si la cuenta está activa (estado = 1)
             if ($row['estado'] == 1) {
-                // Iniciar sesión y almacenar datos en $_SESSION
+                // Iniciar sesión y almacenar datos importantes del usuario
                 session_start();
-                $_SESSION['usuario'] = $usuario;
-                $_SESSION['usuario_id'] = $row['id'];
-                $_SESSION['rol'] = $row['rol'];
-                $_SESSION['dni'] = $row['dni'];
-                $_SESSION['nombre'] = $row['nombre'];
-                $_SESSION['apellidos'] = $row['apellidos'];
+                $_SESSION['usuario'] = $usuario;      // Nombre de usuario
+                $_SESSION['usuario_id'] = $row['id']; // ID único del usuario
+                $_SESSION['rol'] = $row['rol'];       // Rol del usuario (camarero/encargado)
+                $_SESSION['dni'] = $row['dni'];       // DNI del usuario
+                $_SESSION['nombre'] = $row['nombre']; // Nombre real del usuario
+                $_SESSION['apellidos'] = $row['apellidos']; // Apellidos del usuario
 
-                // Redireccionar según el rol
+                // Redireccionar según el rol del usuario
                 if ($row['rol'] == 'camarero') {
                     header("Location: camarero/index.php");
                 } elseif ($row['rol'] == 'encargado') {
                     header("Location: encargado/index.php");
                 }
             } else {
-                // Configurar modal de cuenta suspendida
+                // Configurar modal para cuenta suspendida
                 $modalTitle = "Cuenta Suspendida";
                 $modalBody = "Su cuenta está suspendida.";
                 $modalId = "suspendidoModal";
             }
         } else {
-            // Configurar modal de error de credenciales
+            // Configurar modal para credenciales incorrectas
             $modalTitle = "Error de inicio de sesión";
             $modalBody = "Usuario o contraseña incorrectos.";
             $modalId = "errorModal";
         }
     } else {
-        // Configurar modal de error de credenciales
+        // Configurar modal para usuario no encontrado
         $modalTitle = "Error de inicio de sesión";
         $modalBody = "Usuario o contraseña incorrectos.";
         $modalId = "errorModal";

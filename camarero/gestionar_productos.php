@@ -32,10 +32,17 @@ if (!$mesa_id) {
 // $result - Resultado de la consulta de productos por categoría
 
 /**
- * Obtiene los productos filtrados por categoría
- * @param mysqli $conexion - Conexión a la base de datos
- * @param string $categoria - Nombre de la categoría a filtrar
- * @return mysqli_result - Resultado de la consulta
+ * Función para obtener productos filtrados por categoría
+ * 
+ * @param mysqli $conexion Conexión a la base de datos
+ * @param string $categoria Nombre de la categoría a filtrar
+ * @return mysqli_result Resultado de la consulta con los productos
+ * 
+ * La consulta:
+ * 1. Filtra productos por categoría
+ * 2. Solo muestra productos activos
+ * 3. Ordena alfabéticamente por nombre
+ * 4. Usa prepared statements para seguridad
  */
 function obtener_productos_por_categoria($conexion, $categoria) {
     $categoria = mysqli_real_escape_string($conexion, $categoria);
@@ -53,6 +60,13 @@ function obtener_productos_por_categoria($conexion, $categoria) {
 // Procesar nuevo pedido con prepared statements
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['producto_id'])) {
+        /**
+         * Proceso de inserción de nuevo pedido:
+         * 1. Validación de inputs
+         * 2. Inserción en detalle_pedidos
+         * 3. Vinculación con pedido existente o nuevo
+         * 4. Gestión de errores y redirección
+         */
         $producto_id = filter_input(INPUT_POST, 'producto_id', FILTER_VALIDATE_INT);
         $cantidad = filter_input(INPUT_POST, 'cantidad', FILTER_VALIDATE_INT);
         $notas = filter_input(INPUT_POST, 'notas', FILTER_SANITIZE_STRING);

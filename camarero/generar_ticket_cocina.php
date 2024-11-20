@@ -2,6 +2,21 @@
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 
+/**
+ * Función para generar e imprimir ticket de cocina
+ * 
+ * @param mysqli $conexion Conexión activa a la base de datos
+ * @param int $mesa_id ID de la mesa del pedido
+ * @param array $productos Array con los productos del pedido
+ * @return bool True si la impresión fue exitosa, False en caso contrario
+ * 
+ * Proceso:
+ * 1. Configuración de la impresora de red
+ * 2. Formateo del encabezado del ticket
+ * 3. Listado de productos con cantidades y notas
+ * 4. Corte del ticket y cierre de conexión
+ * 5. Manejo de errores de impresión
+ */
 function generar_ticket_cocina($conexion, $mesa_id, $productos) {
     require_once '../vendor/autoload.php';
 

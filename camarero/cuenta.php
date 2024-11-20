@@ -12,7 +12,12 @@ if (isset($_SESSION['error_ticket'])) {
     unset($_SESSION['error_ticket']);
 }
 
-// Modificar la consulta para obtener los productos correctamente
+/**
+ * Consulta principal para obtener los productos en la cuenta
+ * - Une las tablas cuenta y productos usando el producto_id
+ * - Filtra por mesa_id específica
+ * - Ordena los resultados por fecha/hora descendente
+ */
 $query = "SELECT c.*, p.nombre as nombre_producto 
          FROM cuenta c 
          INNER JOIN productos p ON c.producto_id = p.id 
@@ -32,14 +37,21 @@ while ($item = mysqli_fetch_assoc($cuenta_result)) {
     $productos_cuenta[] = $item;
 }
 
-// Procesar acciones POST
+/**
+ * Procesamiento de acciones POST
+ * Maneja diferentes acciones mediante un switch:
+ * - modificar_cuenta: Actualiza cantidad y subtotal de un producto
+ * - eliminar_cuenta: Elimina un producto de la cuenta
+ * - pagar: Genera ticket y procesa el pago
+ * - pagar_sin_ticket: Procesa el pago sin generar ticket
+ */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     try {
         mysqli_begin_transaction($conexion);
         
         switch ($_POST['action']) {
             case 'modificar_cuenta':
-                // Modificar cantidad y subtotal de un producto
+                // Actualiza la cantidad y recalcula el subtotal de un producto en la cuenta
                 $item_id = (int)$_POST['item_id'];
                 $cantidad = (int)$_POST['cantidad'];
                 $precio_unitario = (float)$_POST['precio_unitario'];
@@ -68,8 +80,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     exit;
                 }
             case 'pagar_sin_ticket':
+                /**
+                 * Proceso de pago sin generar ticket:
+                 * 1. Obtiene todos los productos de la cuenta actual
+                 * 2. Inserta cada producto en la tabla cuentas_pagadas para historial
+                 * 3. Elimina los productos de la cuenta actual
+                 * 4. Actualiza el estado de la mesa a 'inactiva'
+                 */
                 try {
-                    // Procesar el pago sin generar ticket
+                    // Consulta para obtener productos actuales
                     $query = "SELECT c.*, p.nombre as nombre_producto 
                              FROM cuenta c 
                              INNER JOIN productos p ON c.producto_id = p.id 
@@ -446,7 +465,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     <!-- Scripts de Bootstrap y funcionalidad -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    // Función para modificar cantidad de un producto
+    /**
+     * Funciones JavaScript
+     */
+
+    /**
+     * modificarCantidad
+     * Prepara y muestra el modal para modificar la cantidad de un producto
+     * @param {number} itemId - ID del item a modificar
+     * @param {string} nombre - Nombre del producto
+     * @param {number} cantidad - Cantidad actual
+     * @param {number} precio - Precio unitario
+     */
     function modificarCantidad(itemId, nombre, cantidad, precio) {
         document.getElementById('mod_item_id').value = itemId;
         document.getElementById('mod_producto_nombre').textContent = nombre;
@@ -455,7 +485,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         new bootstrap.Modal(document.getElementById('modificarModal')).show();
     }
 
-    // Función para ajustar cantidad con botones +
+    /**
+     * ajustarCantidad
+     * Incrementa o decrementa la cantidad en el modal de modificación
+     * @param {number} cambio - Valor a sumar o restar (+1 o -1)
+     */
     function ajustarCantidad(cambio) {
         const input = document.getElementById('mod_cantidad');
         const nuevoValor = parseInt(input.value) + cambio;
@@ -464,26 +498,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
     }
 
-    // Función para eliminar un producto de la cuenta
-    function eliminarProducto(itemId, nombre) {
-        if (confirm(`¿Está seguro de eliminar ${nombre} de la cuenta?`)) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.innerHTML = `
-                <input type="hidden" name="action" value="eliminar_cuenta">
-                <input type="hidden" name="item_id" value="${itemId}">
-            `;
-            document.body.appendChild(form);
-            form.submit();
-        }
-    }
-
-    // Función para mostrar el modal de pago
+    /**
+     * mostrarModalPago
+     * Muestra el modal de confirmación de pago con el total actual
+     */
     function mostrarModalPago() {
         new bootstrap.Modal(document.getElementById('pagoModal')).show();
     }
 
-    // Función para mostrar el modal de eliminación
+    /**
+     * mostrarModalEliminar
+     * Muestra el modal de confirmación para eliminar un producto
+     * @param {number} itemId - ID del item a eliminar
+     * @param {string} nombreProducto - Nombre del producto a eliminar
+     */
     function mostrarModalEliminar(itemId, nombreProducto) {
         document.getElementById('itemEliminarId').value = itemId;
         document.getElementById('productoEliminar').textContent = nombreProducto;

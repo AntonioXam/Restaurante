@@ -48,6 +48,7 @@ function mesa_tiene_productos($conexion, $mesa_id) {
     return $row['total'] > 0;
 }
 
+
 // Lógica para activar mesa
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activar_mesa'])) {
     $mesa_id = $_POST['mesa_id'];
@@ -58,6 +59,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activar_mesa'])) {
 
     header("Location: gestionar_pedido.php?mesa_id=$mesa_id");
     exit();
+}
+
+/**
+ * Proceso de activación de mesa:
+ * 1. Actualización del estado de la mesa a 'activa'
+ * 2. Asignación del número de comensales
+ * 3. Creación de nuevo pedido pendiente
+ * 4. Redirección a gestión de pedido
+ */
+// Lógica de activación de mesa
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activar_mesa'])) {
+    $mesa_id = $_POST['mesa_id'];
+    $comensales = $_POST['comensales'];
+
+    mysqli_query($conexion, "UPDATE mesas SET estado = 'activa', comensales = $comensales WHERE id = $mesa_id");
+    mysqli_query($conexion, "INSERT INTO pedidos (mesa_id, estado, total) VALUES ($mesa_id, 'pendiente', 0.00)");
+
+    header("Location: gestionar_pedido.php?mesa_id=$mesa_id");
+    exit();
+   
 }
 
 // Lógica para cerrar mesa
