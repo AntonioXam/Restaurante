@@ -2,13 +2,10 @@
 include '../sesion.php';
 include '../conexion.php';
 
-// Verificar permisos de camarero
-if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'camarero') {
-    header('Location: ../index.php');
-    exit;
-}
 
-// Sanitizar mesa_id
+
+// / Sanitizar y validar el parámetro mesa_id recibido por GET
+// Si mesa_id no es un entero válido, redirige a gestionar_mesas.php y termina la ejecución
 $mesa_id = filter_input(INPUT_GET, 'mesa_id', FILTER_VALIDATE_INT);
 if (!$mesa_id) {
     header('Location: gestionar_mesas.php');

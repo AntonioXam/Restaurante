@@ -2,11 +2,7 @@
 include '../sesion.php';
 include '../conexion.php';
 
-// Verificar si el usuario tiene rol 'camarero' o 'encargado'
-if (!in_array($_SESSION['rol'], ['camarero', 'encargado'])) {
-    header("Location: ../login.php");
-    exit;
-}
+
 
 // Consulta para obtener el historial de cuentas pagadas agrupadas
 $query = "SELECT 
