@@ -2,6 +2,17 @@
 include '../sesion.php';
 include '../conexion.php';
 
+/**
+ * Descripción general del sistema de gestión de mesas
+ * 
+ * Este script maneja:
+ * 1. Visualización de mesas activas e inactivas
+ * 2. Activación de nuevas mesas
+ * 3. Asignación de comensales
+ * 4. Gestión de estados de mesa
+ * 5. Cierre de mesas
+ */
+
 // Gestión de mesas del restaurante
 // Muestra:
 // - Mesas activas (ocupadas)
@@ -25,20 +36,25 @@ include '../conexion.php';
 
 /**
  * Obtiene todas las mesas que están actualmente ocupadas
- * @param mysqli $conexion - Conexión a la base de datos
- * @return mysqli_result - Resultado de la consulta
+ * 
+ * @param mysqli $conexion Conexión activa a la base de datos
+ * @return mysqli_result Conjunto de resultados con las mesas activas
+ * @throws mysqli_sql_exception Si hay error en la consulta
  */
 function obtener_mesas_activas($conexion) {
     return mysqli_query($conexion, "SELECT * FROM mesas WHERE estado = 'activa'");
 }
 
 /**
- * Verifica si una mesa tiene productos en la cuenta
- * @param mysqli $conexion - Conexión a la base de datos
- * @param int $mesa_id - ID de la mesa
- * @return bool - True si tiene productos, False en caso contrario
+ * Verifica si una mesa tiene productos pendientes en la cuenta
+ * 
+ * @param mysqli $conexion Conexión activa a la base de datos
+ * @param int $mesa_id Identificador único de la mesa
+ * @return bool True si la mesa tiene productos, False si está vacía
+ * @throws mysqli_sql_exception Si hay error en la consulta
  */
 function mesa_tiene_productos($conexion, $mesa_id) {
+    // Consulta preparada para prevenir SQL injection
     $query = "SELECT COUNT(*) as total FROM cuenta WHERE mesa_id = ?";
     $stmt = mysqli_prepare($conexion, $query);
     mysqli_stmt_bind_param($stmt, "i", $mesa_id);
@@ -48,13 +64,20 @@ function mesa_tiene_productos($conexion, $mesa_id) {
     return $row['total'] > 0;
 }
 
-
-// Lógica para activar mesa
+/**
+ * Procesamiento de activación de mesa
+ * 
+ * Actualiza el estado de la mesa a 'activa' y crea un nuevo pedido
+ * asociado a la mesa con estado inicial 'pendiente'
+ */
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activar_mesa'])) {
     $mesa_id = $_POST['mesa_id'];
     $comensales = $_POST['comensales'];
 
+    // Actualiza el estado de la mesa
     mysqli_query($conexion, "UPDATE mesas SET estado = 'activa', comensales = $comensales WHERE id = $mesa_id");
+    
+    // Crea un nuevo pedido asociado
     mysqli_query($conexion, "INSERT INTO pedidos (mesa_id, estado, total) VALUES ($mesa_id, 'pendiente', 0.00)");
 
     header("Location: gestionar_pedido.php?mesa_id=$mesa_id");
@@ -62,37 +85,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activar_mesa'])) {
 }
 
 /**
- * Proceso de activación de mesa:
- * 1. Actualización del estado de la mesa a 'activa'
- * 2. Asignación del número de comensales
- * 3. Creación de nuevo pedido pendiente
- * 4. Redirección a gestión de pedido
+ * Procesamiento de cierre de mesa
+ * 
+ * Verifica que la mesa no tenga productos pendientes antes de cerrarla
  */
-// Lógica de activación de mesa
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['activar_mesa'])) {
-    $mesa_id = $_POST['mesa_id'];
-    $comensales = $_POST['comensales'];
-
-    mysqli_query($conexion, "UPDATE mesas SET estado = 'activa', comensales = $comensales WHERE id = $mesa_id");
-    mysqli_query($conexion, "INSERT INTO pedidos (mesa_id, estado, total) VALUES ($mesa_id, 'pendiente', 0.00)");
-
-    header("Location: gestionar_pedido.php?mesa_id=$mesa_id");
-    exit();
-   
-}
-
-// Lógica para cerrar mesa
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cerrar_mesa'])) {
     $mesa_id = $_POST['mesa_id'];
     if (!mesa_tiene_productos($conexion, $mesa_id)) {
+        // Actualiza el estado de la mesa a inactiva y elimina los comensales
         mysqli_query($conexion, "UPDATE mesas SET estado = 'inactiva', comensales = NULL WHERE id = $mesa_id");
         header("Location: gestionar_mesas.php?status=success");
         exit();
     }
 }
 
+/**
+ * Inicialización de variables principales
+ * 
+ * Obtiene el estado actual de las mesas para su visualización
+ */
 $mesa_id = isset($_GET['mesa_id']) ? $_GET['mesa_id'] : null;
+// Consulta de mesas disponibles
 $mesas_inactivas_result = mysqli_query($conexion, "SELECT * FROM mesas WHERE estado = 'inactiva'");
+// Consulta de mesas ocupadas
 $mesas_activas_result = obtener_mesas_activas($conexion);
 ?>
 <!DOCTYPE html>
