@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST'):
 </body>
 </html>
 <?php
-// ...existing code hasta else...
+
 else:
 /**
  * Genera informe de ventas para el período especificado
