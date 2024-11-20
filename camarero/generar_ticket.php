@@ -53,9 +53,9 @@ try {
     $printer->text(str_repeat("-", 32) . "\n\n");
 
     // Cabecera de la tabla
-    $printer->text(str_repeat("=", 32) . "\n");
-    $printer->text(sprintf("%-16s %3s %10s\n", "PRODUCTO", "UDS", "IMPORTE"));
-    $printer->text(str_repeat("=", 32) . "\n");
+    $printer->text(str_repeat("=", 48) . "\n");
+    $printer->text(sprintf("%-14s %3s %12s %12s\n", "PRODUCTO", "UDS", "P.UNIT", "TOTAL"));
+    $printer->text(str_repeat("=", 48) . "\n");
 
     // Detalles de productos
     $total = 0;
@@ -64,11 +64,12 @@ try {
         $subtotal = $item['cantidad'] * $item['precio_unitario'];
         $total += $subtotal;
         
-        $nombre = substr($item['nombre_producto'], 0, 16);
+        $nombre = substr($item['nombre_producto'], 0, 14);
         $cantidad = str_pad($item['cantidad'], 3, ' ', STR_PAD_LEFT);
-        $precio = str_pad(number_format($subtotal, 2) . " EUR", 10, ' ', STR_PAD_LEFT);
+        $precio_unit = str_pad(number_format($item['precio_unitario'], 2) . " EUR", 12, ' ', STR_PAD_LEFT);
+        $precio_total = str_pad(number_format($subtotal, 2) . " EUR", 12, ' ', STR_PAD_LEFT);
         
-        $printer->text(sprintf("%-16s %3s %10s\n", $nombre, $cantidad, $precio));
+        $printer->text(sprintf("%-14s %3s %12s %12s\n", $nombre, $cantidad, $precio_unit, $precio_total));
     }
 
     // Cálculos finales
