@@ -43,6 +43,7 @@ function generar_ticket_cocina($conexion, $mesa_id, $productos) {
 
         // Pie del ticket
         $printer->text("--------------------------------\n");
+        $printer->text("\n\n\n\n\n");  // Espacio en blanco para corte
         $printer->cut();
         $printer->close();
 

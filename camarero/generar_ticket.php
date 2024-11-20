@@ -93,7 +93,7 @@ try {
     $printer->text("\n");
     $printer->text("Conserve esta factura\n");
     $printer->text("para cualquier reclamación\n");
-    $printer->text("\n\n");
+    $printer->text("\n\n\n\n\n");  // Espacio en blanco para corte
 
     // Cortar ticket
     $printer->cut();

@@ -88,7 +88,7 @@ try {
     $printer->text("\n");
     $printer->text("*** COPIA DE TICKET ***\n");
     $printer->text("¡Gracias por su visita!\n");
-    $printer->text("\n\n");
+    $printer->text("\n\n\n\n\n");  // Espacio en blanco para corte
 
     $printer->cut();
     $printer->close();
